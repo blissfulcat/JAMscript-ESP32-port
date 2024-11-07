@@ -1,7 +1,7 @@
-#ifndef SYSTEM_MANAGER_H
-#define SYSTEM_MANAGER_H
+#ifndef __SYSTEM_MANAGER_H__
+#define __SYSTEM_MANAGER_H__
 
-#include <stdbool.h>
+#include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _system_manager_t

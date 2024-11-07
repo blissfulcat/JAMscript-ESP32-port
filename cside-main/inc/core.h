@@ -1,5 +1,7 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef __CORE_H__
+#define __CORE_H__
+
+#include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _corestate_t

@@ -1,8 +1,8 @@
-#ifndef ZENOH_H
-#define ZENOH_H
+#ifndef __ZENOH_H__
+#define __ZENOH_H__
 
 #include <zenoh-pico.h>
-#include <stdbool.h>
+#include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _zenoh_t

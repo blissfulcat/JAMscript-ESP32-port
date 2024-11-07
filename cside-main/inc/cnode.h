@@ -1,10 +1,10 @@
-#ifndef CNODE_H
-#define CNODE_H
+#ifndef __CNODE_H__
+#define __CNODE_H__
 
-#include <stdbool.h>
 #include "zenoh.h"
 #include "core.h"
 #include "system_manager.h"
+#include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _cnode_t 
