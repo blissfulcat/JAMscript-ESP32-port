@@ -24,6 +24,12 @@ typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 zenoh_t* zenoh_init();
 
 /**
+ * @brief Frees memory associated with the zenoh_t struct.
+ * @param zenoh pointer to zenoh_t struct
+ */
+void zenoh_destroy(zenoh_t* zenoh);
+
+/**
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
  * @param zenoh pointer to zenoh_t struct
  * @retval true If a JNode is found

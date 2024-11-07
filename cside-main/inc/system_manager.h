@@ -19,6 +19,12 @@ typedef struct _system_manager_t
 system_manager_t* system_manager_init();
 
 /**
+ * @brief Frees memory associated with the system_manager_t struct.
+ * @param sm pointer to system_manager_t struct
+ */
+void system_manager_destroy(system_manager_t* sm);
+
+/**
  * @brief Initializes the Wifi module and connects to a preset network.
  * @retval true If wifi initiation successful
  * @retval false If error occured during wifi init

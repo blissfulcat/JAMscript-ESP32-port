@@ -6,6 +6,10 @@ zenoh_t *zenoh_init() {
     return NULL;
 }
 
+void zenoh_destroy(zenoh_t* zenoh) {
+    
+}
+
 bool zenoh_scout(zenoh_t* zenoh) {
     return NULL;
 }

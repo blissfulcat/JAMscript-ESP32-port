@@ -19,12 +19,13 @@ void dump_bufer_hex(uint8_t* buffer, uint32_t size);
 void dump_bufer_hex_raw(uint8_t* buffer, uint32_t size);
 void dump_heap_left();
 
-//#define MEMORY_DEBUG
+#define MEMORY_DEBUG
 #ifdef MEMORY_DEBUG
+static int32_t total_mem_usage = 0;
 #include <stdio.h>
 #include <stdint.h>
-#define calloc(x,y) calloc(x,y); printf("calloc: %lu  " __FILE__ ":%d\n", (uint32_t) y*x, __LINE__)
-#define malloc(x) malloc(x); printf("malloc: %lu"  __FILE__ ":%d\n", (uint32_t) x, __LINE__)
-#define free(x) {free(x); printf("Freed a " #x " " __FILE__ ":%d\n", __LINE__);}
+#define calloc(x,y) calloc(x,y); total_mem_usage+=(y*x); printf("calloc: %lu  " __FILE__ ":%d. Total M count: %li\n", (uint32_t) y*x, __LINE__, total_mem_usage)
+#define malloc(x) malloc(x); total_mem_usage+=x; printf("malloc: %lu"  __FILE__ ":%d. Total M count: %li\n", (uint32_t) x, __LINE__, total_mem_usage)
+#define free(x) {free(x); total_mem_usage-=sizeof(*x); printf("Freed a " #x " " __FILE__ ":%d. Total M count: %li\n", __LINE__, total_mem_usage);}
 #endif
 #endif
