@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define NULL ((void *)0)
 #define JAM_OK 1
 #define JAM_FAIL -1
 #define JAM_MEMORY_ERR -2
