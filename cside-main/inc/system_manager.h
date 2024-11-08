@@ -1,13 +1,20 @@
 #ifndef __SYSTEM_MANAGER_H__
 #define __SYSTEM_MANAGER_H__
 
+#include <esp_event.h>
 #include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _system_manager_t
 {
-    /* data */
-    int a; // TODO
+   // add more info if needed
+
+   int _connection_attempts = 0;
+   bool wifi_connection = false;
+
+   esp_event_handler_instance_t wifi_any_event_handle;
+   esp_event_handler_instance_t got_ip_event_handle;
+
 } system_manager_t;
 
 /* FUNCTION PROTOTYPES */
