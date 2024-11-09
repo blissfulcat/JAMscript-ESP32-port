@@ -86,6 +86,7 @@ zenoh_t *zenoh_init() {
     int retval = z_open(s, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
+        free(s);
         return NULL;
     }
     zenoh->z_session = s;
