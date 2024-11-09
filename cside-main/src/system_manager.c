@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <zenoh-pico.h>
+#include "system_manager.h"
 
 #define ESP_WIFI_SSID "WIFI USERNAME HERE"
 #define ESP_WIFI_PASS "WIFI PASSWORD HERE"
@@ -55,7 +56,11 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 system_manager_t* system_manager_init() {
 	assert(!_system_initialized && "System Manager was initialized a second time!");
 
-   	system_manager_t* system_manager = &_global_system_manager;
+    /*
+    We do not need a global static system manager. You should dynamically allocate system_manager
+    with calloc. See cnode_init()
+    */
+   	system_manager_t* system_manager = &_global_system_manager; 
     memset(system_manager, 0, sizeof(system_manager_t));
 
     system_manager->_connection_attempts = 0;
@@ -91,6 +96,12 @@ void _system_manager_board_init(system_manager_t* system_manager)
 
     int *context = (int *)malloc(sizeof(int));
     *context = 0;
+
+    /* We should not scout here, this is done in the zenoh file via zenoh_scout().
+    * scouting should also be done in cnode_init()
+    * besides, this would not work because we have not opened a zenoh session
+    * you should remove all of the lines below
+    */
     z_owned_config_t config;
     z_config_default(&config);
     z_owned_closure_hello_t closure;
@@ -101,6 +112,7 @@ void _system_manager_board_init(system_manager_t* system_manager)
 
 
 void system_manager_destroy(system_manager_t* system_manager) {
+    /* Also, free does nothing if system_manager is not dynamically allocated (using malloc, calloc, etc.) */
     free(system_manager);
     //reset pointer
     system_manager = NULL;
@@ -119,7 +131,9 @@ void reset_system_manager(system_manager_t* system_manager) {
     system_manager->got_ip_event_handle = NULL;
 }
 
-
+/*
+* This function should return 'bool' (see header file)
+*/
 void system_manager_wifi_init(system_manager_t* system_manager) {
 	s_event_group_handler = xEventGroupCreate();
 
@@ -150,7 +164,9 @@ void system_manager_wifi_init(system_manager_t* system_manager) {
     if (bits & WIFI_CONNECTED_BIT) {
         s_is_wifi_connected = true;
     }
-
+    /*
+    handler_got_ip and handler_any_id are not defined anywhere, this raises a compile error 
+    */
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, handler_got_ip));
     ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, handler_any_id));
     vEventGroupDelete(s_event_group_handler);
