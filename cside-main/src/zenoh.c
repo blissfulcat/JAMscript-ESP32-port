@@ -185,12 +185,29 @@ bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
     return true;
 }
 
+/*
+* Not too sure what this does ... 
+*/
 void zenoh_start_read_task(zenoh_t* zenoh) {
+    /* Make sure we don't accidentally dereference a null pointer ... */
+    if (zenoh == NULL || zenoh->z_session == NULL) {
+        return false;
+    }
+    z_owned_session_t s = *(zenoh->z_session);
+    zp_start_read_task(z_loan_mut(s), NULL);
     
 } 
  
+ /*
+ * Not too sure what this does ...
+ */
 void zenoh_start_lease_task(zenoh_t* zenoh) {
-    
+    /* Make sure we don't accidentally dereference a null pointer ... */
+    if (zenoh == NULL || zenoh->z_session == NULL) {
+        return false;
+    }
+    z_owned_session_t s = *(zenoh->z_session);
+    zp_start_lease_task(z_loan_mut(s), NULL);
 } 
  
 bool zenoh_publish(zenoh_t* zenoh, const char* message) {
