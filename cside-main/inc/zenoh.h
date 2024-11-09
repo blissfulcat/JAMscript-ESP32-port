@@ -75,5 +75,5 @@ void zenoh_start_lease_task(zenoh_t* zenoh); // do we really need this
  * @retval true If publish successful
  * @retval false If an error occured 
 */
-bool zenoh_publish(zenoh_t* zenoh, char* message);
+bool zenoh_publish(zenoh_t* zenoh, const char* message);
 #endif

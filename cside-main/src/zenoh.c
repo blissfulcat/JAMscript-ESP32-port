@@ -193,6 +193,22 @@ void zenoh_start_lease_task(zenoh_t* zenoh) {
     
 } 
  
-bool zenoh_publish(zenoh_t* zenoh, char* message) {
-    return NULL;
+bool zenoh_publish(zenoh_t* zenoh, const char* message) {
+    /* Make sure we don't accidentally dereference a null pointer ... */
+    if (zenoh == NULL || zenoh->z_session == NULL) {
+        return false;
+    }
+
+    if (zenoh->z_pub == NULL) {
+        /* Need to call zenoh_declare_pub() first */
+        return false;
+    }
+
+    z_owned_publisher_t pub = *(zenoh->z_pub);
+    z_owned_bytes_t payload;
+    z_bytes_copy_from_str(&payload, message);
+    if (z_publisher_put(z_loan(pub), z_move(payload), NULL) != Z_OK) {
+        return false;
+    }
+    return true;
 }
