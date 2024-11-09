@@ -97,6 +97,15 @@ void zenoh_destroy(zenoh_t* zenoh) {
     if (zenoh->z_session != NULL) {
         free(zenoh->z_session);
     }
+
+    if (zenoh->z_sub != NULL) {
+        free(zenoh->z_sub);
+    }
+
+    if (zenoh->z_pub != NULL) {
+        free(zenoh->z_pub);
+    } 
+    
     free(zenoh);
     zenoh = NULL;
 }
@@ -125,12 +134,16 @@ bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callbac
     z_owned_session_t s = *(zenoh->z_session);
     z_owned_closure_sample_t cb;
     z_closure(&cb, callback);
-    z_owned_subscriber_t sub;
+    /* Allocate sub object dynamically */
+    z_owned_subscriber_t* sub = (z_owned_subscriber_t*) malloc(sizeof(z_owned_subscriber_t));
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
-    if (z_declare_subscriber(&sub, z_loan(s), z_loan(ke), z_move(cb), NULL) < 0) {
+    if (z_declare_subscriber(sub, z_loan(s), z_loan(ke), z_move(cb), NULL) < 0) {
+        free(sub);
         return false;
     }
+    /* Only store z_sub object into zenoh if sub declaration was sucessful */
+    zenoh->z_sub = sub;
     return true;
 }
 
