@@ -31,11 +31,10 @@ void zenoh_destroy(zenoh_t* zenoh);
 
 /**
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
- * @param zenoh pointer to zenoh_t struct
  * @retval true If a JNode is found
  * @retval false If a JNode is not found
 */
-bool zenoh_scout(zenoh_t* zenoh);
+bool zenoh_scout();
 
 /**
  * @brief Declare a zenoh subscriber on a specific topic. Assign callback function.

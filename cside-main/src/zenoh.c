@@ -103,7 +103,7 @@ void zenoh_destroy(zenoh_t* zenoh) {
 * Should we send a message (pub) and wait for a response for identification ?
 * TODO: Refactor: we do not need the zenoh object as a parameter
 */
-bool zenoh_scout(zenoh_t* zenoh) {
+bool zenoh_scout() {
     int *context = (int *)malloc(sizeof(int));
     *context = 0;
     z_owned_config_t config;
