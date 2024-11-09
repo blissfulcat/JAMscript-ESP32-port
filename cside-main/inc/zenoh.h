@@ -54,7 +54,7 @@ bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callbac
  * @retval true If publish declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_pub(zenoh_t* zenoh, char* key_expression);
+bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression);
 
 /**
  * @brief Start the zenoh read task by calling zp_start_read_task()

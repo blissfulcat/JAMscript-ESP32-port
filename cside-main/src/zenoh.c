@@ -94,6 +94,10 @@ zenoh_t *zenoh_init() {
 
 void zenoh_destroy(zenoh_t* zenoh) {
     /* FREE ALL MEMBERS THAT ARE ALLOCATED USING MALLOC, CALLOC */
+    if (zenoh == NULL) {
+        return;
+    }
+
     if (zenoh->z_session != NULL) {
         free(zenoh->z_session);
     }
@@ -105,7 +109,7 @@ void zenoh_destroy(zenoh_t* zenoh) {
     if (zenoh->z_pub != NULL) {
         free(zenoh->z_pub);
     } 
-    
+
     free(zenoh);
     zenoh = NULL;
 }
@@ -131,6 +135,16 @@ bool zenoh_scout() {
 }
 
 bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback) {
+    /* Make sure we don't accidentally dereference a null pointer ... */
+    if (zenoh == NULL || zenoh->z_session == NULL) {
+        return false;
+    }
+
+    if (zenoh->z_sub != NULL) {
+        /* We have already allocated a subscriber, return immediately */
+        return false;
+    }
+
     z_owned_session_t s = *(zenoh->z_session);
     z_owned_closure_sample_t cb;
     z_closure(&cb, callback);
@@ -147,8 +161,28 @@ bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callbac
     return true;
 }
 
-bool zenoh_declare_pub(zenoh_t* zenoh, char* key_expression) {
-    return NULL;
+bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
+    /* Make sure we don't accidentally dereference a null pointer ... */
+    if (zenoh == NULL || zenoh->z_session == NULL) {
+        return false;
+    }
+
+    if (zenoh->z_pub != NULL) {
+        /* We have already allocated a publisher, return immediately */
+        return false;
+    }
+
+    z_owned_session_t s = *(zenoh->z_session);
+    /* Allocate pub object dynamically */
+    z_owned_publisher_t* pub = (z_owned_publisher_t*) malloc(sizeof(z_owned_publisher_t));
+    z_view_keyexpr_t ke;
+    z_view_keyexpr_from_str_unchecked(&ke, key_expression);
+    if (z_declare_publisher(pub, z_loan(s), z_loan(ke), NULL) < 0) {
+        free(pub);
+        return false;
+    }
+    zenoh->z_pub = pub;
+    return true;
 }
 
 void zenoh_start_read_task(zenoh_t* zenoh) {
