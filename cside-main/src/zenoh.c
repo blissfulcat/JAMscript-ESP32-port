@@ -114,13 +114,21 @@ bool zenoh_scout() {
     if (strcmp(CONNECT, "") != 0) {
         zp_config_insert(z_loan_mut(config), Z_CONFIG_CONNECT_KEY, CONNECT);
     }
-    // printf("Scouting...\n");
     z_scout(z_config_move(&config), z_closure_hello_move(&closure), NULL);
     return true;
 }
 
 bool zenoh_declare_sub(zenoh_t* zenoh, char* key_expression, zenoh_callback_t* callback) {
-    return NULL;
+    z_owned_session_t s = *(zenoh->z_session);
+    z_owned_closure_sample_t cb;
+    z_closure(&cb, callback);
+    z_owned_subscriber_t sub;
+    z_view_keyexpr_t ke;
+    z_view_keyexpr_from_str_unchecked(&ke, key_expression);
+    if (z_declare_subscriber(&sub, z_loan(s), z_loan(ke), z_move(cb), NULL) < 0) {
+        return false;
+    }
+    return true;
 }
 
 bool zenoh_declare_pub(zenoh_t* zenoh, char* key_expression) {
