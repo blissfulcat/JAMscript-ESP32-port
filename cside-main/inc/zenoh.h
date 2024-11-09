@@ -33,6 +33,7 @@ void zenoh_destroy(zenoh_t* zenoh);
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
  * @retval true If a JNode is found
  * @retval false If a JNode is not found
+ * @note Can be called even before calling zenoh_init() as long as wifi has been initiated
 */
 bool zenoh_scout();
 
