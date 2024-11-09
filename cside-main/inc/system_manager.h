@@ -8,13 +8,8 @@
 typedef struct _system_manager_t
 {
    // add more info if needed
-   /*
-   * You cannot initialize values inside a struct however,
-   * when you initialize the struct using calloc everything is set to 0 by default
-   * so you get the same effect that you want
-   */
-   int _connection_attempts = 0;
-   bool wifi_connection = false;
+   int _connection_attempts;
+   bool wifi_connection;
 
    esp_event_handler_instance_t wifi_any_event_handle;
    esp_event_handler_instance_t got_ip_event_handle;
