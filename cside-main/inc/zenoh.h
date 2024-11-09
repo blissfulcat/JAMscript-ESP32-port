@@ -45,7 +45,7 @@ bool zenoh_scout();
  * @retval true If subscription declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_sub(zenoh_t* zenoh, char* key_expression, zenoh_callback_t* callback);
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback);
 
 /**
  * @brief Declare a zenoh publisher on a specific topic.

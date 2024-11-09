@@ -82,18 +82,21 @@ zenoh_t *zenoh_init() {
     }
 
     /* Open Zenoh session */
-    z_owned_session_t s;
-    int retval = z_open(&s, z_move(config), NULL); 
+    z_owned_session_t* s = (z_owned_session_t*) malloc(sizeof(z_owned_session_t));
+    int retval = z_open(s, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
         return NULL;
     }
-    zenoh->z_session = &s;
+    zenoh->z_session = s;
     return zenoh;
 }
 
 void zenoh_destroy(zenoh_t* zenoh) {
-    /* TODO: Not sure if we need to also free zenoh->z_session and its other members?*/
+    /* FREE ALL MEMBERS THAT ARE ALLOCATED USING MALLOC, CALLOC */
+    if (zenoh->z_session != NULL) {
+        free(zenoh->z_session);
+    }
     free(zenoh);
     zenoh = NULL;
 }
@@ -118,7 +121,7 @@ bool zenoh_scout() {
     return true;
 }
 
-bool zenoh_declare_sub(zenoh_t* zenoh, char* key_expression, zenoh_callback_t* callback) {
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback) {
     z_owned_session_t s = *(zenoh->z_session);
     z_owned_closure_sample_t cb;
     z_closure(&cb, callback);
