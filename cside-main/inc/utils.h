@@ -24,8 +24,10 @@ void dump_heap_left();
 static int32_t total_mem_usage = 0;
 #include <stdio.h>
 #include <stdint.h>
-#define calloc(x,y) calloc(x,y); total_mem_usage+=(y*x); printf("calloc: %lu  " __FILE__ ":%d. Total M count: %li\n", (uint32_t) y*x, __LINE__, total_mem_usage)
-#define malloc(x) malloc(x); total_mem_usage+=x; printf("malloc: %lu"  __FILE__ ":%d. Total M count: %li\n", (uint32_t) x, __LINE__, total_mem_usage)
-#define free(x) {free(x); total_mem_usage-=sizeof(*x); printf("Freed a " #x " " __FILE__ ":%d. Total M count: %li\n", __LINE__, total_mem_usage);}
+#include "esp_log.h"
+static const char* TAG = "MEMORY_DEBUG";
+#define calloc(x,y) calloc(x,y); total_mem_usage+=(y*x); ESP_LOGI(TAG, "calloc: %lu  " __FILE__ ":%d. Total M count: %li\n", (uint32_t) y*x, __LINE__, total_mem_usage)
+#define malloc(x) malloc(x); total_mem_usage+=x; ESP_LOGI(TAG, "malloc: %lu"  __FILE__ ":%d. Total M count: %li\n", (uint32_t) x, __LINE__, total_mem_usage)
+#define free(x) {free(x); total_mem_usage-=sizeof(*x); ESP_LOGI(TAG, "Freed a " #x " " __FILE__ ":%d. Total M count: %li\n", __LINE__, total_mem_usage);}
 #endif
 #endif
