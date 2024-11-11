@@ -26,8 +26,12 @@
 #include <zenoh-pico.h>
 #include "system_manager.h"
 
+
+// WiFi credentials
 #define ESP_WIFI_SSID "WIFI USERNAME HERE"
 #define ESP_WIFI_PASS "WIFI PASSWORD HERE"
+
+/// WiFi event handler
 #define ESP_MAXIMUM_RETRY 5
 #define WIFI_CONNECTED_BIT BIT0
 #define SHOULD_SKIP_WIFI_INIT false
@@ -37,7 +41,7 @@ static EventGroupHandle_t s_event_group_handler;
 static int s_retry_count = 0;
 static bool _system_initialized = false;
 
-
+/* PRIVATE FUNCTIONS */
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
@@ -53,6 +57,8 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 }
 
 
+
+/* PUBLIC FUNCTIONS */
 system_manager_t* system_manager_init() {
 	assert(!_system_initialized && "System Manager was initialized a second time!");
     system_manager_t* system_manager = (system_manager_t *) calloc(1, sizeof(system_manager_t));
@@ -94,9 +100,17 @@ void _system_manager_board_init(system_manager_t* system_manager)
 
 
 void system_manager_destroy(system_manager_t* system_manager) {
+    if (system_manager == NULL) {
+        return;
+    }
+    // Free any allocated memory
+    if (system_manager->wifi_any_event_handle != NULL) {
+        free(system_manager->wifi_any_event_handle);
+    }
+    if (system_manager->got_ip_event_handle != NULL) {
+        free(system_manager->got_ip_event_handle);
+    }
     free(system_manager);
-    //reset pointer
-    system_manager = NULL;
 }
 
 
