@@ -28,8 +28,9 @@
 
 
 // WiFi credentials
-#define ESP_WIFI_SSID "WIFI USERNAME HERE"
-#define ESP_WIFI_PASS "WIFI PASSWORD HERE"
+/* TODO: how should we set the wifi credentials? */
+#define ESP_WIFI_SSID "SET SSID HERE"
+#define ESP_WIFI_PASS "SET PASSWORD HERE"
 
 /// WiFi event handler
 #define ESP_MAXIMUM_RETRY 5
@@ -57,6 +58,18 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 }
 
 
+void _system_manager_board_init(system_manager_t* system_manager)
+{
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    int *context = (int *)malloc(sizeof(int));
+    *context = 0;
+}
 
 /* PUBLIC FUNCTIONS */
 system_manager_t* system_manager_init() {
@@ -71,31 +84,6 @@ system_manager_t* system_manager_init() {
     _system_initialized = true;
 
     return system_manager;
-}
-
-
-void _system_manager_board_init(system_manager_t* system_manager)
-{
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-
-    // Set WiFi in STA mode and trigger attachment
-#ifndef SHOULD_SKIP_WIFI_INIT
-    printf("Connecting to WiFi...");
-    system_manager_wifi_init();
-    while (!s_is_wifi_connected) {
-        printf(".");
-        sleep(1);
-    }
-    printf("OK!\n");
-#endif
-
-    int *context = (int *)malloc(sizeof(int));
-    *context = 0;
 }
 
 
@@ -156,8 +144,8 @@ bool system_manager_wifi_init(system_manager_t* system_manager) {
     if (bits & WIFI_CONNECTED_BIT) {
         s_is_wifi_connected = true;
     }
-    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, got_ip_event_handle));
-    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, wifi_any_event_handle));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, system_manager->got_ip_event_handle));
+    ESP_ERROR_CHECK(esp_event_handler_instance_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, system_manager->wifi_any_event_handle));
     vEventGroupDelete(s_event_group_handler);
     return s_is_wifi_connected;
 }
