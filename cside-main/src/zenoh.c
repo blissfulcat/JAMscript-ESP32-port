@@ -191,7 +191,7 @@ bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
 void zenoh_start_read_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL || zenoh->z_session == NULL) {
-        return false;
+        return;
     }
     z_owned_session_t s = *(zenoh->z_session);
     zp_start_read_task(z_loan_mut(s), NULL);
@@ -204,7 +204,7 @@ void zenoh_start_read_task(zenoh_t* zenoh) {
 void zenoh_start_lease_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL || zenoh->z_session == NULL) {
-        return false;
+        return;
     }
     z_owned_session_t s = *(zenoh->z_session);
     zp_start_lease_task(z_loan_mut(s), NULL);
