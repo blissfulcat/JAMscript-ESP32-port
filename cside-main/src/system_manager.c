@@ -35,7 +35,6 @@
 /// WiFi event handler
 #define ESP_MAXIMUM_RETRY 5
 #define WIFI_CONNECTED_BIT BIT0
-#define SHOULD_SKIP_WIFI_INIT false
 
 static bool s_is_wifi_connected = false;
 static EventGroupHandle_t s_event_group_handler;
@@ -66,9 +65,6 @@ void _system_manager_board_init(system_manager_t* system_manager)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-
-    int *context = (int *)malloc(sizeof(int));
-    *context = 0;
 }
 
 /* PUBLIC FUNCTIONS */
@@ -87,18 +83,12 @@ system_manager_t* system_manager_init() {
 }
 
 
-void system_manager_destroy(system_manager_t* system_manager) {
+bool system_manager_destroy(system_manager_t* system_manager) {
     if (system_manager == NULL) {
-        return;
-    }
-    // Free any allocated memory
-    if (system_manager->wifi_any_event_handle != NULL) {
-        free(system_manager->wifi_any_event_handle);
-    }
-    if (system_manager->got_ip_event_handle != NULL) {
-        free(system_manager->got_ip_event_handle);
+        return false;
     }
     free(system_manager);
+    return true;
 }
 
 

@@ -23,4 +23,11 @@ void app_main() {
         sleep(1);
     }
     printf("OK!\n");
+
+    bool is_destroyed = system_manager_destroy(system_manager);
+    if (is_destroyed){
+        printf("deleted\n");
+    }else{
+        printf("not deleted\n");
+    }
 }
