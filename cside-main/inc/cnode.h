@@ -24,6 +24,7 @@ typedef struct _cnode_t
  * @param argc - cmd line argument count
  * @param argv - cmd line args
  * @return pointer to cnode_t struct
+ * @todo What should be expected from argv? e.g. Wi-Fi SSID & Password ?
 */
 cnode_t*    cnode_init(int argc, char** argv);
 
@@ -34,7 +35,7 @@ cnode_t*    cnode_init(int argc, char** argv);
 void        cnode_destroy(cnode_t* cn);
 
 /**
- * @brief Starts listening thread 
+ * @brief Starts a Zenoh sub and pub. Starts listening thread.
  * @param cn - pointer to cnode_t struct
 */
 bool        cnode_start(cnode_t* cn);

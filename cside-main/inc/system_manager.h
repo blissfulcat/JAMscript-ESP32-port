@@ -34,6 +34,8 @@ bool system_manager_destroy(system_manager_t* system_manager);
  * @retval true If wifi initiation successful
  * @retval false If error occured during wifi init
  * @todo How to set the SSID and Password for the wifi network?
+ * @todo This function blocks the program forever if we cannot connect to the network. Maybe implement
+ * a MAX_TIMEOUTS for wifi connection? Also, what happens if we do not have a wifi network to connect to?
 */
 bool system_manager_wifi_init(system_manager_t* system_manager);
 #endif
