@@ -1,7 +1,22 @@
 #include "cnode.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
+#define CNODE_PUB_KEYEXPR "jamscript/cnode/example"
+#define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
+/* PRIVATE FUNCTIONS */
+static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
+    z_view_string_t keystr;
+    z_keyexpr_as_view_string(z_sample_keyexpr(sample), &keystr);
+    z_owned_string_t value;
+    z_bytes_to_string(z_sample_payload(sample), &value);
+    printf(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),
+           z_string_data(z_view_string_loan(&keystr)), (int)z_string_len(z_string_loan(&value)),
+           z_string_data(z_string_loan(&value)));
+    z_string_drop(z_string_move(&value));
+}
+
+/* PUBLIC FUNCTIONS */
 cnode_t* cnode_init(int argc, char** argv) {
     /* Dynamically allocate cn */
     cnode_t* cn = (cnode_t *)calloc(1, sizeof(cnode_t));
@@ -32,11 +47,11 @@ printf("Initiating Wi-Fi ... \r\n");
     
     /* Init core */
     uint32_t serial_num = 0; // serial num should be determined by args 
-    cn->core_state = core_init(serial_num);
 
 // #ifdef PRINT_INIT_PROGRESS
 // printf("Initiating core ... \r\n");
 // #endif
+//     cn->core_state = core_init(serial_num);
 //     if (cn->core_state == NULL) {
 //         printf("Core creation failed. \r\n");
 //         cnode_destroy(cn);
@@ -93,7 +108,38 @@ void cnode_destroy(cnode_t* cn) {
 }
 
 bool cnode_start(cnode_t* cn) {
-    return NULL;
+    /* Make sure we don't deref null pointer ... */
+    if (cn == NULL || !cn->initialized) {
+        return false;
+    }
+    // int serial_num = cn->core->serial_num;
+    int serial_num = 0; // temporary
+
+    /* This should not happen but just in case ... */
+    if (cn->zenoh == NULL) {
+        return false;
+    }
+
+#ifdef PRINT_INIT_PROGRESS
+printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
+#endif
+    if (!zenoh_declare_pub(cn->zenoh, CNODE_PUB_KEYEXPR)) {
+        printf("Could not declare publisher. \r\n");
+        return false;
+    }
+    
+#ifdef PRINT_INIT_PROGRESS
+printf("cnode %d: declaring Zenoh sub ... \r\n", serial_num);
+#endif
+    if (!zenoh_declare_sub(cn->zenoh, CNODE_SUB_KEYEXPR, _cnode_data_handler)) {
+        printf("Could not declare subscriber \r\n");
+        return false;
+    }
+
+#ifdef PRINT_INIT_PROGRESS
+printf("cnode %d: successfully started. \r\n", serial_num);
+#endif
+    return true;
 }
 
 bool cnode_stop(cnode_t* cn) {
