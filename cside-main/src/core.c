@@ -2,6 +2,7 @@
 #include "esp_system.h"
 #include "nvs.h"
 #include "nvs_flash.h"
+#include "string.h"
 
 corestate_t* core_init(int serialnum) {
     // Initialize core
@@ -28,9 +29,6 @@ if(cs==NULL){
 if(cs->device_id!=NULL){
     free(cs->device_id);
 }
-if(cs->serial_num!=NULL){
-    free(&cs->serial_num);
-}
 free(cs);
 
 }
@@ -44,7 +42,7 @@ void core_setup(corestate_t *cs) {
 // Current iteration is **NOT** an elegant solution
 // Needs to add an override system for serial and device id
 // Also UUID4
-char buffer[37];
+char buffer[37]={""};
 //uuid4_generate(buffer);
 cs->device_id=strdup(buffer);
 esp_err_t err = nvs_flash_init();
@@ -61,15 +59,15 @@ if (err!=ESP_OK){
     printf("Error %s opening NVS handle \n", esp_err_to_name(err));
 } else {
     // Checking device id
-    err=nvs_get_i64(my_handle,"device_id", &cs->device_id);
+    err=nvs_get_u64(my_handle,"device_id", (uint64_t)*cs->device_id);
     switch (err) {
         case ESP_OK:
             printf("Done\n");
-            printf("Device ID = %i \n", cs->device_id);
+            printf("Device ID = %i \n", *cs->device_id);
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
-            err = nvs_set_i64(my_handle, "device_id", cs->device_id);
+            err = nvs_set_u64(my_handle, "device_id", (uint64_t)cs->device_id);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             break;
         default:
@@ -77,7 +75,7 @@ if (err!=ESP_OK){
     }
 
     // Checking serial number
-        err=nvs_get_i64(my_handle,"serial_num", &cs->serial_num);
+        err=nvs_get_u64(my_handle,"serial_num", cs->serial_num);
     switch (err) {
         case ESP_OK:
             printf("Done\n");
@@ -85,7 +83,7 @@ if (err!=ESP_OK){
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
-            err = nvs_set_i64(my_handle, "serial_num", cs->serial_num);
+            err = nvs_set_u64(my_handle, "serial_num", cs->serial_num);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             break;
         default:
