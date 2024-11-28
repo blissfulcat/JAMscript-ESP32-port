@@ -59,11 +59,11 @@ if (err!=ESP_OK){
     printf("Error %s opening NVS handle \n", esp_err_to_name(err));
 } else {
     // Checking device id
-    err=nvs_get_u64(my_handle,"device_id", (uint64_t)*cs->device_id);
+    err=nvs_get_u64(my_handle,"device_id", (uint64_t*)cs->device_id);
     switch (err) {
         case ESP_OK:
             printf("Done\n");
-            printf("Device ID = %i \n", *cs->device_id);
+            printf("Device ID = %s \n", cs->device_id);
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
@@ -73,9 +73,8 @@ if (err!=ESP_OK){
         default:
             printf("Error (%s) reading!\n", esp_err_to_name(err));
     }
-
     // Checking serial number
-        err=nvs_get_u64(my_handle,"serial_num", cs->serial_num);
+    err=nvs_get_i32(my_handle,"serial_num", (int32_t*)cs->serial_num);
     switch (err) {
         case ESP_OK:
             printf("Done\n");
