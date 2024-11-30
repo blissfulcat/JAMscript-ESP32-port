@@ -5,11 +5,18 @@
 #include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
+// typedef struct _zenoh_t
+// {
+//     z_owned_publisher_t* z_pub;
+//     z_owned_subscriber_t* z_sub;
+//     z_owned_session_t* z_session;
+// } zenoh_t;
+
 typedef struct _zenoh_t
 {
-    z_owned_publisher_t* z_pub;
-    z_owned_subscriber_t* z_sub;
-    z_owned_session_t* z_session;
+    z_owned_publisher_t z_pub;
+    z_owned_subscriber_t z_sub;
+    z_owned_session_t z_session;
 } zenoh_t;
 
 typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
