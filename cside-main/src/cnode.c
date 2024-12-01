@@ -1,7 +1,7 @@
 #include "cnode.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
-#define CNODE_PUB_KEYEXPR "jamscript/cnode/new"
+#define CNODE_PUB_KEYEXPR "jamscript/cnode/"
 #define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
 /* PRIVATE FUNCTIONS */
@@ -13,7 +13,8 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     z_owned_string_t value;
     z_bytes_to_string(z_sample_payload(sample), &value);
     /* Do not want to print out what we send out */
-    if (strncmp(z_string_data(z_view_string_loan(&keystr)), CNODE_PUB_KEYEXPR, strlen(CNODE_PUB_KEYEXPR)) == 0) {
+    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id);
+    if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
         z_string_drop(z_string_move(&value));
         return;
     } 
@@ -125,13 +126,14 @@ printf("cnode %d: declaring Zenoh session ... \r\n", serial_num);
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
 #endif
-    //char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, "/0");
-    if (!zenoh_declare_pub(cn->zenoh, CNODE_PUB_KEYEXPR)) {
+    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cn->node_id);
+    printf("%s\r\n", cnode_pub_ke);
+    if (!zenoh_declare_pub(cn->zenoh, cnode_pub_ke)) {
         printf("Could not declare publisher. \r\n");
-        //free(cnode_pub_ke);
+        free(cnode_pub_ke);
         return false;
     }
-    //free(cnode_pub_ke);
+    free(cnode_pub_ke);
     
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh sub ... \r\n", serial_num);
