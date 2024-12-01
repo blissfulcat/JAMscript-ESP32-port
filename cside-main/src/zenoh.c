@@ -70,9 +70,7 @@ static void drop(void *context) {
 }
 
 /* PUBLIC FUNCTIONS */
-zenoh_t *zenoh_init() {
-    zenoh_t* zenoh = (zenoh_t*) calloc(1, sizeof(zenoh_t));
- 
+bool zenoh_init(zenoh_t* zenoh) {
     /* Initialize Zenoh Session and other parameters */
     z_owned_config_t config;
     z_config_default(&config);
@@ -82,15 +80,12 @@ zenoh_t *zenoh_init() {
     }
 
     /* Open Zenoh session */
-    z_owned_session_t* s = (z_owned_session_t*) malloc(sizeof(z_owned_session_t));
-    int retval = z_open(s, z_move(config), NULL); 
+    int retval = z_open(&zenoh->z_session, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
-        free(s);
-        return NULL;
+        return false;
     }
-    zenoh->z_session = s;
-    return zenoh;
+    return true;
 }
 
 void zenoh_destroy(zenoh_t* zenoh) {
@@ -98,21 +93,9 @@ void zenoh_destroy(zenoh_t* zenoh) {
     if (zenoh == NULL) {
         return;
     }
-
-    if (zenoh->z_session != NULL) {
-        free(zenoh->z_session);
-    }
-
-    if (zenoh->z_sub != NULL) {
-        free(zenoh->z_sub);
-    }
-
-    if (zenoh->z_pub != NULL) {
-        free(zenoh->z_pub);
-    } 
-
-    free(zenoh);
-    zenoh = NULL;
+    z_drop(z_move(zenoh->z_pub));
+    z_drop(z_move(zenoh->z_sub));
+    z_drop(z_move(zenoh->z_session));
 }
 
 /*
@@ -137,95 +120,60 @@ bool zenoh_scout() {
 
 bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback) {
     /* Make sure we don't accidentally dereference a null pointer ... */
-    if (zenoh == NULL || zenoh->z_session == NULL) {
+    if (zenoh == NULL) {
         return false;
     }
-
-    if (zenoh->z_sub != NULL) {
-        /* We have already allocated a subscriber, return immediately */
-        return false;
-    }
-
-    z_owned_session_t s = *(zenoh->z_session);
     z_owned_closure_sample_t cb;
     z_closure(&cb, callback);
-    /* Allocate sub object dynamically */
-    z_owned_subscriber_t* sub = (z_owned_subscriber_t*) malloc(sizeof(z_owned_subscriber_t));
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
-    if (z_declare_subscriber(sub, z_loan(s), z_loan(ke), z_move(cb), NULL) < 0) {
-        free(sub);
+    if (z_declare_subscriber(z_loan(zenoh->z_session), &zenoh->z_sub , z_loan(ke), z_move(cb), NULL) < 0) {
         return false;
     }
-    /* Only store z_sub object into zenoh if sub declaration was sucessful */
-    zenoh->z_sub = sub;
     return true;
 }
 
 bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
     /* Make sure we don't accidentally dereference a null pointer ... */
-    if (zenoh == NULL || zenoh->z_session == NULL) {
+    if (zenoh == NULL) {
         return false;
     }
 
-    if (zenoh->z_pub != NULL) {
-        /* We have already allocated a publisher, return immediately */
-        return false;
-    }
-
-    z_owned_session_t s = *(zenoh->z_session);
-    /* Allocate pub object dynamically */
-    z_owned_publisher_t* pub = (z_owned_publisher_t*) malloc(sizeof(z_owned_publisher_t));
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
-    if (z_declare_publisher(pub, z_loan(s), z_loan(ke), NULL) < 0) {
-        free(pub);
+    if (z_declare_publisher(z_loan(zenoh->z_session), &zenoh->z_pub , z_loan(ke), NULL) < 0) {
         return false;
     }
-    zenoh->z_pub = pub;
     return true;
 }
 
-/*
-* Not too sure what this does ... 
-*/
+
 void zenoh_start_read_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
-    if (zenoh == NULL || zenoh->z_session == NULL) {
+    if (zenoh == NULL) {
         return;
     }
-    z_owned_session_t s = *(zenoh->z_session);
-    zp_start_read_task(z_loan_mut(s), NULL);
-    
+    zp_start_read_task(z_loan_mut(zenoh->z_session), NULL);
 } 
  
- /*
- * Not too sure what this does ...
- */
+
 void zenoh_start_lease_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
-    if (zenoh == NULL || zenoh->z_session == NULL) {
+    if (zenoh == NULL) {
         return;
     }
-    z_owned_session_t s = *(zenoh->z_session);
-    zp_start_lease_task(z_loan_mut(s), NULL);
+    zp_start_lease_task(z_loan_mut(zenoh->z_session), NULL);
 } 
  
 bool zenoh_publish(zenoh_t* zenoh, const char* message) {
     /* Make sure we don't accidentally dereference a null pointer ... */
-    if (zenoh == NULL || zenoh->z_session == NULL) {
+    if (zenoh == NULL) {
         return false;
     }
 
-    if (zenoh->z_pub == NULL) {
-        /* Need to call zenoh_declare_pub() first */
-        return false;
-    }
-
-    z_owned_publisher_t pub = *(zenoh->z_pub);
     z_owned_bytes_t payload;
     z_bytes_copy_from_str(&payload, message);
-    if (z_publisher_put(z_loan(pub), z_move(payload), NULL) != Z_OK) {
+    if (z_publisher_put(z_loan(zenoh->z_pub), z_move(payload), NULL) != Z_OK) {
         return false;
     }
     return true;
