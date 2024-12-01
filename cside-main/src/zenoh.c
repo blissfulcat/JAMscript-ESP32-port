@@ -70,8 +70,9 @@ static void drop(void *context) {
 }
 
 /* PUBLIC FUNCTIONS */
-bool zenoh_init(zenoh_t* zenoh) {
+zenoh_t* zenoh_init() {
     /* Initialize Zenoh Session and other parameters */
+    zenoh_t* zenoh = calloc(1, sizeof(zenoh_t));
     z_owned_config_t config;
     z_config_default(&config);
     zp_config_insert(z_loan_mut(config), Z_CONFIG_MODE_KEY, MODE);
@@ -83,9 +84,9 @@ bool zenoh_init(zenoh_t* zenoh) {
     int retval = z_open(&zenoh->z_session, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
-        return false;
+        return NULL;
     }
-    return true;
+    return zenoh;
 }
 
 void zenoh_destroy(zenoh_t* zenoh) {
@@ -96,6 +97,7 @@ void zenoh_destroy(zenoh_t* zenoh) {
     z_drop(z_move(zenoh->z_pub));
     z_drop(z_move(zenoh->z_sub));
     z_drop(z_move(zenoh->z_session));
+    free(zenoh);
 }
 
 /*
