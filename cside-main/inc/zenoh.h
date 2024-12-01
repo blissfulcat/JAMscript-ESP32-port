@@ -25,10 +25,12 @@ typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
 /**
  * @brief Constructor. Initializes zenoh objects and starts a Zenoh session.
- * @return pointer to zenoh_t struct
+ * @param zenoh pointer to unitialized zenoh_t struct
+ * @retval true If initialization occured without error
+ * @retval false If an error occured 
  * @todo What configuration do we want for the zenoh session? Peer to peer, client?
 */
-zenoh_t* zenoh_init();
+bool zenoh_init(zenoh_t* zenoh);
 
 /**
  * @brief Frees memory associated with the zenoh_t struct.

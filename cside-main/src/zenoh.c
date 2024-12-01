@@ -70,9 +70,7 @@ static void drop(void *context) {
 }
 
 /* PUBLIC FUNCTIONS */
-zenoh_t *zenoh_init() {
-    zenoh_t* zenoh = (zenoh_t*) calloc(1, sizeof(zenoh_t));
- 
+bool zenoh_init(zenoh_t* zenoh) {
     /* Initialize Zenoh Session and other parameters */
     z_owned_config_t config;
     z_config_default(&config);
@@ -85,10 +83,9 @@ zenoh_t *zenoh_init() {
     int retval = z_open(&zenoh->z_session, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
-        free(&zenoh->z_session);
-        return NULL;
+        return false;
     }
-    return zenoh;
+    return true;
 }
 
 void zenoh_destroy(zenoh_t* zenoh) {
@@ -96,7 +93,9 @@ void zenoh_destroy(zenoh_t* zenoh) {
     if (zenoh == NULL) {
         return;
     }
-    free(zenoh);
+    z_drop(z_move(zenoh->z_pub));
+    z_drop(z_move(zenoh->z_sub));
+    z_drop(z_move(zenoh->z_session));
 }
 
 /*
@@ -148,9 +147,7 @@ bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
     return true;
 }
 
-/*
-* Not too sure what this does ... 
-*/
+
 void zenoh_start_read_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
@@ -159,9 +156,7 @@ void zenoh_start_read_task(zenoh_t* zenoh) {
     zp_start_read_task(z_loan_mut(zenoh->z_session), NULL);
 } 
  
- /*
- * Not too sure what this does ...
- */
+
 void zenoh_start_lease_task(zenoh_t* zenoh) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
