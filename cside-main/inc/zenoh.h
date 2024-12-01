@@ -1,16 +1,12 @@
+/**
+ * NOTE: The following code assumes the use of zenoh-pico release version 1.0.0
+ * please ensure that this is the correct version used 
+*/
 #ifndef __ZENOH_H__
 #define __ZENOH_H__
 
 #include <zenoh-pico.h>
 #include "utils.h"
-
-/* STRUCTS & TYPEDEFS */
-// typedef struct _zenoh_t
-// {
-//     z_owned_publisher_t* z_pub;
-//     z_owned_subscriber_t* z_sub;
-//     z_owned_session_t* z_session;
-// } zenoh_t;
 
 typedef struct _zenoh_t
 {
