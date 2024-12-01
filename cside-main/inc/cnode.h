@@ -39,7 +39,7 @@ void        cnode_destroy(cnode_t* cn);
  * @param zenoh pointer to zenoh_t struct
  * @param cn pointer to cnode_t struct
 */
-bool        cnode_start(cnode_t* cn, zenoh_t* zenoh);
+bool        cnode_start(cnode_t* cn);
 
 /**
  * @brief Stops listening thread

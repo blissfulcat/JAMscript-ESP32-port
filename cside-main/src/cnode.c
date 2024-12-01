@@ -1,7 +1,7 @@
 #include "cnode.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
-#define CNODE_PUB_KEYEXPR "jamscript/cnode/example"
+#define CNODE_PUB_KEYEXPR "jamscript/cnode/topicB"
 #define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
 /* PRIVATE FUNCTIONS */
@@ -28,11 +28,10 @@ printf("Initiating system ... \r\n");
 #endif
     /* Init system */
     cn->system_manager = system_manager_init();
-
     if (cn->system_manager == NULL) {
         printf("System initialization failed. \r\n");
         cnode_destroy(cn);
-        return NULL;
+        return false;
     }
 
 #ifdef PRINT_INIT_PROGRESS
@@ -42,7 +41,7 @@ printf("Initiating Wi-Fi ... \r\n");
     if (!system_manager_wifi_init(cn->system_manager)) {
         printf("Could not initiate Wi-Fi. \r\n");
         cnode_destroy(cn);
-        return NULL;
+        return false;
     }
     
     /* Init core */
@@ -60,15 +59,15 @@ printf("Initiating Wi-Fi ... \r\n");
 //     // Do we really need the node_id field? Its already in core_state
 //     cn->node_id = cn->core_state->device_id; 
    
-#ifdef PRINT_INIT_PROGRESS
-printf("Scouting for JNodes ... \r\n");
-#endif
-    /* Using Zenoh to scout for JNodes */
-    if (!zenoh_scout()) {
-        printf("Could not find any JNodes. \r\n");
-        cnode_destroy(cn);
-        return NULL;
-    }
+// #ifdef PRINT_INIT_PROGRESS
+// printf("Scouting for JNodes ... \r\n");
+// #endif
+//     /* Using Zenoh to scout for JNodes */
+//     if (!zenoh_scout()) {
+//         printf("Could not find any JNodes. \r\n");
+//         //cnode_destroy(cn);
+//         return false;
+//     }
 
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %lu initialized. \r\n", serial_num);
@@ -94,7 +93,7 @@ void cnode_destroy(cnode_t* cn) {
     free(cn);
 }
 
-bool cnode_start(cnode_t* cn, zenoh_t* zenoh) {
+bool cnode_start(cnode_t* cn) {
     /* Make sure we don't deref null pointer ... */
     if (cn == NULL || !cn->initialized) {
         return false;
@@ -105,25 +104,26 @@ bool cnode_start(cnode_t* cn, zenoh_t* zenoh) {
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh session ... \r\n", serial_num);
 #endif
-    if (!zenoh_init(zenoh)) {
+    cn->zenoh = zenoh_init();
+    if (cn->zenoh == NULL) {
         printf("Could not open Zenoh session. \r\n");
         return false;
     }
-    cn->zenoh = zenoh; /* TODO: not sure if we need this anymore */
+    //cn->zenoh = zenoh; /* TODO: not sure if we need this anymore */
 
-zenoh_start_lease_task(zenoh);
-zenoh_start_read_task(zenoh);
+    zenoh_start_read_task(cn->zenoh);
+    zenoh_start_lease_task(cn->zenoh);
 
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
 #endif
-    char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, "/0");
-    if (!zenoh_declare_pub(cn->zenoh, cnode_pub_ke)) {
+    //char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, "/0");
+    if (!zenoh_declare_pub(cn->zenoh, CNODE_PUB_KEYEXPR)) {
         printf("Could not declare publisher. \r\n");
-        free(cnode_pub_ke);
+        //free(cnode_pub_ke);
         return false;
     }
-    free(cnode_pub_ke);
+    //free(cnode_pub_ke);
     
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh sub ... \r\n", serial_num);
