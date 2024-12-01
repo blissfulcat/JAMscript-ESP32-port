@@ -38,6 +38,7 @@ void zenoh_destroy(zenoh_t* zenoh);
  * @retval false If a JNode is not found
  * @note Can be called even before calling zenoh_init() as long as wifi has been initiated
  * @todo Checking for JNode is not implemented. Function currently always returns true
+ * @todo FIX this function, DO NOT USE CURRENTLY
 */
 bool zenoh_scout();
 

@@ -67,7 +67,10 @@ printf("Initiating Wi-Fi ... \r\n");
 //     }
 //     // Do we really need the node_id field? Its already in core_state
 //     cn->node_id = cn->core_state->device_id; 
-   
+
+/*
+TODO: Currently calling zenoh_scout() creates buggy behavior for zenoh communication
+*/
 // #ifdef PRINT_INIT_PROGRESS
 // printf("Scouting for JNodes ... \r\n");
 // #endif
