@@ -120,13 +120,14 @@ bool zenoh_scout() {
     return true;
 }
 
-bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback) {
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
         return false;
     }
     z_owned_closure_sample_t cb;
-    z_closure(&cb, callback);
+    z_closure(&cb, callback); 
+    cb._val.context = cb_arg; /* Pass in as an argument to the callback */
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
     if (z_declare_subscriber(z_loan(zenoh->z_session), &zenoh->z_sub , z_loan(ke), z_move(cb), NULL) < 0) {

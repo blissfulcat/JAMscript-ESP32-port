@@ -46,10 +46,11 @@ bool zenoh_scout();
  * @param zenoh pointer to zenoh_t struct
  * @param key_expression string describing the 'subscription topic'
  * @param callback pointer to zenoh callback function 
+ * @param cb_arg pointer to argument passed to callback function
  * @retval true If subscription declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback);
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg);
 
 /**
  * @brief Declare a zenoh publisher on a specific topic.

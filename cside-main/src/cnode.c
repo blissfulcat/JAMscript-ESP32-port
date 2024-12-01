@@ -1,19 +1,27 @@
 #include "cnode.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
-#define CNODE_PUB_KEYEXPR "jamscript/cnode/topicB"
+#define CNODE_PUB_KEYEXPR "jamscript/cnode/new"
 #define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
 /* PRIVATE FUNCTIONS */
 static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
+    /* Argument should be a cnode pointer */
+    cnode_t* cnode = (cnode_t*) arg;
     z_view_string_t keystr;
     z_keyexpr_as_view_string(z_sample_keyexpr(sample), &keystr);
     z_owned_string_t value;
     z_bytes_to_string(z_sample_payload(sample), &value);
+    /* Do not want to print out what we send out */
+    if (strncmp(z_string_data(z_view_string_loan(&keystr)), CNODE_PUB_KEYEXPR, strlen(CNODE_PUB_KEYEXPR)) == 0) {
+        z_string_drop(z_string_move(&value));
+        return;
+    } 
     printf(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),
            z_string_data(z_view_string_loan(&keystr)), (int)z_string_len(z_string_loan(&value)),
            z_string_data(z_string_loan(&value)));
     z_string_drop(z_string_move(&value));
+    cnode->message_received = true; /* Indicate that we have received a message */
 }
 
 /* PUBLIC FUNCTIONS */
@@ -128,7 +136,7 @@ printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh sub ... \r\n", serial_num);
 #endif
-    if (!zenoh_declare_sub(cn->zenoh, CNODE_SUB_KEYEXPR, _cnode_data_handler)) {
+    if (!zenoh_declare_sub(cn->zenoh, CNODE_SUB_KEYEXPR, _cnode_data_handler, (void*) cn)) {
         printf("Could not declare subscriber \r\n");
         return false;
     }

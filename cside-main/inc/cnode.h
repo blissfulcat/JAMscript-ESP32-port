@@ -14,6 +14,7 @@ typedef struct _cnode_t
     zenoh_t* zenoh;
     corestate_t* core_state;
     bool initialized;
+    volatile bool message_received; /* Here for the sub callback */
 } cnode_t;
 
 /* FUNCTION PROTOTYPES */
