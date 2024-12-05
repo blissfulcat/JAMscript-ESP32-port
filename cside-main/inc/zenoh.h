@@ -1,16 +1,12 @@
+/**
+ * NOTE: The following code assumes the use of zenoh-pico release version 1.0.0
+ * please ensure that this is the correct version used 
+*/
 #ifndef __ZENOH_H__
 #define __ZENOH_H__
 
 #include <zenoh-pico.h>
 #include "utils.h"
-
-/* STRUCTS & TYPEDEFS */
-// typedef struct _zenoh_t
-// {
-//     z_owned_publisher_t* z_pub;
-//     z_owned_subscriber_t* z_sub;
-//     z_owned_session_t* z_session;
-// } zenoh_t;
 
 typedef struct _zenoh_t
 {
@@ -25,12 +21,10 @@ typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
 /**
  * @brief Constructor. Initializes zenoh objects and starts a Zenoh session.
- * @param zenoh pointer to unitialized zenoh_t struct
- * @retval true If initialization occured without error
- * @retval false If an error occured 
+ * @return pointer to unitialized zenoh_t struct
  * @todo What configuration do we want for the zenoh session? Peer to peer, client?
 */
-bool zenoh_init(zenoh_t* zenoh);
+zenoh_t* zenoh_init();
 
 /**
  * @brief Frees memory associated with the zenoh_t struct.
@@ -44,6 +38,7 @@ void zenoh_destroy(zenoh_t* zenoh);
  * @retval false If a JNode is not found
  * @note Can be called even before calling zenoh_init() as long as wifi has been initiated
  * @todo Checking for JNode is not implemented. Function currently always returns true
+ * @todo FIX this function, DO NOT USE CURRENTLY
 */
 bool zenoh_scout();
 
@@ -52,10 +47,11 @@ bool zenoh_scout();
  * @param zenoh pointer to zenoh_t struct
  * @param key_expression string describing the 'subscription topic'
  * @param callback pointer to zenoh callback function 
+ * @param cb_arg pointer to argument passed to callback function
  * @retval true If subscription declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback);
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg);
 
 /**
  * @brief Declare a zenoh publisher on a specific topic.
