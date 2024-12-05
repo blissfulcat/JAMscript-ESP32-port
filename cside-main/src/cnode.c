@@ -153,5 +153,33 @@ printf("cnode %d: successfully started. \r\n", serial_num);
 }
 
 bool cnode_stop(cnode_t* cn) {
-    return NULL;
+    /* Make sure we don't deref null pointer ... */
+    if (cn == NULL || !cn->initialized) {
+        return false;
+    }
+    /* Stop all tasks */
+    // if (!zp_stop_read_task(z_loan(cn->zenoh->z_session))) {
+    //     printf("Could not stop read task \r\n");
+    //     return false; 
+    // } 
+    // if (!zp_stop_lease_task(z_loan(cn->zenoh->z_session))) {
+    //     printf("Could not stop lease task \r\n");
+    //     return false;
+    // }
+
+    /* Undeclare subscriber and publisher */
+    if (!z_undeclare_subscriber(z_move(cn->zenoh->z_sub))) {
+        printf("Could not undeclare sub \r\n");
+        return false;
+    }
+    if (!z_undeclare_publisher(z_move(cn->zenoh->z_pub))){ 
+        printf("Could not undeclare pub \r\n");
+        return false;
+    }
+
+    /* Drop session */
+    if (!z_session_is_closed(z_loan(cn->zenoh->z_session))) {
+        z_session_drop(z_move(cn->zenoh->z_session));
+    }
+    return true;
 }

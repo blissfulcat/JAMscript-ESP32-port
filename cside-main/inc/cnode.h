@@ -46,6 +46,7 @@ bool        cnode_start(cnode_t* cn);
  * @brief Stops listening thread
  * @param cn pointer to cnode_t struct
  * @todo should we also stop wifi activity? then we would have to start wifi activity in cnode_start
+ * @todo fix this function
 */
 bool        cnode_stop(cnode_t* cn);
 #endif
