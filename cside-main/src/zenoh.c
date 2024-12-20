@@ -70,8 +70,9 @@ static void drop(void *context) {
 }
 
 /* PUBLIC FUNCTIONS */
-bool zenoh_init(zenoh_t* zenoh) {
+zenoh_t* zenoh_init() {
     /* Initialize Zenoh Session and other parameters */
+    zenoh_t* zenoh = calloc(1, sizeof(zenoh_t));
     z_owned_config_t config;
     z_config_default(&config);
     zp_config_insert(z_loan_mut(config), Z_CONFIG_MODE_KEY, MODE);
@@ -83,9 +84,9 @@ bool zenoh_init(zenoh_t* zenoh) {
     int retval = z_open(&zenoh->z_session, z_move(config), NULL); 
     if (retval < 0) {
         printf("Unable to open Zenoh session! Error code: %d\n", retval);
-        return false;
+        return NULL;
     }
-    return true;
+    return zenoh;
 }
 
 void zenoh_destroy(zenoh_t* zenoh) {
@@ -96,6 +97,7 @@ void zenoh_destroy(zenoh_t* zenoh) {
     z_drop(z_move(zenoh->z_pub));
     z_drop(z_move(zenoh->z_sub));
     z_drop(z_move(zenoh->z_session));
+    free(zenoh);
 }
 
 /*
@@ -118,13 +120,14 @@ bool zenoh_scout() {
     return true;
 }
 
-bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback) {
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
         return false;
     }
     z_owned_closure_sample_t cb;
-    z_closure(&cb, callback);
+    z_closure(&cb, callback); 
+    cb._val.context = cb_arg; /* Pass in as an argument to the callback */
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
     if (z_declare_subscriber(z_loan(zenoh->z_session), &zenoh->z_sub , z_loan(ke), z_move(cb), NULL) < 0) {

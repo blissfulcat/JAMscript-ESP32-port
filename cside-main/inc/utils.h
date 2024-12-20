@@ -18,8 +18,9 @@ typedef uint32_t jam_error_t;
 void dump_bufer_hex(uint8_t* buffer, uint32_t size);
 void dump_bufer_hex_raw(uint8_t* buffer, uint32_t size);
 void dump_heap_left();
+char* concat(const char *s1, const char *s2);
 
-#define MEMORY_DEBUG
+//#define MEMORY_DEBUG
 #ifdef MEMORY_DEBUG
 static int32_t total_mem_usage = 0;
 #include <stdio.h>
