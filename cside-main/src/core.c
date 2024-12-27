@@ -7,6 +7,9 @@
 corestate_t* core_init(int serialnum) {
     // Initialize core
     corestate_t* cs=(corestate_t*)calloc(1,sizeof(corestate_t));
+    if (!cs){
+        printf("FAILED TO INIT CS");
+    }
     cs->serial_num=serialnum;
     core_setup(cs);
     return cs;
@@ -45,6 +48,8 @@ void core_setup(corestate_t *cs) {
 char buffer[37]={""};
 //uuid4_generate(buffer);
 cs->device_id=strdup(buffer);
+printf("Test Device ID = %d \n", *cs->device_id);
+size_t size_of_buffer=37;
 esp_err_t err = nvs_flash_init();
 
 if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND){
@@ -52,14 +57,14 @@ if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND){
     err = nvs_flash_init();
 }
 ESP_ERROR_CHECK(err);
-
 nvs_handle_t my_handle;
 err = nvs_open("storage", NVS_READWRITE, &my_handle);
 if (err!=ESP_OK){
     printf("Error %s opening NVS handle \n", esp_err_to_name(err));
 } else {
     // Checking device id
-    err=nvs_get_u64(my_handle,"device_id", (uint64_t*)cs->device_id);
+    err=nvs_get_str(my_handle,"device_id", cs->device_id, &size_of_buffer);
+    
     switch (err) {
         case ESP_OK:
             printf("Done\n");
@@ -67,7 +72,7 @@ if (err!=ESP_OK){
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
-            err = nvs_set_u64(my_handle, "device_id", (uint64_t)cs->device_id);
+            err = nvs_set_str(my_handle, "device_id", cs->device_id);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             break;
         default:
@@ -82,7 +87,7 @@ if (err!=ESP_OK){
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
-            err = nvs_set_u64(my_handle, "serial_num", cs->serial_num);
+            err = nvs_set_i32(my_handle, "serial_num", cs->serial_num);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             break;
         default:
