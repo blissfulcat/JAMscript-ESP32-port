@@ -13,7 +13,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     z_owned_string_t value;
     z_bytes_to_string(z_sample_payload(sample), &value);
     /* Do not want to print out what we send out */
-    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id);
+    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); // TODO: FIX THIS MEMORY LEAK
     if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
         z_string_drop(z_string_move(&value));
         return;
