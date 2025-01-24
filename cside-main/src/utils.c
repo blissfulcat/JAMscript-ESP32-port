@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include "string.h"
 
+int32_t total_mem_usage = 0;
+
 char* concat(const char *s1, const char *s2)
 {
     const size_t len1 = strlen(s1);
