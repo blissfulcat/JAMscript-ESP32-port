@@ -1,0 +1,89 @@
+ho 8 tail 4 room 4
+load:0x40080404,len:3860
+entry 0x4008063c
+I (31) boot: ESP-IDF v5.4-dev-4076-gce6085349f 2nd stage bootloader
+I (31) boot: compile time Nov 11 2024 17:18:09
+I (31) boot: Multicore bootloader
+I (34) boot: chip revision: v3.0
+I (37) boot.esp32: SPI Speed      : 40MHz
+I (41) boot.esp32: SPI Mode       : DIO
+I (44) boot.esp32: SPI Flash Size : 2MB
+I (48) boot: Enabling RNG early entropy source...
+I (52) boot: Partition Table:
+I (55) boot: ## Label            Usage          Type ST Offset   Length
+I (61) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (68) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (74) boot:  2 factory          factory app      00 00 00010000 00100000
+I (81) boot: End of partition table
+I (84) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=189b4h (100788) map
+I (126) esp_image: segment 1: paddr=000289dc vaddr=3ff80000 size=0001ch (    28) load
+I (126) esp_image: segment 2: paddr=00028a00 vaddr=3ffb0000 size=03eech ( 16108) load
+I (136) esp_image: segment 3: paddr=0002c8f4 vaddr=40080000 size=03724h ( 14116) load
+I (143) esp_image: segment 4: paddr=00030020 vaddr=400d0020 size=828cch (534732) map
+I (328) esp_image: segment 5: paddr=000b28f4 vaddr=40083724 size=13fe8h ( 81896) load
+I (371) boot: Loaded app from partition at offset 0x10000
+I (371) boot: Disabling RNG early entropy source...
+I (381) cpu_start: Multicore app
+I (390) cpu_start: Pro cpu start user code
+I (390) cpu_start: cpu freq: 160000000 Hz
+I (390) app_init: Application information:
+I (390) app_init: Project name:     zenoh-test
+I (394) app_init: App version:      6155a42-dirty
+I (398) app_init: Compile time:     Nov 11 2024 17:18:00
+I (403) app_init: ELF file SHA256:  3ed5fac2f...
+I (408) app_init: ESP-IDF:          v5.4-dev-4076-gce6085349f
+I (413) efuse_init: Min chip rev:     v0.0
+I (417) efuse_init: Max chip rev:     v3.99 
+I (421) efuse_init: Chip rev:         v3.0
+I (425) heap_init: Initializing. RAM available for dynamic allocation:
+I (431) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (436) heap_init: At 3FFB8170 len 00027E90 (159 KiB): DRAM
+I (442) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM
+I (447) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (452) heap_init: At 4009770C len 000088F4 (34 KiB): IRAM
+I (459) spi_flash: detected chip: generic
+I (461) spi_flash: flash io: dio
+W (464) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.
+I (478) main_task: Started on CPU0
+I (488) main_task: Calling app_main()
+Connecting to WiFi...I (518) wifi:wifi driver task: 3ffc0384, prio:23, stack:6656, core=0
+I (528) wifi:wifi firmware version: 434429f30
+I (528) wifi:wifi certification version: v7.0
+I (528) wifi:config NVS flash: enabled
+I (528) wifi:config nano formatting: disabled
+I (538) wifi:Init data frame dynamic rx buffer num: 32
+I (538) wifi:Init static rx mgmt buffer num: 5
+I (538) wifi:Init management short buffer num: 32
+I (548) wifi:Init dynamic tx buffer num: 32
+I (548) wifi:Init static rx buffer size: 1600
+I (558) wifi:Init static rx buffer num: 10
+I (558) wifi:Init dynamic rx buffer num: 32
+I (568) wifi_init: rx ba win: 6
+I (568) wifi_init: accept mbox: 6
+I (568) wifi_init: tcpip mbox: 32
+I (568) wifi_init: udp mbox: 6
+I (578) wifi_init: tcp mbox: 6
+I (578) wifi_init: tcp tx win: 5760
+I (578) wifi_init: tcp rx win: 5760
+I (578) wifi_init: tcp mss: 1440
+I (588) wifi_init: WiFi IRAM OP enabled
+I (588) wifi_init: WiFi RX IRAM OP enabled
+W (598) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (608) phy_init: phy_version 4840,02e0d70,Sep  2 2024,19:39:07
+I (678) wifi:mode : sta (c0:49:ef:4b:26:b0)
+I (678) wifi:enable tsf
+I (698) wifi:new:<1,0>, old:<1,0>, ap:<255,255>, sta:<1,0>, prof:1, snd_ch_cfg:0x0
+I (698) wifi:state: init -> auth (0xb0)
+I (698) wifi:state: auth -> assoc (0x0)
+I (708) wifi:state: assoc -> run (0x10)
+I (728) wifi:connected with VIRGIN852, aid = 11, channel 1, BW20, bssid = 34:5d:9e:e5:18:b8
+I (728) wifi:security: WPA2-PSK, phy: bgn, rssi: -34
+I (738) wifi:pm start, type: 1
+
+I (738) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (758) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (758) wifi:<ba-add>idx:0 (ifx:0, 34:5d:9e:e5:18:b8), tid:7, ssn:1, winSize:64
+I (1768) esp_netif_handlers: sta ip: 192.168.2.36, mask: 255.255.255.0, gw: 192.168.2.1
+OK!
+deleted
+I (1768) main_task: Returned from app_main()
