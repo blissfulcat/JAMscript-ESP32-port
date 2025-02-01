@@ -19,7 +19,8 @@
 */
 typedef struct _task_t
 {
-    bool is_running; ///< if the task is running or not
+    volatile bool is_running; ///< if the task is running or not
+    volatile bool has_finished; ///< if the task has finished or not
     char* name; ///< string: name of the task
     uint32_t serial_id; ///< id starting at 0  
     TaskHandle_t task_handle_frtos; ///< task handle from free rtos
