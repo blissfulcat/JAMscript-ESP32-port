@@ -15,7 +15,7 @@
 #define MAX_TASKS 20 ///< Maximum number of tasks
 
 /**
- * Structure representing one task that is to be run by tboard.
+ * @brief Structure representing one task that is to be run by tboard.
 */
 typedef struct _task_t
 {
