@@ -85,3 +85,71 @@ void        task_set_args(task_t* task, int num_args, ...) {
     va_end(valist);
     return;
 }
+
+
+
+void        task_print(task_t* task) {
+    if (task == NULL) {
+        printf("Uninitialized task given to task_print() \r\n");
+        return;
+    }
+
+    printf("\r\n ---------- TASK INFO BEGIN ---------- \r\n");
+    printf("name: %s \r\n", task->name);
+    printf("serial id: %lu \r\n", task->serial_id);
+    printf("argsig: ");
+    for (int i = 0; i < strlen(task->fn_argsig); i++) {
+        switch(task->fn_argsig[i]) {
+            case 'i':
+            printf("int, ");
+            break;
+            case 'f':
+            printf("double, ");
+            break;
+            case 's':
+            printf("string, ");
+            break;
+            case 'n':
+            printf("nvoid, ");
+            break;
+        }
+    }
+    printf("\r\n");
+    printf("return_type: ");
+    switch(task->return_arg->type) {
+        case INT_TYPE:
+        printf("int \r\n");
+        break;
+        case DOUBLE_TYPE:
+        printf("double \r\n");
+        break;
+        case STRING_TYPE:
+        printf("string \r\n");
+        break;
+        case NVOID_TYPE:
+        printf("nvoid \r\n");
+        break;
+        case LONG_TYPE:
+        printf("long \r\n");
+        break;
+        case VOID_TYPE:
+        printf("void \r\n");
+        break;
+        case NULL_TYPE:
+        printf("null \r\n");
+        break;
+    }
+    if (task->is_running) {
+        printf("is_running: true \r\n");
+    } else {
+        printf("is_running: false \r\n");
+    }
+
+    if (task->has_finished) {
+        printf("has_finished: true \r\n");
+    } else {
+        printf("has_finished: false \r\n");
+    }
+    printf(" ---------- TASK INFO END ---------- \r\n");
+    return;
+}

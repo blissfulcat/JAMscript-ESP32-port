@@ -88,4 +88,11 @@ void        task_set_return_arg(task_t* task, arg_t* return_arg);
  * @note This function takes in variable arguments, each of which must be an arg_t* object
 */
 void        task_set_args(task_t* task, int num_args, ...);
+
+
+/**
+ * @brief Print out information about task to the terminal.
+ * @param task pointer to task_t struct
+*/
+void        task_print(task_t* task);
 #endif // __TASK_H__
