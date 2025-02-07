@@ -6,8 +6,8 @@
 /* STRUCTS & TYPEDEFS */
 
 /**
- * Structure representing the tboard itself. 
- * Can be accessed by various tasks (need to be careful about race conditions).
+ * @brief Structure representing the tboard itself. 
+ * @note Can be accessed by various tasks (need to be careful about race conditions).
 */
 typedef struct _tboard_t
 {
