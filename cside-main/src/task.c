@@ -16,7 +16,7 @@ static  argtype_t    char_to_argtype(char c) {
 
 
 /* PUBLIC FUNCTIONS */
-task_t*     task_create(char* name, uint32_t serial_id, argtype_t return_type, char* fn_argsig) {
+task_t*     task_create(char* name, uint32_t serial_id, argtype_t return_type, char* fn_argsig, function_stub_t entry_point) {
     /* Initialize task_t struct */
     task_t* task = calloc(1, sizeof(task_t));
     task->return_arg = calloc(1, sizeof(arg_t));
@@ -29,6 +29,7 @@ task_t*     task_create(char* name, uint32_t serial_id, argtype_t return_type, c
     task->serial_id = serial_id;
     task->return_arg->type = return_type;
     task->fn_argsig = fn_argsig;
+    task->entry_point = entry_point;
     task->is_running = false;
     return task;
 }
