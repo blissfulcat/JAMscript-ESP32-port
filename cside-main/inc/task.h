@@ -63,6 +63,7 @@ task_t*     task_create(char* name, uint32_t serial_id, argtype_t return_type, c
 
 /**
  * @brief Destructor. Frees memory allocated for the task_t struct.
+ * @param task pointer to task_t struct
 */
 void        task_destroy(task_t* task);
 
