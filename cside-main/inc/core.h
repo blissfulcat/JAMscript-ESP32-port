@@ -2,6 +2,7 @@
 #define __CORE_H__
 
 #include "utils.h"
+// TODO: move discountFlake to an util section
 
 /* STRUCTS & TYPEDEFS */
 typedef struct _corestate_t
@@ -31,5 +32,12 @@ void core_destroy(corestate_t *cs);
  * @param cs pointer to corestate_t struct
 */
 void core_setup(corestate_t *cs);
+
+
+int discountflake(char *buffer);
+/**
+ * @brief Does the discount snowflake generation
+ * @param buffer pointer to a buffer able to contain ID
+*/
 
 #endif
