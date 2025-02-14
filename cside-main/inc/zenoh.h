@@ -1,15 +1,18 @@
+/**
+ * NOTE: The following code assumes the use of zenoh-pico release version 1.0.0
+ * please ensure that this is the correct version used 
+*/
 #ifndef __ZENOH_H__
 #define __ZENOH_H__
 
 #include <zenoh-pico.h>
 #include "utils.h"
 
-/* STRUCTS & TYPEDEFS */
 typedef struct _zenoh_t
 {
-    z_owned_publisher_t* z_pub;
-    z_owned_subscriber_t* z_sub;
-    z_owned_session_t* z_session;
+    z_owned_publisher_t z_pub;
+    z_owned_subscriber_t z_sub;
+    z_owned_session_t z_session;
 } zenoh_t;
 
 typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
@@ -18,7 +21,7 @@ typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
 /**
  * @brief Constructor. Initializes zenoh objects and starts a Zenoh session.
- * @return pointer to zenoh_t struct
+ * @return pointer to unitialized zenoh_t struct
  * @todo What configuration do we want for the zenoh session? Peer to peer, client?
 */
 zenoh_t* zenoh_init();
@@ -31,21 +34,24 @@ void zenoh_destroy(zenoh_t* zenoh);
 
 /**
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
- * @param zenoh pointer to zenoh_t struct
  * @retval true If a JNode is found
  * @retval false If a JNode is not found
+ * @note Can be called even before calling zenoh_init() as long as wifi has been initiated
+ * @todo Checking for JNode is not implemented. Function currently always returns true
+ * @todo FIX this function, DO NOT USE CURRENTLY
 */
-bool zenoh_scout(zenoh_t* zenoh);
+bool zenoh_scout();
 
 /**
  * @brief Declare a zenoh subscriber on a specific topic. Assign callback function.
  * @param zenoh pointer to zenoh_t struct
  * @param key_expression string describing the 'subscription topic'
  * @param callback pointer to zenoh callback function 
+ * @param cb_arg pointer to argument passed to callback function
  * @retval true If subscription declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_sub(zenoh_t* zenoh, char* key_expression, zenoh_callback_t* callback);
+bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg);
 
 /**
  * @brief Declare a zenoh publisher on a specific topic.
@@ -54,7 +60,7 @@ bool zenoh_declare_sub(zenoh_t* zenoh, char* key_expression, zenoh_callback_t* c
  * @retval true If publish declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_pub(zenoh_t* zenoh, char* key_expression);
+bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression);
 
 /**
  * @brief Start the zenoh read task by calling zp_start_read_task()
@@ -75,5 +81,5 @@ void zenoh_start_lease_task(zenoh_t* zenoh); // do we really need this
  * @retval true If publish successful
  * @retval false If an error occured 
 */
-bool zenoh_publish(zenoh_t* zenoh, char* message);
+bool zenoh_publish(zenoh_t* zenoh, const char* message);
 #endif

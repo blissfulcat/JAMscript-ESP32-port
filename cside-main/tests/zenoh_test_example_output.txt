@@ -1,0 +1,36 @@
+WiFi Connected!
+I (1858) MEMORY_DEBUG: malloc: 4./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:123. Total M count: 4
+
+UDP Unicast link
+Hello { zid: Some(04C9E7B6F9E115744FB2A931D3430D96), whatami: "Router", locators: ["tcp/[fe80::2bc1:5090:60bd:52a4]:7447", "tcp/10.0.0.252:7447"] }
+I (2878) MEMORY_DEBUG: Freed a (int*)context ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:64. Total M count: 0
+
+Dropping scout results.
+Initiating Zenoh session ...
+I (2898) MEMORY_DEBUG: calloc: 12  ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:74. Total M count: 12
+
+I (2908) MEMORY_DEBUG: malloc: 8./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:85. Total M count: 20
+
+session.c: _z_new_transport ret value: 0
+session.c: _z_session_init ret value: 0
+session.c: __z_open_inner ret value: 0
+api.c: _z_open ret value: 0
+Zenoh session initiated
+Declaring Subscriber on key/expression/**
+I (2938) MEMORY_DEBUG: malloc: 12./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:152. Total M count: 32
+
+Subscriber OK!
+Declaring Publisher on key/expression/example
+I (2948) MEMORY_DEBUG: malloc: 76./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:177. Total M count: 108
+
+Publisher OK!
+Attempting to publish: message over zenoh
+ >> [Subscriber handler] Received ('key/expression/example': 'message over zenoh')
+Success!
+I (2978) MEMORY_DEBUG: Freed a zenoh->z_session ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:102. Total M count: 100
+
+I (2988) MEMORY_DEBUG: Freed a zenoh->z_sub ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:106. Total M count: 88
+
+I (2998) MEMORY_DEBUG: Freed a zenoh->z_pub ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:110. Total M count: 12
+
+I (3008) MEMORY_DEBUG: Freed a zenoh ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:113. Total M count: 0
