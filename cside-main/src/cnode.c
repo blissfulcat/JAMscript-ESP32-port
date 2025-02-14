@@ -58,6 +58,16 @@ printf("Initiating Wi-Fi ... \r\n");
     /* Init core */
     uint32_t serial_num = 0; // serial num should be determined by args 
 
+#ifdef PRINT_INIT_PROGRESS
+printf("cnode %d: creating task board ... \r\n", serial_num);
+#endif
+        // Start the taskboard
+    cn->tboard = tboard_create(cn, cn->args->nexecs);
+    if ( cn->tboard == NULL ) {
+        cnode_destroy(cn);
+        terminate_error(true, "cannot create the task board");
+    }
+
 // #ifdef PRINT_INIT_PROGRESS
 // printf("Initiating core ... \r\n");
 // #endif
@@ -90,11 +100,14 @@ printf("cnode %lu initialized. \r\n", serial_num);
     return cn;
 }
 
+// NOTE: comment given from the previous esp32 version
+// Many of the cnode start/stop/destryo commands aren't necessary to use on the esp32 as we have our
+// own boot phase before the user program executes.
+
 void cnode_destroy(cnode_t* cn) {
     if (cn == NULL) {
         return;
     }
-
     if (cn->system_manager != NULL)
         system_manager_destroy(cn->system_manager);
     
@@ -103,6 +116,9 @@ void cnode_destroy(cnode_t* cn) {
 
     if (cn->zenoh != NULL)
         zenoh_destroy(cn->zenoh);
+
+    if (cn->tboard != NULL)
+        tboard_destroy(cn->tboard);
         
     free(cn);
 }
@@ -183,5 +199,8 @@ bool cnode_stop(cnode_t* cn) {
     if (!z_session_is_closed(z_loan(cn->zenoh->z_session))) {
         z_session_drop(z_move(cn->zenoh->z_session));
     }
+
+    // tboard_shutdown is going to block.. until another thread kills the tboard.
+    tboard_shutdown(cn->tboard);
     return true;
 }

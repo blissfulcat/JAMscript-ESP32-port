@@ -7,14 +7,31 @@
 #include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
+
+/* CNode arguments structure created by process_args() */
+typedef struct _cnode_args_t {
+    char *tags;
+    int groupid;
+    char *appid;
+    int port;
+    char *host;
+    int redport;
+    char *redhost;
+    int snumber;
+    int nexecs;
+} cnode_args_t;
+
+/* CNode type, which contains CNode substructures and taskboard */
 typedef struct _cnode_t 
 {
+    cnode_args_t *args;
     system_manager_t* system_manager; 
     char* node_id;
     zenoh_t* zenoh;
     corestate_t* core_state;
     bool initialized;
     volatile bool message_received; /* Here for the sub callback */
+    void *tboard;
 } cnode_t;
 
 /* FUNCTION PROTOTYPES */

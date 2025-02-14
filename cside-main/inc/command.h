@@ -30,7 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cbor.h>
 #include <stdint.h>
 #include "utils.h"
-typedef enum {
+typedef enum _jamcommand_t{
     CMD_REGISTER,
     CMD_REGISTER_ACK,
     CMD_NEW_REGISTER,
