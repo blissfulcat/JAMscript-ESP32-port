@@ -1,6 +1,7 @@
 #include "cnode.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
+#define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
 #define CNODE_PUB_KEYEXPR "jamscript/cnode/"
 #define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
@@ -12,6 +13,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     z_keyexpr_as_view_string(z_sample_keyexpr(sample), &keystr);
     z_owned_string_t value;
     z_bytes_to_string(z_sample_payload(sample), &value);
+
     /* Do not want to print out what we send out */
     const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); 
     if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
@@ -19,12 +21,18 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
         free(cnode_pub_ke);
         return;
     } 
+
+#ifdef DEBUG_PRINT_MESSAGES
     printf(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),
            z_string_data(z_view_string_loan(&keystr)), (int)z_string_len(z_string_loan(&value)),
            z_string_data(z_string_loan(&value)));
+#endif
+
+    /* Call the new function to process the message */
+    cnode_process_message(cnode, z_string_data(z_view_string_loan(&keystr)), z_string_data(z_string_loan(&value)));    
+    /* Cleanup */
     z_string_drop(z_string_move(&value));
     free(cnode_pub_ke);
-    cnode->message_received = true; /* Indicate that we have received a message */
 }
 
 /* PUBLIC FUNCTIONS */
@@ -204,3 +212,18 @@ bool cnode_stop(cnode_t* cn) {
     tboard_shutdown(cn->tboard);
     return true;
 }
+
+void cnode_process_message(cnode_t *cnode, const char *key, const char *payload) {
+    if (!cnode || !key || !payload) {
+        printf("[cnode] Error: Invalid message received.\n");
+        return;
+    }
+
+    printf("[cnode] Processing message: Key = %s, Payload = %s\n", key, payload);
+
+    // TODO: Implement message handling logic based on `key` and `payload`
+    // Example: Update cnode state, trigger events, or store the message
+
+    cnode->message_received = true; /* Indicate that we have received a message */
+}
+
