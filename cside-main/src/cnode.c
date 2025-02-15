@@ -1,4 +1,6 @@
 #include "cnode.h"
+#include "command.h"
+#include "processor.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
 #define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
@@ -213,17 +215,22 @@ bool cnode_stop(cnode_t* cn) {
     return true;
 }
 
-void cnode_process_message(cnode_t *cnode, const char *key, const char *payload) {
-    if (!cnode || !key || !payload) {
-        printf("[cnode] Error: Invalid message received.\n");
-        return;
+bool cnode_process_message(cnode_t* cn, char* buf, int buflen) {
+    if (!cn || !buf || buflen <= 0) {
+        fprintf(stderr, "[ERROR] Invalid input to cnode_process_message\n");
+        return false;
     }
 
-    printf("[cnode] Processing message: Key = %s, Payload = %s\n", key, payload);
-
-    // TODO: Implement message handling logic based on `key` and `payload`
-    // Example: Update cnode state, trigger events, or store the message
-
-    cnode->message_received = true; /* Indicate that we have received a message */
+    // Decode the message using CBOR
+    command_t *cmd = command_from_data(NULL, buf, buflen);
+    if (!cmd) {
+        fprintf(stderr, "[ERROR] Failed to parse command from data\n");
+        return false;
+    }
+#ifdef DEBUG_PRINT_MESSAGES
+    printf("[INFO] Received command: %d, subcmd: %d\n", command_to_string(cmd->cmd), cmd->subcmd);
+#endif
+    process_message(cn->tboard, cmd);
+    return true;
 }
 

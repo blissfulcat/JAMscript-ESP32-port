@@ -70,7 +70,7 @@ void internal_command_free(internal_command_t* ic)
  * Return a command that includes a CBOR representation that can be sent out (a
  * byte string) It reuses the command_new_using_arg() function
  */
-command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_id,
+command_t* command_new(jamcommand_t cmd, int subcmd, const char* fn_name, uint64_t task_id,
                        const char* node_id, const char* fn_argsig, ...)
 {
     va_list args;
@@ -123,7 +123,7 @@ command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_i
     return c;
 }
 
-command_t* command_new_using_arg(int cmd, int subcmd, const char* fn_name,
+command_t* command_new_using_arg(jamcommand_t cmd, int subcmd, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args)
 {
@@ -675,4 +675,15 @@ void command_print(command_t* cmd)
     command_arg_print(cmd->args);
 
     printf("\n===================================\n");
+}
+
+const char* command_to_string(jamcommand_t cmd) {
+    switch (cmd) {
+        case CMD_PING: return "PING";
+        case CMD_REXEC: return "REXEC";
+        case CMD_REXEC_ACK: return "REXEC_ACK";
+        case CMD_REXEC_RES: return "REXEC_RES";
+        case CMD_GET_REXEC_RES: return "GET_REXEC_RES";
+        default: return "UNKNOWN_COMMAND";
+    }
 }

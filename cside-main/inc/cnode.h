@@ -68,13 +68,11 @@ bool        cnode_start(cnode_t* cn);
 bool        cnode_stop(cnode_t* cn);
 
 /**
- * @brief Processes a received message and takes appropriate action
- * @param cnode Pointer to the cnode_t struct representing the current cnode instance
- * @param key The key expression associated with the received message
- * @param payload The message content received from Zenoh
- * @note This function is called when a message is received through Zenoh
- * @todo Implement specific message handling logic based on key and payload content
- * @todo In case we can receive buffered messages, we should process them in this function
+ * @brief Processes an incoming message received through Zenoh.
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param buf Pointer to the raw character buffer containing the encoded message.
+ * @param buflen Length of the buffer.
+ * @return True if the command was successfully processed, false otherwise.
  */
 void        cnode_process_message(cnode_t *cnode, const char *key, const char *payload);
 

@@ -40,6 +40,11 @@ typedef enum _jamcommand_t{
     CMD_REGISTER_ACK,
     CMD_NEW_REGISTER,
     CMD_OLD_REGISTER,
+    CMD_PING,
+    CMD_REXEC,
+    CMD_REXEC_ACK,
+    CMD_CLOSE_PORT,
+    CMD_GET_REXEC_RES,
     // only most barebone commands right now
 } jamcommand_t;
 
@@ -127,7 +132,7 @@ typedef struct _arg_t {
  * command structure at the decoding process.
  */
 typedef struct _command_t {
-    int cmd;                             // Command type
+    jamcommand_t cmd;                             // Command type
     int subcmd;                          // Sub-command type
     char fn_name[SMALL_CMD_STR_LEN];     // Function name
     uint64_t task_id;                    // Task identifier (execution ID)
@@ -145,7 +150,7 @@ typedef struct _command_t {
  * A simplified command representation used for internal processing.
  */
 typedef struct _internal_command_t {
-    int cmd;         // Command type
+    jamcommand_t cmd;         // Command type
     uint32_t task_id; // Task identifier
     arg_t* args;     // List of arguments
 } internal_command_t;
@@ -175,7 +180,7 @@ void internal_command_free(internal_command_t* ic);
  * @param fn_argsig Argument signature
  * @return Pointer to newly allocated command object
  */
-command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_id,
+command_t* command_new(jamcommand_t cmd, int subcmd, const char* fn_name, uint64_t task_id,
                        const char* node_id, const char* fn_argsig, ...);
 
 /**
@@ -189,7 +194,7 @@ command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_i
  * @param args Pointer to argument list
  * @return Pointer to newly allocated command object
  */
-command_t* command_new_using_arg(int cmd, int opt, const char* fn_name,
+command_t* command_new_using_arg(jamcommand_t cmd, int opt, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args);
 
@@ -204,7 +209,7 @@ command_t* command_new_using_arg(int cmd, int opt, const char* fn_name,
  * @param fn_argsig Argument signature
  * @param args Pointer to argument list
  */
-void command_init_using_arg(command_t* command, int cmd, int opt, const char* fn_name,
+void command_init_using_arg(command_t* command, jamcommand_t cmd, int opt, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args);
 
@@ -278,4 +283,12 @@ arg_t* command_args_clone(arg_t* arg);
  * @param cmd Pointer to command to be printed
  */
 void command_print(command_t* cmd);
+
+/**
+ * @brief Converts a command to a string
+ * @param cmd Command to be converted
+ * @return String representation of the command
+ * @todo will need to be updated to include all commands
+ */
+const char* command_to_string(jamcommand_t cmd);
 #endif
