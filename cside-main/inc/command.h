@@ -43,6 +43,7 @@ typedef enum _jamcommand_t{
     CMD_PING,
     CMD_REXEC,
     CMD_REXEC_ACK,
+    CMD_REXEC_RES,
     CMD_CLOSE_PORT,
     CMD_GET_REXEC_RES,
     // only most barebone commands right now

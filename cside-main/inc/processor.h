@@ -1,7 +1,7 @@
 #pragma once
 #include "task.h"
 #include "command.h"
-#include "util.h"
+#include "utils.h"
 
 bool process_message(tboard_t* tboard, command_t* cmd);
 
