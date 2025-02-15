@@ -1,6 +1,7 @@
 #include "cnode.h"
 #include "command.h"
 #include "processor.h"
+#include "tboard.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
 #define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
@@ -31,7 +32,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
 #endif
 
     /* Call the new function to process the message */
-    cnode_process_message(cnode, z_string_data(z_view_string_loan(&keystr)), z_string_data(z_string_loan(&value)));    
+    // cnode_process_message(cnode, z_string_data(z_view_string_loan(&keystr)), z_string_data(z_string_loan(&value)));    
     /* Cleanup */
     z_string_drop(z_string_move(&value));
     free(cnode_pub_ke);
@@ -69,26 +70,25 @@ printf("Initiating Wi-Fi ... \r\n");
     uint32_t serial_num = 0; // serial num should be determined by args 
 
 #ifdef PRINT_INIT_PROGRESS
-printf("cnode %d: creating task board ... \r\n", serial_num);
+printf("cnode %ld: creating task board ... \r\n", serial_num);
 #endif
         // Start the taskboard
-    cn->tboard = tboard_create(cn, cn->args->nexecs);
-    if ( cn->tboard == NULL ) {
-        cnode_destroy(cn);
-        terminate_error(true, "cannot create the task board");
-    }
+    // cn->tboard = tboard_create(cn, cn->args->nexecs);
+    // if ( cn->tboard == NULL ) {
+    //     cnode_destroy(cn);
+    // }
 
-// #ifdef PRINT_INIT_PROGRESS
-// printf("Initiating core ... \r\n");
-// #endif
-//     cn->core_state = core_init(serial_num);
-//     if (cn->core_state == NULL) {
-//         printf("Core creation failed. \r\n");
-//         cnode_destroy(cn);
-//         return NULL;
-//     }
-//     // Do we really need the node_id field? Its already in core_state
-//     cn->node_id = cn->core_state->device_id; 
+#ifdef PRINT_INIT_PROGRESS
+printf("Initiating core ... \r\n");
+#endif
+    cn->core_state = core_init(serial_num);
+    if (cn->core_state == NULL) {
+        printf("Core creation failed. \r\n");
+        cnode_destroy(cn);
+        return NULL;
+    }
+    // Do we really need the node_id field? Its already in core_state
+    cn->node_id = cn->core_state->device_id; 
 
 /*
 TODO: Currently calling zenoh_scout() creates buggy behavior for zenoh communication
@@ -157,6 +157,10 @@ printf("cnode %d: declaring Zenoh session ... \r\n", serial_num);
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
 #endif
+    printf("hello\n");
+    printf("%s\r\n", CNODE_PUB_KEYEXPR);
+    printf("%s\r\n", cn->node_id);
+
     const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cn->node_id);
     printf("%s\r\n", cnode_pub_ke);
     if (!zenoh_declare_pub(cn->zenoh, cnode_pub_ke)) {
@@ -228,9 +232,9 @@ bool cnode_process_message(cnode_t* cn, char* buf, int buflen) {
         return false;
     }
 #ifdef DEBUG_PRINT_MESSAGES
-    printf("[INFO] Received command: %d, subcmd: %d\n", command_to_string(cmd->cmd), cmd->subcmd);
+    printf("[INFO] Received command: %s, subcmd: %d\n", command_to_string(cmd->cmd), cmd->subcmd);
 #endif
-    process_message(cn->tboard, cmd);
+    // process_message(cn->tboard, cmd);
     return true;
 }
 

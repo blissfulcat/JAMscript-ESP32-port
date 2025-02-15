@@ -59,4 +59,10 @@ void        tboard_register_task(tboard_t* tboard, task_t* task);
 */
 bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args);
 
+/**
+ * @brief Shutdown the tboard
+ * @param tboard pointer to tboard_t struct
+ */
+void           tboard_shutdown(tboard_t *tboard);
+
 #endif // __TBOARD_H__

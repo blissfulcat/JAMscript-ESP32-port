@@ -36,7 +36,7 @@ void app_main(void)
         if (!zenoh_publish(cnode->zenoh, "Message from old board")) {
             printf("Could not publish! \r\n");
         }
-        //printf("Published! \r\n");
+        // printf("Published! \r\n");
         sleep(1);
     }
     

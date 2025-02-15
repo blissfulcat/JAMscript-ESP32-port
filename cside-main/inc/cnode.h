@@ -74,6 +74,6 @@ bool        cnode_stop(cnode_t* cn);
  * @param buflen Length of the buffer.
  * @return True if the command was successfully processed, false otherwise.
  */
-void        cnode_process_message(cnode_t *cnode, const char *key, const char *payload);
+bool        cnode_process_message(cnode_t* cn, char* buf, int buflen);
 
 #endif

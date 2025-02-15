@@ -110,7 +110,7 @@ if (err!=ESP_OK){
 }
 
 //Temporary
-cs->device_id=NULL;
+// cs->device_id=NULL;
 
 }
 

@@ -26,6 +26,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <utils.h>
 
 
 // the nvoid_t structure has its own copy of the
