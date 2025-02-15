@@ -44,6 +44,7 @@ nvoid_t *nvoid_new(void *data, int len)
 nvoid_t *nvoid_null()
 {
     nvoid_t *nv = (nvoid_t *)calloc(1, sizeof(nvoid_t));
+    if (!nv) return NULL;  // Handle allocation failure
     nv->len = 0;
     nv->data = NULL;
     return nv;

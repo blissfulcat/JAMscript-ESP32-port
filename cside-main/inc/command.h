@@ -30,6 +30,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cbor.h>
 #include <stdint.h>
 #include "utils.h"
+
+/*
+ * Enumeration of command types used in the JAM protocol.
+ * These represent different message types exchanged between nodes.
+ */
 typedef enum _jamcommand_t{
     CMD_REGISTER,
     CMD_REGISTER_ACK,
@@ -37,6 +42,8 @@ typedef enum _jamcommand_t{
     CMD_OLD_REGISTER,
     // only most barebone commands right now
 } jamcommand_t;
+
+// NOTE: These are past commands that aren't used right now
 // #define CmdNames_REGISTER 1001
 // #define CmdNames_REGISTER_ACK 1002
 // #define CmdNames_NEW_REGISTER 1005
@@ -72,6 +79,10 @@ typedef enum _jamcommand_t{
 // #define CmdNames_STOP 7000
 
 
+/*
+ * Enumeration of argument types that a command can contain.
+ * These define the type of each argument passed within a command.
+ */
 typedef enum
 {
     NULL_TYPE,
@@ -83,17 +94,22 @@ typedef enum
     VOID_TYPE
 } argtype_t;
 
+/*
+ * Defines length constraints for command string parameters.
+ */
 #define TINY_CMD_STR_LEN 16
 #define SMALL_CMD_STR_LEN 32
 #define LARGE_CMD_STR_LEN 128
 #define HUGE_CMD_STR_LEN 1024
 
-typedef struct _arg_t
-{
-    int nargs;
-    argtype_t type;
-    union _argvalue_t
-    {
+/*
+ * Structure representing a single command argument.
+ * Each argument has a type and a value stored in a union.
+ */
+typedef struct _arg_t {
+    int nargs;      // Number of arguments
+    argtype_t type; // Type of argument
+    union _argvalue_t {
         int ival;
         long int lval;
         char* sval;
@@ -110,59 +126,156 @@ typedef struct _arg_t
  * Also, information is extracted from the CBOR item and inserted into the
  * command structure at the decoding process.
  */
-typedef struct _command_t
-{
-    // Command object is going to hold truncated versions of the parameters
-    // in case longer strings are passed at creation
-    // CBOR object is going to hold all the data
-    int cmd;
-    int subcmd;
-    char fn_name[SMALL_CMD_STR_LEN]; // Function name
-    uint64_t task_id; // Task identifier (a function in execution)
-    char node_id[LARGE_CMD_STR_LEN];        // this can be the UUID4 of the node
-    char fn_argsig[SMALL_CMD_STR_LEN];      // Argument signature of the
-                                            // functions - use fmask format
-    unsigned char buffer[HUGE_CMD_STR_LEN]; // CBOR byte array in raw byte form
-    int length;                             // length of the raw CBOR data
-
-    arg_t* args; // List of args
-
-    int refcount; // Deallocation control
-    long id;
+typedef struct _command_t {
+    int cmd;                             // Command type
+    int subcmd;                          // Sub-command type
+    char fn_name[SMALL_CMD_STR_LEN];     // Function name
+    uint64_t task_id;                    // Task identifier (execution ID)
+    char node_id[LARGE_CMD_STR_LEN];     // Unique node identifier (UUID4)
+    char fn_argsig[SMALL_CMD_STR_LEN];   // Function argument signature
+    unsigned char buffer[HUGE_CMD_STR_LEN]; // CBOR serialized data
+    int length;                          // Length of CBOR data
+    arg_t* args;                         // List of arguments
+    int refcount;                        // Reference counter for memory management
+    long id;                             // Unique command ID
 } command_t;
 
-typedef struct _internal_command_t
-{
-    int cmd;
-    uint32_t task_id;
-    arg_t* args;
+/*
+ * Structure for handling internal commands within the system.
+ * A simplified command representation used for internal processing.
+ */
+typedef struct _internal_command_t {
+    int cmd;         // Command type
+    uint32_t task_id; // Task identifier
+    arg_t* args;     // List of arguments
 } internal_command_t;
 
+/* CONSTRUCTORS */
+
+/**
+ * @brief Creates a new internal command from an existing command
+ * @param cmd Pointer to an existing command_t object
+ * @return Pointer to a newly allocated internal_command_t object
+ */
 internal_command_t* internal_command_new(command_t* cmd);
+
+/**
+ * @brief Frees an internal command
+ * @param ic Pointer to the internal command to be freed
+ */
 void internal_command_free(internal_command_t* ic);
 
-// Constructors
+/**
+ * @brief Creates a new command object with variable arguments
+ * @param cmd Command type
+ * @param subcmd Sub-command type
+ * @param fn_name Function name
+ * @param task_id Task identifier
+ * @param node_id Node UUID
+ * @param fn_argsig Argument signature
+ * @return Pointer to newly allocated command object
+ */
 command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_id,
                        const char* node_id, const char* fn_argsig, ...);
+
+/**
+ * @brief Creates a new command object using an argument list
+ * @param cmd Command type
+ * @param opt Optional parameters
+ * @param fn_name Function name
+ * @param taskid Task identifier
+ * @param node_id Node UUID
+ * @param fn_argsig Argument signature
+ * @param args Pointer to argument list
+ * @return Pointer to newly allocated command object
+ */
 command_t* command_new_using_arg(int cmd, int opt, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args);
 
+/**
+ * @brief Initializes an existing command object using arguments
+ * @param command Pointer to command object
+ * @param cmd Command type
+ * @param opt Optional parameters
+ * @param fn_name Function name
+ * @param taskid Task identifier
+ * @param node_id Node UUID
+ * @param fn_argsig Argument signature
+ * @param args Pointer to argument list
+ */
 void command_init_using_arg(command_t* command, int cmd, int opt, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args);
 
+/**
+ * @brief Constructs a command from raw data
+ * @param fn_argsig Argument signature
+ * @param data Pointer to raw data
+ * @param len Length of data
+ * @return Pointer to newly allocated command object
+ */
 command_t* command_from_data(char* fn_argsig, void* data, int len);
+
+/**
+ * @brief Parses raw data into an existing command object
+ * @param cmdo Pointer to an existing command object
+ * @param fn_argsig Argument signature
+ * @param len Length of data
+ */
 void command_from_data_inplace(command_t* cmdo, const char* fn_argsig, int len);
 
-// Methods
-void command_hold(command_t* cmd);
-void command_free(command_t* cmd);
-bool command_qargs_alloc(const char* fmt, arg_t** rargs, va_list args);
-void command_arg_print(arg_t* arg);
-void command_arg_inner_free(arg_t* arg);
-void command_args_free(arg_t* arg);
-arg_t* command_args_clone(arg_t* arg);
-void command_print(command_t* cmd);
+/* METHODS FOR COMMAND OBJECT */
 
+/**
+ * @brief Increments reference count of a command object
+ * @param cmd Pointer to command object
+ */
+void command_hold(command_t* cmd);
+
+/**
+ * @brief Frees a command object
+ * @param cmd Pointer to command object to be freed
+ */
+void command_free(command_t* cmd);
+
+/**
+ * @brief Allocates and initializes argument structures based on format string
+ * @param fmt Format string describing argument types
+ * @param rargs Pointer to allocated argument list
+ * @param args Variable argument list
+ * @return Boolean indicating success or failure
+ */
+bool command_qargs_alloc(const char* fmt, arg_t** rargs, va_list args);
+
+/**
+ * @brief Prints argument details
+ * @param arg Pointer to argument to be printed
+ */
+void command_arg_print(arg_t* arg);
+
+/**
+ * @brief Frees an argument's internal resources
+ * @param arg Pointer to argument
+ */
+void command_arg_inner_free(arg_t* arg);
+
+/**
+ * @brief Frees a list of arguments
+ * @param arg Pointer to first argument in list
+ */
+void command_args_free(arg_t* arg);
+
+/**
+ * @brief Clones an argument structure
+ * @param arg Pointer to argument to be cloned
+ * @return Pointer to newly allocated argument
+ */
+arg_t* command_args_clone(arg_t* arg);
+
+/**
+ * @brief Prints command details
+ * @param cmd Pointer to command to be printed
+ */
+void command_print(command_t* cmd);
 #endif
