@@ -1,6 +1,5 @@
 #include "cnode.h"
 #include "command.h"
-#include "processor.h"
 #include "tboard.h"
 #include "utils.h"
 
@@ -37,7 +36,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     cnode_process_received_cmd(cnode, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));    
     /* Cleanup */
     z_string_drop(z_string_move(&value));
-    free(cnode_pub_ke);
+    // free(cnode_pub_ke);
 }
 
 /* PUBLIC FUNCTIONS */
@@ -209,8 +208,6 @@ bool cnode_stop(cnode_t* cn) {
         z_session_drop(z_move(cn->zenoh->z_session));
     }
 
-    // tboard_shutdown is going to block.. until another thread kills the tboard.
-    tboard_shutdown(cn->tboard);
     return true;
 }
 
@@ -230,7 +227,7 @@ bool cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen) {
         return false;
     }
 #ifdef DEBUG_PRINT_MESSAGES
-    printf("received encoded buffer\n");
+    printf("decoded received buffer to:\n");
     command_print(cmd);
 #endif
     // TODO: start task here based on the command
