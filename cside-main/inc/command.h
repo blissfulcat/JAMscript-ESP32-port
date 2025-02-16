@@ -284,8 +284,10 @@ void command_print(command_t* cmd);
 /**
  * @brief Converts a command to a string
  * @param cmd Command to be converted
+ * @param output_str Buffer to store the output string
+ * @param max_len Maximum length of the output string
  * @return String representation of the command
  * @todo will need to be updated to include all commands
  */
-const char* command_to_string(jamcommand_t cmd);
+const char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len);
 #endif

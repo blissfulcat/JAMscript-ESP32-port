@@ -678,7 +678,7 @@ void command_print(command_t* cmd)
     printf("\n===================================\n");
 }
 
-char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len) {
+const char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len) {
     const char* str;
     switch (cmd) {
         case CMD_PING: str = "PING"; break;
