@@ -12,6 +12,8 @@ typedef struct _cnode_t
     system_manager_t* system_manager; 
     char* node_id;
     zenoh_t* zenoh;
+    zenoh_pub_t* zenoh_pub_reply;        ///< This publisher is to send replies back to controller
+    zenoh_pub_t* zenoh_pub_request;      ///< This publisher is to send commands to controller
     corestate_t* core_state;
     bool initialized;
     volatile bool message_received; /* Here for the sub callback */
