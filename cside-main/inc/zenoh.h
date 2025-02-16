@@ -10,10 +10,15 @@
 
 typedef struct _zenoh_t
 {
-    z_owned_publisher_t z_pub;
     z_owned_subscriber_t z_sub;
     z_owned_session_t z_session;
 } zenoh_t;
+
+typedef struct _zenoh_pub_t
+{
+    z_owned_publisher_t z_pub;
+    char* keyexpr;
+} zenoh_pub_t;
 
 typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
@@ -54,13 +59,14 @@ bool zenoh_scout();
 bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg);
 
 /**
- * @brief Declare a zenoh publisher on a specific topic.
+ * @brief Declare a zenoh publisher on a specific topic. The resulting publisher is passed through the z_pub argument.
  * @param zenoh pointer to zenoh_t struct
  * @param key_expression string describing the 'subscription topic'
+ * @param zenoh_pub pointer to zenoh_pub_t struct, which will contain the resulting z_owned_pub struct
  * @retval true If publish declaration returned without error
  * @retval false If an error occured 
 */
-bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression);
+bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression, zenoh_pub_t* zenoh_pub);
 
 /**
  * @brief Start the zenoh read task by calling zp_start_read_task()
@@ -75,11 +81,12 @@ void zenoh_start_read_task(zenoh_t* zenoh); // do we really need this
 void zenoh_start_lease_task(zenoh_t* zenoh); // do we really need this
 
 /**
- * @brief Publish a message over zenoh.
+ * @brief Publish a message over zenoh using a given publisher.
  * @param zenoh pointer to zenoh_t struct
  * @param message string consisting of message
+ * @param zenoh_pub pointer to zenoh_pub_t struct specifying which publisher to send over.
  * @retval true If publish successful
  * @retval false If an error occured 
 */
-bool zenoh_publish(zenoh_t* zenoh, const char* message);
+bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub);
 #endif

@@ -94,7 +94,6 @@ void zenoh_destroy(zenoh_t* zenoh) {
     if (zenoh == NULL) {
         return;
     }
-    z_drop(z_move(zenoh->z_pub));
     z_drop(z_move(zenoh->z_sub));
     z_drop(z_move(zenoh->z_session));
     free(zenoh);
@@ -136,7 +135,7 @@ bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callbac
     return true;
 }
 
-bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
+bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression, zenoh_pub_t* zenoh_pub) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
         return false;
@@ -144,7 +143,7 @@ bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression) {
 
     z_view_keyexpr_t ke;
     z_view_keyexpr_from_str_unchecked(&ke, key_expression);
-    if (z_declare_publisher(z_loan(zenoh->z_session), &zenoh->z_pub , z_loan(ke), NULL) < 0) {
+    if (z_declare_publisher(z_loan(zenoh->z_session), &(zenoh_pub->z_pub), z_loan(ke), NULL) < 0) {
         return false;
     }
     return true;
@@ -168,7 +167,7 @@ void zenoh_start_lease_task(zenoh_t* zenoh) {
     zp_start_lease_task(z_loan_mut(zenoh->z_session), NULL);
 } 
  
-bool zenoh_publish(zenoh_t* zenoh, const char* message) {
+bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) {
     /* Make sure we don't accidentally dereference a null pointer ... */
     if (zenoh == NULL) {
         return false;
@@ -176,7 +175,7 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message) {
 
     z_owned_bytes_t payload;
     z_bytes_copy_from_str(&payload, message);
-    if (z_publisher_put(z_loan(zenoh->z_pub), z_move(payload), NULL) != Z_OK) {
+    if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), NULL) != Z_OK) {
         return false;
     }
     return true;
