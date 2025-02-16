@@ -36,10 +36,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * These represent different message types exchanged between nodes.
  */
 typedef enum _jamcommand_t{
-    CMD_REGISTER,
-    CMD_REGISTER_ACK,
-    CMD_NEW_REGISTER,
-    CMD_OLD_REGISTER,
     CMD_PING,
     CMD_REXEC,
     CMD_REXEC_ACK,

@@ -128,9 +128,6 @@ void cnode_destroy(cnode_t* cn) {
 
     if (cn->zenoh != NULL)
         zenoh_destroy(cn->zenoh);
-
-    if (cn->tboard != NULL)
-        tboard_destroy(cn->tboard);
         
     free(cn);
 }
@@ -237,7 +234,6 @@ bool cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen) {
     command_print(cmd);
 #endif
     // TODO: start task here based on the command
-    // process_message(cn->tboard, cmd);
 
     free(cmd); // TODO: I don't know if I should free cmd here or not
     return true;
