@@ -146,6 +146,7 @@ bool zenoh_declare_pub(zenoh_t* zenoh, const char* key_expression, zenoh_pub_t* 
     if (z_declare_publisher(z_loan(zenoh->z_session), &(zenoh_pub->z_pub), z_loan(ke), NULL) < 0) {
         return false;
     }
+    zenoh_pub->keyexpr = key_expression;
     return true;
 }
 
