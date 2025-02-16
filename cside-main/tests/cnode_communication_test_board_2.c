@@ -19,8 +19,8 @@ void app_main(void)
 
     while (true) {
         if (cnode->message_received) {
-            //printf("Message received from new board, sending back ACK \r\n");
-            zenoh_publish(cnode->zenoh, "ACK from new board");
+            printf("Message received from new board, sending back ACK \r\n");
+            // zenoh_publish(cnode->zenoh, "ACK from new board");
             cnode->message_received = false;
         }
         sleep(1);

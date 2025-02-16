@@ -5,6 +5,7 @@
 #include "core.h"
 #include "system_manager.h"
 #include "utils.h"
+#include "command.h"
 
 /* STRUCTS & TYPEDEFS */
 
@@ -74,6 +75,14 @@ bool        cnode_stop(cnode_t* cn);
  * @param buflen Length of the buffer.
  * @return True if the command was successfully processed, false otherwise.
  */
-bool        cnode_process_message(cnode_t* cn, char* buf, int buflen);
+bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen);
+
+/**
+ * @brief Sends a command to the Zenoh network.
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
+ */
+bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
 
 #endif

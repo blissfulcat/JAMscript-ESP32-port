@@ -2,9 +2,11 @@
 #include "command.h"
 #include "processor.h"
 #include "tboard.h"
+#include "utils.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
 #define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
+//TODO: change this to follow jamscript convention https://mahesh-web.notion.site/The-JAMScript-Protocol-7057b0d57c8a4555b5670a9e518d3e90
 #define CNODE_PUB_KEYEXPR "jamscript/cnode/"
 #define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
@@ -32,7 +34,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
 #endif
 
     /* Call the new function to process the message */
-    // cnode_process_message(cnode, z_string_data(z_view_string_loan(&keystr)), z_string_data(z_string_loan(&value)));    
+    cnode_process_received_cmd(cnode, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));    
     /* Cleanup */
     z_string_drop(z_string_move(&value));
     free(cnode_pub_ke);
@@ -157,10 +159,6 @@ printf("cnode %d: declaring Zenoh session ... \r\n", serial_num);
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
 #endif
-    printf("hello\n");
-    printf("%s\r\n", CNODE_PUB_KEYEXPR);
-    printf("%s\r\n", cn->node_id);
-
     const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cn->node_id);
     printf("%s\r\n", cnode_pub_ke);
     if (!zenoh_declare_pub(cn->zenoh, cnode_pub_ke)) {
@@ -219,22 +217,37 @@ bool cnode_stop(cnode_t* cn) {
     return true;
 }
 
-bool cnode_process_message(cnode_t* cn, char* buf, int buflen) {
+bool cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen) {
     if (!cn || !buf || buflen <= 0) {
         fprintf(stderr, "[ERROR] Invalid input to cnode_process_message\n");
         return false;
     }
 
-    // Decode the message using CBOR
+    // Decode CBOR message
+#ifdef DEBUG_PRINT_MESSAGES
+    printf("received buffer: %s\n", buf);
+#endif
     command_t *cmd = command_from_data(NULL, buf, buflen);
     if (!cmd) {
         fprintf(stderr, "[ERROR] Failed to parse command from data\n");
         return false;
     }
 #ifdef DEBUG_PRINT_MESSAGES
-    printf("[INFO] Received command: %s, subcmd: %d\n", command_to_string(cmd->cmd), cmd->subcmd);
+    printf("received encoded buffer\n");
+    command_print(cmd);
 #endif
+    // TODO: start task here based on the command
     // process_message(cn->tboard, cmd);
+
+    free(cmd); // TODO: I don't know if I should free cmd here or not
     return true;
 }
 
+bool cnode_send_cmd(cnode_t* cn, command_t* cmd){
+    if (!cn || !cmd) {
+        fprintf(stderr, "[ERROR] Invalid input to cnode_send_cmd\n");
+        return false;
+    }
+    // Publish the command to the Zenoh network
+    return zenoh_publish_encoded(cn->zenoh, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
+}

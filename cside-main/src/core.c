@@ -4,6 +4,7 @@
 #include "nvs_flash.h"
 #include "string.h"
 #include <sys/time.h>
+#include "utils.h"
 
 corestate_t* core_init(int serialnum) {
     // Initialize core

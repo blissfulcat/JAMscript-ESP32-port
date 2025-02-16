@@ -37,6 +37,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utils.h"
 
 static long id = 1;
 
@@ -154,8 +155,8 @@ command_t* command_new_using_arg(jamcommand_t cmd, int subcmd, const char* fn_na
     // store and encode task_id
     cmdo->task_id = taskid;
     cbor_encode_text_stringz(&mapEncoder, "taskid");
-    //cbor_encode_uint(&mapEncoder, taskid);
-    cbor_encode_double(&mapEncoder, taskid);
+    cbor_encode_uint(&mapEncoder, taskid); // prefer using int for saving space if possible
+    // cbor_encode_double(&mapEncoder, taskid);
 
     // store and encode node_id
     COPY_STRING(cmdo->node_id, node_id, LARGE_CMD_STR_LEN);

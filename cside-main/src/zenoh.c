@@ -1,4 +1,5 @@
 #include "zenoh.h"
+#include "utils.h" 
 
 /* Connection parameters for Zenoh */
 #define MODE "peer"
@@ -179,5 +180,22 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message) {
     if (z_publisher_put(z_loan(zenoh->z_pub), z_move(payload), NULL) != Z_OK) {
         return false;
     }
+    return true;
+}
+
+bool zenoh_publish_encoded(zenoh_t* zenoh, const uint8_t* buffer, size_t buffer_len) {
+    /* Make sure we don't accidentally dereference a null pointer */
+    if (zenoh == NULL || buffer == NULL) {
+        return false;
+    }
+
+    z_owned_bytes_t payload;
+    z_bytes_copy_from_buf(&payload, buffer, buffer_len);
+
+    // Publish using the key expression
+    if (z_publisher_put(z_loan(zenoh->z_pub), z_move(payload), z_encoding_application_cbor()) != Z_OK) {
+        return false;
+    }
+
     return true;
 }
