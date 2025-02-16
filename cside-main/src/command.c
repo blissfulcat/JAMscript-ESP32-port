@@ -678,13 +678,22 @@ void command_print(command_t* cmd)
     printf("\n===================================\n");
 }
 
-const char* command_to_string(jamcommand_t cmd) {
+char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len) {
+    const char* str;
     switch (cmd) {
-        case CMD_PING: return "PING";
-        case CMD_REXEC: return "REXEC";
-        case CMD_REXEC_ACK: return "REXEC_ACK";
-        case CMD_REXEC_RES: return "REXEC_RES";
-        case CMD_GET_REXEC_RES: return "GET_REXEC_RES";
-        default: return "UNKNOWN_COMMAND";
+        case CMD_PING: str = "PING"; break;
+        case CMD_REXEC: str = "REXEC"; break;
+        case CMD_REXEC_ACK: str = "REXEC_ACK"; break;
+        case CMD_REXEC_RES: str = "REXEC_RES"; break;
+        case CMD_GET_REXEC_RES: str = "GET_REXEC_RES"; break;
+        default: str = "UNKNOWN_COMMAND"; break;
     }
+
+    size_t l = strlen(str);
+    if (l + 1 > max_len) {
+        return NULL; // Ensure the output buffer is large enough
+    }
+
+    strcpy(output_str, str);
+    return output_str;
 }
