@@ -3,6 +3,8 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "string.h"
+#include <sys/time.h>
+#include "utils.h"
 
 corestate_t* core_init(int serialnum) {
     // Initialize core
@@ -14,12 +16,6 @@ corestate_t* core_init(int serialnum) {
     cs->serial_num=serialnum;
     core_setup(cs);
     return cs;
-
-    /**
- * @brief Constructor. Initiates the core. Calls core_setup() to generate serial & node ID
- * @param serialnum Serial number of the node
- * @return pointer to corestate_t struct
-*/
 
 
 }
@@ -41,14 +37,11 @@ free(cs);
 void core_setup(corestate_t *cs) {
 // No file system so just generating a device ID
 
-//Create device ID and store
-//Generate UUID4 for device_ID    
+// Generate snowflake ID for device_ID and store    
 // Current iteration is **NOT** an elegant solution
 // Needs to add an override system for serial and device id
-// Also generate ID
 char buffer[37]={""};
 cs->device_id=strdup(buffer);
-printf("Test Device ID = %d \n", *cs->device_id);
 size_t size_of_buffer=37;
 
 // Workaround since directly using cs->serial makes an error when loading
@@ -72,7 +65,6 @@ if (err!=ESP_OK){
 } else {
     // Checking device id and creating if needed
     err=nvs_get_str(my_handle,"device_id", cs->device_id, &size_of_buffer);
-    
     switch (err) {
         case ESP_OK:
             printf("Done\n");
@@ -80,6 +72,9 @@ if (err!=ESP_OK){
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
+            discountflake(buffer);
+            cs->device_id=strdup(buffer);
+            printf("Test Device ID = %s \n", cs->device_id);
             err = nvs_set_str(my_handle, "device_id", cs->device_id);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             break;
@@ -95,7 +90,7 @@ if (err!=ESP_OK){
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             printf("The value is not initialized yet!\n");
-            err = nvs_set_i32(my_handle, "serial_num", &serial);
+            err = nvs_set_i32(my_handle, "serial_num", serial);
             printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
             cs->serial_num=serial;
             break;
@@ -116,6 +111,21 @@ if (err!=ESP_OK){
 }
 
 //Temporary
-cs->device_id=NULL;
+// cs->device_id=NULL;
 
+}
+
+int discountflake(char *buffer){
+    uint32_t errorCode=0;
+    uint32_t x;
+    static int counter = 0;
+    counter = (counter+1) % 64; // 6 digits, max 63
+
+    struct timeval tv_now;
+    errorCode=gettimeofday(&tv_now,NULL);
+    tv_now.tv_usec=tv_now.tv_usec%1024; // Cut off any bits past the 10th
+
+    x = (uint32_t)tv_now.tv_sec * 65536 + (uint32_t)tv_now.tv_usec * 64; // first 16 bits seconds, 10 bits microseconds
+    sprintf(buffer,"%li",(x+counter)); // Add in counter
+    return errorCode; // Code -1: snowflake failed, Code 0: Successful
 }

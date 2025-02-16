@@ -37,6 +37,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "utils.h"
 
 static long id = 1;
 
@@ -70,7 +71,7 @@ void internal_command_free(internal_command_t* ic)
  * Return a command that includes a CBOR representation that can be sent out (a
  * byte string) It reuses the command_new_using_arg() function
  */
-command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_id,
+command_t* command_new(jamcommand_t cmd, int subcmd, const char* fn_name, uint64_t task_id,
                        const char* node_id, const char* fn_argsig, ...)
 {
     va_list args;
@@ -123,7 +124,7 @@ command_t* command_new(int cmd, int subcmd, const char* fn_name, uint64_t task_i
     return c;
 }
 
-command_t* command_new_using_arg(int cmd, int subcmd, const char* fn_name,
+command_t* command_new_using_arg(jamcommand_t cmd, int subcmd, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args)
 {
@@ -154,8 +155,8 @@ command_t* command_new_using_arg(int cmd, int subcmd, const char* fn_name,
     // store and encode task_id
     cmdo->task_id = taskid;
     cbor_encode_text_stringz(&mapEncoder, "taskid");
-    //cbor_encode_uint(&mapEncoder, taskid);
-    cbor_encode_double(&mapEncoder, taskid);
+    cbor_encode_uint(&mapEncoder, taskid); // prefer using int for saving space if possible
+    // cbor_encode_double(&mapEncoder, taskid);
 
     // store and encode node_id
     COPY_STRING(cmdo->node_id, node_id, LARGE_CMD_STR_LEN);
@@ -675,4 +676,24 @@ void command_print(command_t* cmd)
     command_arg_print(cmd->args);
 
     printf("\n===================================\n");
+}
+
+const char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len) {
+    const char* str;
+    switch (cmd) {
+        case CMD_PING: str = "PING"; break;
+        case CMD_REXEC: str = "REXEC"; break;
+        case CMD_REXEC_ACK: str = "REXEC_ACK"; break;
+        case CMD_REXEC_RES: str = "REXEC_RES"; break;
+        case CMD_GET_REXEC_RES: str = "GET_REXEC_RES"; break;
+        default: str = "UNKNOWN_COMMAND"; break;
+    }
+
+    size_t l = strlen(str);
+    if (l + 1 > max_len) {
+        return NULL; // Ensure the output buffer is large enough
+    }
+
+    strcpy(output_str, str);
+    return output_str;
 }

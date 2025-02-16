@@ -5,8 +5,24 @@
 #include "core.h"
 #include "system_manager.h"
 #include "utils.h"
+#include "command.h"
 
 /* STRUCTS & TYPEDEFS */
+
+/* CNode arguments structure created by process_args() */
+typedef struct _cnode_args_t {
+    char *tags;
+    int groupid;
+    char *appid;
+    int port;
+    char *host;
+    int redport;
+    char *redhost;
+    int snumber;
+    int nexecs;
+} cnode_args_t;
+
+/* CNode type, which contains CNode substructures and taskboard */
 typedef struct _cnode_t 
 {
     system_manager_t* system_manager; 
@@ -49,4 +65,22 @@ bool        cnode_start(cnode_t* cn);
  * @todo fix this function
 */
 bool        cnode_stop(cnode_t* cn);
+
+/**
+ * @brief Processes an incoming message received through Zenoh.
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param buf Pointer to the raw character buffer containing the encoded message.
+ * @param buflen Length of the buffer.
+ * @return True if the command was successfully processed, false otherwise.
+ */
+bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen);
+
+/**
+ * @brief Sends a command to the Zenoh network.
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
+ */
+bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
+
 #endif

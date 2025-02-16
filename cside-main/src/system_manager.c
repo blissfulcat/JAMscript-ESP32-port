@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <zenoh-pico.h>
 #include "system_manager.h"
+#include "utils.h"
 
 
 // WiFi credentials
