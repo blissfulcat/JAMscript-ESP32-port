@@ -1,20 +1,28 @@
-/**
- * NOTE: The following code assumes the use of zenoh-pico release version 1.0.0
- * please ensure that this is the correct version used 
-*/
+/** @addtogroup zenoh
+ * @{
+ * @brief The zenoh module is a wrapper of the zenoh-pico library. It is one of the components of the @ref cnode.
+ * 
+ * @note zenoh-pico version 1.0.0 is used
+ */
 #ifndef __ZENOH_H__
 #define __ZENOH_H__
 
 #include <zenoh-pico.h>
 #include "utils.h"
 
+/**
+ * @brief Struct representing a zenoh object. 
+*/
 typedef struct _zenoh_t
 {
-    z_owned_publisher_t z_pub;
-    z_owned_subscriber_t z_sub;
-    z_owned_session_t z_session;
+    z_owned_publisher_t z_pub; ///< zenoh publisher instance. used when publishing messages.
+    z_owned_subscriber_t z_sub; ///< zenoh subscriber instance. used when receiving messages.
+    z_owned_session_t z_session; ///< zenoh session instance. 
 } zenoh_t;
 
+/**
+ * @brief Function signature of the callback function which must be defined for zenoh_declare_sub().
+*/
 typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
 /* FUNCTION PROTOTYPES */
@@ -36,7 +44,7 @@ void zenoh_destroy(zenoh_t* zenoh);
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
  * @retval true If a JNode is found
  * @retval false If a JNode is not found
- * @note Can be called even before calling zenoh_init() as long as wifi has been initiated
+ * @deprecated Do not use this function.
  * @todo Checking for JNode is not implemented. Function currently always returns true
  * @todo FIX this function, DO NOT USE CURRENTLY
 */
@@ -92,3 +100,6 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message);
  */
 bool zenoh_publish_encoded(zenoh_t* zenoh, const uint8_t* buffer, size_t buffer_len);
 #endif
+/**
+ * @}
+*/

@@ -23,6 +23,11 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
+/** @addtogroup command
+ * @{
+ * @brief The command modules contains structures to represent a JAMScript command as well as
+ * functions to help encode, decode commands using CBOR. 
+ */
 #ifndef __COMMAND_H__
 #define __COMMAND_H__
 
@@ -31,19 +36,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdint.h>
 #include "utils.h"
 
-/*
- * Enumeration of command types used in the JAM protocol.
+/** @brief Enumeration of command types used in the JAM protocol.
  * These represent different message types exchanged between nodes.
  */
 typedef enum _jamcommand_t{
-    CMD_PING,
+    CMD_PING,   
     CMD_REXEC,
     CMD_REXEC_ACK,
     CMD_REXEC_RES,
     CMD_CLOSE_PORT,
-    CMD_GET_REXEC_RES,
-    // only most barebone commands right now
+    CMD_GET_REXEC_RES, 
 } jamcommand_t;
+// only most barebone commands right now
 
 // NOTE: These are past commands that aren't used right now
 // #define CmdNames_REGISTER 1001
@@ -81,8 +85,8 @@ typedef enum _jamcommand_t{
 // #define CmdNames_STOP 7000
 
 
-/*
- * Enumeration of argument types that a command can contain.
+
+ /** @brief Enumeration of argument types that a command can contain.
  * These define the type of each argument passed within a command.
  */
 typedef enum
@@ -96,21 +100,19 @@ typedef enum
     VOID_TYPE
 } argtype_t;
 
-/*
- * Defines length constraints for command string parameters.
- */
-#define TINY_CMD_STR_LEN 16
-#define SMALL_CMD_STR_LEN 32
-#define LARGE_CMD_STR_LEN 128
-#define HUGE_CMD_STR_LEN 1024
+/* Defines length constraints for command string parameters. */
+ 
+#define TINY_CMD_STR_LEN 16 ///< Tiny command length (bytes)
+#define SMALL_CMD_STR_LEN 32 ///< Small command length (bytes)
+#define LARGE_CMD_STR_LEN 128 ///< Large command length (bytes)
+#define HUGE_CMD_STR_LEN 1024 ///< Huge command length (bytes)
 
-/*
- * Structure representing a single command argument.
+/** @brief Structure representing a single command argument.
  * Each argument has a type and a value stored in a union.
  */
 typedef struct _arg_t {
-    int nargs;      // Number of arguments
-    argtype_t type; // Type of argument
+    int nargs;      ///< Number of arguments
+    argtype_t type; ///< Type of argument
     union _argvalue_t {
         int ival;
         long int lval;
@@ -118,38 +120,36 @@ typedef struct _arg_t {
         double dval;
         nvoid_t* nval;
         void* vval;
-    } val;
+    } val; ///< Value contained in union
 } arg_t;
 
-/*
- * A structure to hold the outgoing and incoming command.
+/** @brief A structure to hold the outgoing and incoming command.
  * An outgoing command is parsed into a CBOR formatted byte array and
  * similarly a CBOR formatted byte array is decoded into a CBOR item handle.
  * Also, information is extracted from the CBOR item and inserted into the
  * command structure at the decoding process.
  */
 typedef struct _command_t {
-    jamcommand_t cmd;                             // Command type
-    int subcmd;                          // Sub-command type
-    char fn_name[SMALL_CMD_STR_LEN];     // Function name
-    uint64_t task_id;                    // Task identifier (execution ID)
-    char node_id[LARGE_CMD_STR_LEN];     // Unique node identifier (UUID4)
-    char fn_argsig[SMALL_CMD_STR_LEN];   // Function argument signature
-    unsigned char buffer[HUGE_CMD_STR_LEN]; // CBOR serialized data
-    int length;                          // Length of CBOR data
-    arg_t* args;                         // List of arguments
-    int refcount;                        // Reference counter for memory management
-    long id;                             // Unique command ID
+    jamcommand_t cmd;                           ///< Command type
+    int subcmd;                                 ///< Sub-command type
+    char fn_name[SMALL_CMD_STR_LEN];            ///< Function name
+    uint64_t task_id;                           ///< Task identifier (execution ID)
+    char node_id[LARGE_CMD_STR_LEN];            ///< Unique node identifier (UUID4)
+    char fn_argsig[SMALL_CMD_STR_LEN];          ///< Function argument signature
+    unsigned char buffer[HUGE_CMD_STR_LEN];     ///< CBOR serialized data
+    int length;                                 ///< Length of CBOR data
+    arg_t* args;                                ///< List of arguments
+    int refcount;                               ///< Reference counter for memory management
+    long id;                                    ///< Unique command ID
 } command_t;
 
-/*
- * Structure for handling internal commands within the system.
+/** @brief Structure for handling internal commands within the system.
  * A simplified command representation used for internal processing.
  */
 typedef struct _internal_command_t {
-    jamcommand_t cmd;         // Command type
-    uint32_t task_id; // Task identifier
-    arg_t* args;     // List of arguments
+    jamcommand_t cmd;         ///< Command type
+    uint32_t task_id;         ///< Task identifier
+    arg_t* args;              ///< List of arguments
 } internal_command_t;
 
 /* CONSTRUCTORS */
@@ -291,3 +291,6 @@ void command_print(command_t* cmd);
  */
 const char* command_to_string(jamcommand_t cmd, char* output_str, size_t max_len);
 #endif
+/**
+ * @}
+*/

@@ -1,3 +1,9 @@
+/** @addtogroup cnode
+ * @{
+ * @brief The cnode module includes the data structure which holds all of the information about the controller (c-side) node.
+ * It contains functions to initiate and stop the cnode, as well as to send and receive messages over the network using
+ * the zenoh protocol. It manages tasks using the tboard component.
+ */
 #ifndef __CNODE_H__
 #define __CNODE_H__
 
@@ -9,7 +15,8 @@
 
 /* STRUCTS & TYPEDEFS */
 
-/* CNode arguments structure created by process_args() */
+/** @brief arguments structure created by process_args() 
+ */
 typedef struct _cnode_args_t {
     char *tags;
     int groupid;
@@ -22,15 +29,16 @@ typedef struct _cnode_args_t {
     int nexecs;
 } cnode_args_t;
 
-/* CNode type, which contains CNode substructures and taskboard */
+/** @brief CNode type, which contains CNode substructures and taskboard 
+ */
 typedef struct _cnode_t 
 {
-    system_manager_t* system_manager; 
-    char* node_id;
-    zenoh_t* zenoh;
-    corestate_t* core_state;
-    bool initialized;
-    volatile bool message_received; /* Here for the sub callback */
+    system_manager_t* system_manager; ///< pointer to system_manager_t object. used to initiate system & wifi
+    char* node_id; ///< randomly generated (snowflakeid) ID
+    zenoh_t* zenoh; ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
+    corestate_t* core_state; ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
+    bool initialized; ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
+    volatile bool message_received; ///< boolean representing if a message has been received, needs to be reset manually.
 } cnode_t;
 
 /* FUNCTION PROTOTYPES */
@@ -82,5 +90,7 @@ bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t bufl
  * @return True if the command was successfully sent, false otherwise.
  */
 bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
-
 #endif
+/**
+ * @}
+*/

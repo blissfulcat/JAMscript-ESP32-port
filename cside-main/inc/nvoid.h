@@ -1,3 +1,10 @@
+/** @addtogroup nvoid
+ * @{
+ * @brief The nvoid module is simply a definition of a custom type, which stores a void pointer (a pointer to
+ * any possible structure) and a length n (hence the name nvoid). It is one of the types which can be
+ * passed through the JAMScript commands.
+ */
+
 /*
 The MIT License (MIT)
 Copyright (c) 2016 Muthucumaru Maheswaran
@@ -24,18 +31,36 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __NVOID_H__
 #include "utils.h"
 
+/**
+ * @brief Struct defining the nvoid type.
+*/
 typedef struct _nvoid_t
 {
-    int len;    
-    void *data;
+    int len;    ///< length of the nvoid object
+    void *data; ///< pointer to the data
 } nvoid_t;
 
+/**
+ * @brief Constructor. Allocates memory dynamically to create a new nvoid object.
+ * @param data void pointer to the data
+ * @param len length of that data
+ * @return pointer to the newly created nvoid object.
+*/
 nvoid_t *nvoid_new(void *data, int len);
+
+/**
+ * @brief Creates a new nvoid object which by default points to null. (&data=0, len=0).
+ * @return pointer to the newly created nvoid object.
+*/
 nvoid_t *nvoid_null();
 
+/**
+ * @brief Free the memory allocated to the nvoid object.
+*/
 #define nvoid_free(n)  do {             \
     free(n);                            \
 } while (0)
-
-
 #endif
+/**
+ * @}
+*/
