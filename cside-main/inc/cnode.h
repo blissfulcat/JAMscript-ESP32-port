@@ -28,6 +28,8 @@ typedef struct _cnode_t
     system_manager_t* system_manager; 
     char* node_id;
     zenoh_t* zenoh;
+    zenoh_pub_t* zenoh_pub_reply;        ///< This publisher is to send replies back to controller
+    zenoh_pub_t* zenoh_pub_request;      ///< This publisher is to send commands to controller
     corestate_t* core_state;
     bool initialized;
     volatile bool message_received; /* Here for the sub callback */
@@ -46,7 +48,8 @@ typedef struct _cnode_t
 cnode_t*    cnode_init(int argc, char** argv);
 
 /**
- * @brief Frees memory allocated during cnode_init()
+ * @brief Frees memory allocated during cnode_init().
+ * @warning cnode_stop(cn) must have been called first
  * @param cn - pointer to cnode_t struct
 */
 void        cnode_destroy(cnode_t* cn);
@@ -61,8 +64,8 @@ bool        cnode_start(cnode_t* cn);
 /**
  * @brief Stops listening thread
  * @param cn pointer to cnode_t struct
- * @todo should we also stop wifi activity? then we would have to start wifi activity in cnode_start
- * @todo fix this function
+ * @retval true successfully stopped the cnode
+ * @retval false unsuccessfully stopped the cnode
 */
 bool        cnode_stop(cnode_t* cn);
 
