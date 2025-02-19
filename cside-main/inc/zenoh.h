@@ -19,12 +19,19 @@ typedef struct _zenoh_t
     z_owned_session_t z_session; ///< zenoh session instance. 
 } zenoh_t;
 
+/**
+ * @brief Struct representing a zenoh publisher.
+*/
 typedef struct _zenoh_pub_t
 {
-    z_owned_publisher_t z_pub;
-    char* keyexpr;
+    z_owned_publisher_t z_pub; ///< zenoh publisher object
+    char* keyexpr; ///< keyexpression (or topic) of the publisher
 } zenoh_pub_t;
 
+
+/**
+ * @brief Function pointer typedef. Need to register this type as an argument of zenoh_declare_sub().
+*/
 typedef void (*zenoh_callback_t)(z_loaned_sample_t*, void*);
 
 /* FUNCTION PROTOTYPES */
