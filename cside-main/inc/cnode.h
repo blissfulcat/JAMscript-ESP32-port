@@ -36,6 +36,8 @@ typedef struct _cnode_t
     system_manager_t* system_manager; ///< pointer to system_manager_t object. used to initiate system & wifi
     char* node_id; ///< randomly generated (snowflakeid) ID
     zenoh_t* zenoh; ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
+    zenoh_pub_t* zenoh_pub_reply;        ///< This publisher is to send replies back to controller
+    zenoh_pub_t* zenoh_pub_request;      ///< This publisher is to send commands to controller
     corestate_t* core_state; ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
     bool initialized; ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
     volatile bool message_received; ///< boolean representing if a message has been received, needs to be reset manually.
@@ -54,7 +56,8 @@ typedef struct _cnode_t
 cnode_t*    cnode_init(int argc, char** argv);
 
 /**
- * @brief Frees memory allocated during cnode_init()
+ * @brief Frees memory allocated during cnode_init().
+ * @warning cnode_stop(cn) must have been called first
  * @param cn - pointer to cnode_t struct
 */
 void        cnode_destroy(cnode_t* cn);
@@ -69,8 +72,8 @@ bool        cnode_start(cnode_t* cn);
 /**
  * @brief Stops listening thread
  * @param cn pointer to cnode_t struct
- * @todo should we also stop wifi activity? then we would have to start wifi activity in cnode_start
- * @todo fix this function
+ * @retval true successfully stopped the cnode
+ * @retval false unsuccessfully stopped the cnode
 */
 bool        cnode_stop(cnode_t* cn);
 

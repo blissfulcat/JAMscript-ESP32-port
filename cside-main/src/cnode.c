@@ -4,10 +4,10 @@
 #include "utils.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
+#define CNODE_REPLY_PUB_KEYEXPR "app/replies/up"
+#define CNODE_REQUEST_PUB_KEYEXPR "app/requests/up"
+#define CNODE_SUB_KEYEXPR "app/**"
 #define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
-//TODO: change this to follow jamscript convention https://mahesh-web.notion.site/The-JAMScript-Protocol-7057b0d57c8a4555b5670a9e518d3e90
-#define CNODE_PUB_KEYEXPR "jamscript/cnode/"
-#define CNODE_SUB_KEYEXPR "jamscript/cnode/**"
 
 /* PRIVATE FUNCTIONS */
 static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
@@ -19,6 +19,23 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     z_bytes_to_string(z_sample_payload(sample), &value);
 
     /* Do not want to print out what we send out */
+    // const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id);
+
+    /* The code below is to avoid processing our own commands */
+    // char* cnode_pub_ke = CNODE_REPLY_PUB_KEYEXPR;
+    // if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
+    //     z_string_drop(z_string_move(&value));
+    //     // free(cnode_pub_ke);
+    //     return;
+    // } 
+    // cnode_pub_ke = CNODE_REQUEST_PUB_KEYEXPR;
+    // if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
+    //     z_string_drop(z_string_move(&value));
+    //     // free(cnode_pub_ke);
+    //     return;
+    // } 
+
+    /* The cnode should be receiving from app/replies/down or app/requests/down */
     const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); 
     if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
         z_string_drop(z_string_move(&value));
@@ -37,6 +54,7 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     /* Cleanup */
     z_string_drop(z_string_move(&value));
     // free(cnode_pub_ke);
+    cnode->message_received = true; /* Indicate that we have received a message */
 }
 
 /* PUBLIC FUNCTIONS */
@@ -125,9 +143,21 @@ void cnode_destroy(cnode_t* cn) {
     if (cn->core_state != NULL)
         core_destroy(cn->core_state);
 
+    if (cn->zenoh_pub_reply != NULL) {
+        //z_drop(z_move(cn->zenoh_pub_reply->z_pub));
+        free(cn->zenoh_pub_reply);
+        //free(cn->zenoh_pub_reply->keyexpr);
+    }
+
+    if (cn->zenoh_pub_request != NULL) {
+        //z_drop(z_move(cn->zenoh_pub_request->z_pub));
+        free(cn->zenoh_pub_request);
+        // free(cn->zenoh_pub_request->keyexpr);
+    }
+
     if (cn->zenoh != NULL)
         zenoh_destroy(cn->zenoh);
-        
+
     free(cn);
 }
 
@@ -153,16 +183,26 @@ printf("cnode %d: declaring Zenoh session ... \r\n", serial_num);
     zenoh_start_lease_task(cn->zenoh);
 
 #ifdef PRINT_INIT_PROGRESS
-printf("cnode %d: declaring Zenoh pub ... \r\n", serial_num);
+printf("cnode %d: declaring Zenoh pubs ... \r\n", serial_num);
 #endif
-    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cn->node_id);
-    printf("%s\r\n", cnode_pub_ke);
-    if (!zenoh_declare_pub(cn->zenoh, cnode_pub_ke)) {
-        printf("Could not declare publisher. \r\n");
-        free(cnode_pub_ke);
+    /* Allocate space for the key expressions and zenoh pub objects */
+    //char* cnode_reply_pub_ke = malloc(strlen(CNODE_REPLY_PUB_KEYEXPR)*sizeof(char));
+    //cnode_reply_pub_ke = CNODE_REPLY_PUB_KEYEXPR;
+    cn->zenoh_pub_reply = calloc(1, sizeof(zenoh_pub_t));
+
+    //char* cnode_request_pub_ke = malloc(strlen(CNODE_REQUEST_PUB_KEYEXPR)*sizeof(char));
+    //cnode_request_pub_ke = CNODE_REQUEST_PUB_KEYEXPR;
+    cn->zenoh_pub_request = calloc(1, sizeof(zenoh_pub_t));
+
+    if (!zenoh_declare_pub(cn->zenoh, CNODE_REPLY_PUB_KEYEXPR, cn->zenoh_pub_reply)) {
+        printf("Could not declare reply publisher. \r\n");
         return false;
     }
-    free(cnode_pub_ke);
+    
+    if (!zenoh_declare_pub(cn->zenoh, CNODE_REQUEST_PUB_KEYEXPR, cn->zenoh_pub_request)) {
+        printf("Could not declare request publisher. \r\n");
+        return false;
+    }
     
 #ifdef PRINT_INIT_PROGRESS
 printf("cnode %d: declaring Zenoh sub ... \r\n", serial_num);
@@ -184,22 +224,28 @@ bool cnode_stop(cnode_t* cn) {
         return false;
     }
     /* Stop all tasks */
-    // if (!zp_stop_read_task(z_loan(cn->zenoh->z_session))) {
-    //     printf("Could not stop read task \r\n");
-    //     return false; 
-    // } 
-    // if (!zp_stop_lease_task(z_loan(cn->zenoh->z_session))) {
-    //     printf("Could not stop lease task \r\n");
-    //     return false;
-    // }
+    if (zp_stop_read_task(z_loan(cn->zenoh->z_session)) < 0) {
+        printf("Could not stop read task \r\n");
+        return false; 
+    } 
+    if (zp_stop_lease_task(z_loan(cn->zenoh->z_session)) < 0) {
+        printf("Could not stop lease task \r\n");
+        return false;
+    }
 
     /* Undeclare subscriber and publisher */
-    if (!z_undeclare_subscriber(z_move(cn->zenoh->z_sub))) {
+    if (z_undeclare_subscriber(z_move(cn->zenoh->z_sub)) < 0) {
         printf("Could not undeclare sub \r\n");
         return false;
     }
-    if (!z_undeclare_publisher(z_move(cn->zenoh->z_pub))){ 
-        printf("Could not undeclare pub \r\n");
+
+    if (z_undeclare_publisher(z_move(cn->zenoh_pub_reply->z_pub)) < 0){ 
+        printf("Could not undeclare reply pub \r\n");
+        return false;
+    }
+
+    if (z_undeclare_publisher(z_move(cn->zenoh_pub_request->z_pub)) < 0){ 
+        printf("Could not undeclare request pub \r\n");
         return false;
     }
 
