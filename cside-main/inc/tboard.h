@@ -17,7 +17,7 @@ typedef struct _tboard_t
     uint32_t    num_dead_tasks; 
     uint32_t    last_dead_task_id; 
     
-    // not sure what these do but they were in the code on github
+    -
     SemaphoreHandle_t task_management_mutex; 
     StaticSemaphore_t task_management_mutex_data;
     
@@ -37,6 +37,11 @@ tboard_t*   tboard_create();
 */
 void        tboard_destroy(tboard_t* tboard);
 
+/**
+ * @brief Delete the last dead task from the tasks array and the memory
+ * @param tboard pointer to the tboard_t structure
+ */
+void        tboard_delete_last_dead_task(tboard_t* tboard);
 
 /**
  * @brief Registers a task to the tboard.
@@ -55,7 +60,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task);
  * @retval true if the task was started successfully
  * @retval false an error occured during task starting (i.e., task not found)
 */
-bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args);
+bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args);
 
 
 /**
@@ -67,7 +72,7 @@ bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args
  * @retval true if the task was started successfully
  * @retval false an error occured during task starting (i.e., task not found)
 */
-bool        tboard_start_task(tboard_t* tboard, char* name, arg_t** args);
+bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
 
 
 /* GET TASK FUNCTIONS*/
@@ -80,7 +85,7 @@ bool        tboard_start_task(tboard_t* tboard, char* name, arg_t** args);
  * @returns pointer to the task associated with the name in the tboard
  * @returns NULL if the element cannot be found
  */
-task_t*     tboard_find_task(tboard_t* tboard, char* name);
+task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
 
 /**
  * @brief Return the task associated to serial ID in the tboard
@@ -90,7 +95,7 @@ task_t*     tboard_find_task(tboard_t* tboard, char* name);
  * @returns pointer to the task associated with the serial ID in the tboard
  * @returns NULL if the element cannot be found
  */
-task_t*     tboard_find_task(tboard_t tboard, int task_serial_id);
+task_t*     tboard_find_task_id(tboard_t tboard, int task_serial_id);
 
 int         strcomp(char* str1, char*str2);
 

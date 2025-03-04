@@ -1,5 +1,5 @@
 #include "tboard.h"
-
+#include "FreeRTOS.h"
 
 tboard_t*   tboard_create() {
     tboard_t* tboard = (tboard_t*)malloc(sizeof(tboard_t));
@@ -14,13 +14,15 @@ tboard_t*   tboard_create() {
         tboard->tasks[i] = NULL;
     }
 
+    //implement the semaphores
+
     // Initialize task counters
     tboard->num_tasks = 0;
     tboard->num_dead_tasks = 0;
     tboard->last_dead_task_id = 0;
 }
 
-// In this inplementation, the function does not check that there are still tasks in the tboard
+
 void        tboard_destroy(tboard_t* tboard) {
     if (tboard == NULL){
         return
@@ -36,6 +38,20 @@ void        tboard_destroy(tboard_t* tboard) {
 
     free(tboard);
 }
+
+void        tboard_delete_last_dead_task(tboard_t* tboard){
+    u_int32_t target_task_id = tboard->last_dead_task_id;
+
+    // Delete the task and replace the tasks[i] by a null pointer
+    for (int i=0; i<MAX_TASKS; i++){
+        if (tboard->tasks[i]->serial_id == target_task_id){
+            task_destroy(tasks[i]);
+            tboard->tasks[i] = NULL;
+        }
+    }
+   
+}
+
 
 void        tboard_register_task(tboard_t* tboard, task_t* task) {
 
@@ -63,7 +79,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
     return;
 }
 
-bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args) {
+bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args) {
    
     if (tboard == NULL){
         return
@@ -74,31 +90,63 @@ bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args
     // Initialize the argumnets of the task 
     task_set_args(task_target, args);
 
-    // Run the task 
-        // if the task is stopped and not finished -> list as a dead task 
-        // update the tboard parameters (dead tasks/num of tasks) 
-    return NULL;
+    arg_t* return_arg = NULL;
+    execution_context_t ctx;
+    ctx.query_args = task_target->args;
+    ctx.return_arg = &return_arg;
+    
+    vTaskSetThreadLocalStoragePointer( NULL, 0, args );
+
+    task_target->entry_point(ctx);
+    task_target->is_running = true;
+
+    // Find a way to monitor that the task is still running 
+    // Use the retun argument ?
+    
+    tboard->num_dead_tasks ++;
+    tboard->last_dead_task_id = task_target->serial_id;
+
+    task_target->is_running = false;
+    task_target->has_finished = true;
+    return true;
+    
 }
 
-bool        tboard_start_task(tboard_t* tboard, char* name, arg_t** args){
+bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args){
 
     if (tboard == NULL){
-        return
+        return false;
     }
 
-    task_t* task_target =tboard_find_task(tboard, name);
+    task_t* task_target = tboard_find_task(tboard, name);
+    if (task_target == NULL) return false;
     
     // Initialize the argumnets of the task 
     task_set_args(task_target, args);
 
-    // Run the task 
-        // if the task is stopped and not finished -> list as a dead task
-        // update the tboard parameters (dead tasks/num of tasks) 
-        
-    return NULL;
+    arg_t* return_arg = NULL;
+    execution_context_t ctx;
+    ctx.query_args = task_target->args;
+    ctx.return_arg = &return_arg;
+    
+    vTaskSetThreadLocalStoragePointer( NULL, 0, args );
+
+    task_target->entry_point(ctx);
+    task_target->is_running = true;
+
+    // Find a way to monitor that the task is still running 
+    // Use the retun argument ?
+    
+    tboard->num_dead_tasks ++;
+    tboard->last_dead_task_id = task_target->serial_id;
+
+    task_target->is_running = false;
+    task_target->has_finished = true;
+    return true;
+  
 }
 
-task_t*     tboard_find_task(tboard_t* tboard, char* name){
+task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     
     if (tboard == NULL){
         return
@@ -113,7 +161,7 @@ task_t*     tboard_find_task(tboard_t* tboard, char* name){
     return NULL;
 }
 
-task_t*     tboard_find_task(tboard_t tboard, int task_serial_id){
+task_t*     tboard_find_task_id(tboard_t tboard, int task_serial_id){
     
     if (tboard == NULL){
         return
