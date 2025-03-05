@@ -1,5 +1,4 @@
 #include "tboard.h"
-#include "FreeRTOS.h"
 
 tboard_t*   tboard_create() {
     tboard_t* tboard = (tboard_t*)malloc(sizeof(tboard_t));
@@ -20,18 +19,19 @@ tboard_t*   tboard_create() {
     tboard->num_tasks = 0;
     tboard->num_dead_tasks = 0;
     tboard->last_dead_task_id = 0;
+    return tboard;
 }
 
 
 void        tboard_destroy(tboard_t* tboard) {
     if (tboard == NULL){
-        return
+        return;
     }
 
     //Free memory of all tasks 
-    for (int i=0; i<MAX_TASKS, i++){
-        if (tboard->tasks != NULL){
-            free(tboard->tasks(i));
+    for (int i=0; i<MAX_TASKS; i++){
+        if (tboard->tasks[i] != NULL){
+            free(tboard->tasks[i]);
             tboard->tasks[i] = NULL;
         }
     }
@@ -40,12 +40,12 @@ void        tboard_destroy(tboard_t* tboard) {
 }
 
 void        tboard_delete_last_dead_task(tboard_t* tboard){
-    u_int32_t target_task_id = tboard->last_dead_task_id;
+    uint32_t target_task_id = tboard->last_dead_task_id;
 
     // Delete the task and replace the tasks[i] by a null pointer
     for (int i=0; i<MAX_TASKS; i++){
         if (tboard->tasks[i]->serial_id == target_task_id){
-            task_destroy(tasks[i]);
+            task_destroy(tboard->tasks[i]);
             tboard->tasks[i] = NULL;
         }
     }
@@ -56,13 +56,13 @@ void        tboard_delete_last_dead_task(tboard_t* tboard){
 void        tboard_register_task(tboard_t* tboard, task_t* task) {
 
     if (tboard == NULL){
-        return
+        return;
     }
 
     // check that no task has already the same name or serial id in the tasks
     for (int i=0; i<MAX_TASKS; i++){
         if (tboard->tasks[i]->name == task->name || tboard->tasks[i]->serial_id == task->serial_id){
-            return  // same name or id as a task in the array
+            return;  // same name or id as a task in the array
         }
     }
 
@@ -82,10 +82,10 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
 bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args) {
    
     if (tboard == NULL){
-        return
+        return false;
     }
 
-    task_t* task_target =tboard_find_task(tboard, task_serial_id);
+    task_t* task_target =tboard_find_task_id(tboard, task_serial_id);
 
     // Initialize the argumnets of the task 
     task_set_args(task_target, args);
@@ -97,7 +97,7 @@ bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** a
     
     vTaskSetThreadLocalStoragePointer( NULL, 0, args );
 
-    task_target->entry_point(ctx);
+    task_target->entry_point(&ctx);
     task_target->is_running = true;
 
     // Find a way to monitor that the task is still running 
@@ -118,7 +118,7 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args){
         return false;
     }
 
-    task_t* task_target = tboard_find_task(tboard, name);
+    task_t* task_target = tboard_find_task_name(tboard, name);
     if (task_target == NULL) return false;
     
     // Initialize the argumnets of the task 
@@ -131,7 +131,7 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args){
     
     vTaskSetThreadLocalStoragePointer( NULL, 0, args );
 
-    task_target->entry_point(ctx);
+    task_target->entry_point(&ctx);
     task_target->is_running = true;
 
     // Find a way to monitor that the task is still running 
@@ -149,7 +149,8 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args){
 task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     
     if (tboard == NULL){
-        return
+        printf("Error: Unitialized tboard passed to tboard_find_task_name");
+        return NULL;
     }
 
     for (int i=0; i<MAX_TASKS; i++){
@@ -161,10 +162,11 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     return NULL;
 }
 
-task_t*     tboard_find_task_id(tboard_t tboard, int task_serial_id){
+task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id){
     
     if (tboard == NULL){
-        return
+        printf("Error: Unitialized tboard passed to tboard_find_task_id");
+        return NULL; 
     }
     
     for (int i=0; i<MAX_TASKS; i++){
@@ -176,11 +178,12 @@ task_t*     tboard_find_task_id(tboard_t tboard, int task_serial_id){
 }
 
 int         strcomp(char* str1, char*str2){
-    int i;
+    int i = 0;
     while (str1[i] != '\0'){
         if(str1[i] != str2[i]){
             return 0;
         }
+        i++;
     }
     return 1;
 }

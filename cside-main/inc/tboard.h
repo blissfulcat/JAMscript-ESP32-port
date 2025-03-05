@@ -2,6 +2,7 @@
 #define __TBOARD_H__
 
 #include "task.h"
+#include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
 
@@ -16,8 +17,6 @@ typedef struct _tboard_t
     uint32_t    num_tasks; 
     uint32_t    num_dead_tasks; 
     uint32_t    last_dead_task_id; 
-    
-    -
     SemaphoreHandle_t task_management_mutex; 
     StaticSemaphore_t task_management_mutex_data;
     
@@ -95,7 +94,7 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
  * @returns pointer to the task associated with the serial ID in the tboard
  * @returns NULL if the element cannot be found
  */
-task_t*     tboard_find_task_id(tboard_t tboard, int task_serial_id);
+task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 
 int         strcomp(char* str1, char*str2);
 
