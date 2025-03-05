@@ -39,6 +39,7 @@ void        tboard_destroy(tboard_t* tboard);
 /**
  * @brief Delete the last dead task from the tasks array and the memory
  * @param tboard pointer to the tboard_t structure
+ * @warning untested
  */
 void        tboard_delete_last_dead_task(tboard_t* tboard);
 
@@ -58,6 +59,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task);
  * @param args pointer to an array of arg_t pointers (each of which represents an argument)
  * @retval true if the task was started successfully
  * @retval false an error occured during task starting (i.e., task not found)
+ * @warning untested
 */
 bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args);
 
@@ -70,6 +72,7 @@ bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** a
  * @param args pointer to an array of arg_t pointers (each of which represents an argument)
  * @retval true if the task was started successfully
  * @retval false an error occured during task starting (i.e., task not found)
+ * @warning untested
 */
 bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
 
@@ -83,6 +86,7 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
  * @param name char pointer to the name of the task
  * @returns pointer to the task associated with the name in the tboard
  * @returns NULL if the element cannot be found
+ * @warning untested
  */
 task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
 
@@ -93,6 +97,7 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
  * @param name integer of the serial ID
  * @returns pointer to the task associated with the serial ID in the tboard
  * @returns NULL if the element cannot be found
+ * @warning untested
  */
 task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 
@@ -103,6 +108,9 @@ task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 */
 void tboard_print_tasks(tboard_t* tboard);
 
+/**
+ * TODO: Remove this function. We can directly use string.h strcmp()
+*/
 int         strcomp(char* str1, char*str2);
 
 #endif // __TBOARD_H__
