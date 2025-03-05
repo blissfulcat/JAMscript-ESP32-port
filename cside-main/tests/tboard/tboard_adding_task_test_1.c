@@ -82,11 +82,6 @@ void app_main(void)
     /* Display info about task */
     task_print(task);
     
-    /* Wait for the task to finish */
-    // while(!task->has_finished) {
-    //     sleep(1);
-    // };
-    
     /* Return arguments will be placed in task->ret_arg */
     arg_t retarg = {.type = INT_TYPE, .val.ival = 0};
     task_set_return_arg(task, &retarg);
