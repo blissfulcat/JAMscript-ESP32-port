@@ -96,6 +96,13 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
  */
 task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 
+
+/**
+ * @brief Print out tboard status as well as all current running tasks to serial.
+ * @param tboard pointer to the tboard_t structure
+*/
+void tboard_print_tasks(tboard_t* tboard);
+
 int         strcomp(char* str1, char*str2);
 
 #endif // __TBOARD_H__
