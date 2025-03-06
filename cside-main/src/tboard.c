@@ -1,4 +1,39 @@
 #include "tboard.h"
+static tboard_t* _global_tboard; // NOTE: Temp fix to be able to update tboard correctly. Ideally there is a better solutiion.
+
+void _task_freertos_entrypoint_wrapper(void* param)
+{
+    
+    task_t* task = (task_t*) param;
+    assert(task != NULL);
+    execution_context_t ctx;
+    ctx.query_args = task->args;
+    ctx.return_arg = task->return_arg;
+
+    vTaskSetThreadLocalStoragePointer( NULL,  
+                                       TLSTORE_TASK_PTR_IDX,     
+                                       param );
+
+    task->is_running = true;
+    task->entry_point(&ctx);
+
+    task->has_finished = true;
+
+    assert(ctx.return_arg != NULL);
+
+    //if(return_arg != NULL)
+    //    command_args_free(return_arg);
+    //task_destroy(tboard, task);
+    // TODO: need to lock with semaphore before calling task_destroy()
+    task->has_finished = true;
+    task->is_running = false;
+    if (ctx.return_arg->type != NULL_TYPE)
+        task->return_arg->val = ctx.return_arg->val;
+    _global_tboard->last_dead_task_id = task->serial_id;
+    _global_tboard->num_dead_tasks++;
+    vTaskDelete(0);
+}
+
 
 tboard_t*   tboard_create() {
     tboard_t* tboard = (tboard_t*)malloc(sizeof(tboard_t));
@@ -19,6 +54,8 @@ tboard_t*   tboard_create() {
     tboard->num_tasks = 0;
     tboard->num_dead_tasks = 0;
     tboard->last_dead_task_id = 0;
+    // NOTE: This is a temporary solution in order to be able to update the tboard on task execution end
+    _global_tboard = tboard;
     return tboard;
 }
 
@@ -85,7 +122,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
     tboard->num_tasks++;
     return;
 }
-
+/* TODO: Do not need args */
 bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args) {
    
     if (tboard == NULL){
@@ -94,27 +131,43 @@ bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** a
 
     task_t* task_target = tboard_find_task_id(tboard, task_serial_id);
 
+    if (task_target == NULL) {
+        log_error("Could not find task");
+        return false;
+    }
     // Initialize the argumnets of the task 
-    task_set_args(task_target, args);
+    //task_set_args(task_target, args); //we can assume that target_task->args has been already set
+    if (task_target->args != task_get_args(task_target)) {
+        log_error("Task arguments not correctly set before calling start_task().")
+        return false;
+    }
 
-    arg_t* return_arg = NULL;
-    execution_context_t ctx;
-    ctx.query_args = task_target->args;
-    ctx.return_arg = &return_arg;
+    xTaskCreatePinnedToCore(_task_freertos_entrypoint_wrapper, 
+                            task_target->name, 
+                            TASK_STACK_SIZE, 
+                            task_target, 
+                            1,
+                            &task_target->task_handle_frtos, 
+                            TASK_DEFAULT_CORE);
+
+    // arg_t* return_arg = NULL;
+    // execution_context_t ctx;
+    // ctx.query_args = task_target->args;
+    // ctx.return_arg = &return_arg;
     
-    vTaskSetThreadLocalStoragePointer( NULL, 0, args );
+    // vTaskSetThreadLocalStoragePointer( NULL, 0, args );
 
-    task_target->entry_point(&ctx);
-    task_target->is_running = true;
+    // task_target->entry_point(&ctx);
+    // task_target->is_running = true;
 
     // Find a way to monitor that the task is still running 
     // Use the retun argument ?
     
-    tboard->num_dead_tasks ++;
-    tboard->last_dead_task_id = task_target->serial_id;
+    // tboard->num_dead_tasks ++;
+    // tboard->last_dead_task_id = task_target->serial_id;
 
-    task_target->is_running = false;
-    task_target->has_finished = true;
+    // task_target->is_running = false;
+    // task_target->has_finished = true;
     return true;
     
 }
@@ -126,43 +179,36 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args){
     }
 
     task_t* task_target = tboard_find_task_name(tboard, name);
-    if (task_target == NULL) return false;
-    
-    // Initialize the argumnets of the task 
-    task_set_args(task_target, args);
+    if (task_target == NULL) {
+        log_error("Could not find task");
+        return false;
+    }
 
-    arg_t* return_arg = NULL;
-    execution_context_t ctx;
-    ctx.query_args = task_target->args;
-    ctx.return_arg = &return_arg;
-    
-    vTaskSetThreadLocalStoragePointer( NULL, 0, args );
+    if (task_target->args != task_get_args(task_target)) {
+        log_error("Task arguments not correctly set before calling start_task().")
+        return false;
+    }
 
-    task_target->entry_point(&ctx);
-    task_target->is_running = true;
-
-    // Find a way to monitor that the task is still running 
-    // Use the retun argument ?
-    
-    tboard->num_dead_tasks ++;
-    tboard->last_dead_task_id = task_target->serial_id;
-
-    task_target->is_running = false;
-    task_target->has_finished = true;
+    xTaskCreatePinnedToCore(_task_freertos_entrypoint_wrapper, 
+                            task_target->name, 
+                            TASK_STACK_SIZE, 
+                            task_target, 
+                            1,
+                            &task_target->task_handle_frtos, 
+                            TASK_DEFAULT_CORE);
     return true;
-  
 }
 
 task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     
     if (tboard == NULL){
-        printf("Error: Unitialized tboard passed to tboard_find_task_name");
+        log_error("Unitialized tboard passed to tboard_find_task_name");
         return NULL;
     }
 
     for (int i=0; i<MAX_TASKS; i++){
         char* target_name = tboard->tasks[i]->name;
-        if (strcomp(name, target_name) == 1){
+        if (strcmp(name, target_name) == 0){
             return tboard->tasks[i];
         }
     }
@@ -172,7 +218,7 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
 task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id){
     
     if (tboard == NULL){
-        printf("Error: Unitialized tboard passed to tboard_find_task_id");
+        log_error("Unitialized tboard passed to tboard_find_task_id");
         return NULL; 
     }
     
