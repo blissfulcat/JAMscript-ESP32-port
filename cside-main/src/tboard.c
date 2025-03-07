@@ -230,17 +230,6 @@ task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id){
     return NULL;
 }
 
-int         strcomp(char* str1, char*str2){
-    int i = 0;
-    while (str1[i] != '\0'){
-        if(str1[i] != str2[i]){
-            return 0;
-        }
-        i++;
-    }
-    return 1;
-}
-
 
 void tboard_print_tasks(tboard_t* tboard) {
     if (tboard == NULL) {
@@ -261,3 +250,8 @@ void tboard_print_tasks(tboard_t* tboard) {
     }
     printf("---------- TBOARD INFO END ----------\n");
 }
+
+void           tboard_shutdown(tboard_t*tboard){
+    return;
+}
+

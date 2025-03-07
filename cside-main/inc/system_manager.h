@@ -1,3 +1,8 @@
+/** @addtogroup system_manager
+ * @{
+ * @brief The system manager module provides the ESP32 system init functionality as well as the initiation of the
+ * Wi-Fi module, which is needed for the zenoh protocol. It is one of the components of @ref cnode.
+ */
 #ifndef __SYSTEM_MANAGER_H__
 #define __SYSTEM_MANAGER_H__
 
@@ -5,15 +10,17 @@
 #include "utils.h"
 
 /* STRUCTS & TYPEDEFS */
+/**
+ * Struct representing the system manager.
+*/
 typedef struct _system_manager_t
 {
    // add more info if needed
-   int _connection_attempts;
-   bool wifi_connection;
+   int _connection_attempts; ///< number of connections attempted
+   bool wifi_connection; ///< if we are connected to the wifi or not
 
-   esp_event_handler_instance_t wifi_any_event_handle;
-   esp_event_handler_instance_t got_ip_event_handle;
-
+   esp_event_handler_instance_t wifi_any_event_handle; ///< event handle for wifi events
+   esp_event_handler_instance_t got_ip_event_handle; ///< event handle for got ip event
 } system_manager_t;
 
 /* FUNCTION PROTOTYPES */
@@ -40,3 +47,6 @@ bool system_manager_destroy(system_manager_t* system_manager);
 */
 bool system_manager_wifi_init(system_manager_t* system_manager);
 #endif
+/**
+ * @}
+*/

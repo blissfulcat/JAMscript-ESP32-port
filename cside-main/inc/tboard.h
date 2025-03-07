@@ -1,3 +1,8 @@
+/** @addtogroup tboard
+ * @{
+ * @brief The tboard module provides a structure to manage all of the tasks which can be executed on the cnode, as well as tasks which can be
+ * executed remotely by the cnode. It uses FreeRTOS to manage tasks. It is one of the components of @ref cnode.
+ */
 #ifndef __TBOARD_H__
 #define __TBOARD_H__
 
@@ -113,3 +118,14 @@ void tboard_print_tasks(tboard_t* tboard);
 */
 int         strcomp(char* str1, char*str2);
 #endif // __TBOARD_H__
+
+/**
+ * @brief Shutdown the tboard
+ * @param tboard pointer to tboard_t struct
+ */
+void           tboard_shutdown(tboard_t *tboard);
+#endif // __TBOARD_H__
+/**
+ * @}
+*/
+

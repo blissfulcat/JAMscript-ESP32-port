@@ -1,3 +1,7 @@
+/** @addtogroup task
+ * @{
+ * @brief The task module contains the structures that hold JAMScript tasks, which are to be run via commands.
+ */
 #ifndef __TASK_H__
 #define __TASK_H__
 
@@ -97,3 +101,6 @@ void        task_set_args(task_t* task, int num_args, ...);
 */
 void        task_print(task_t* task);
 #endif // __TASK_H__
+/**
+ * @}
+*/
