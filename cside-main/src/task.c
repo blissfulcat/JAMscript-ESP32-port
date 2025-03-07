@@ -96,9 +96,9 @@ void        task_print(task_t* task) {
     }
 
     printf("\r\n ---------- TASK INFO BEGIN ---------- \r\n");
-    printf("name: %s \r\n", task->name);
-    printf("serial id: %lu \r\n", task->serial_id);
-    printf("argsig: ");
+    printf("name:           %s \r\n", task->name);
+    printf("serial id:      %lu \r\n", task->serial_id);
+    printf("argsig:         ");
     for (int i = 0; i < strlen(task->fn_argsig); i++) {
         switch(task->fn_argsig[i]) {
             case 'i':
@@ -116,7 +116,7 @@ void        task_print(task_t* task) {
         }
     }
     printf("\r\n");
-    printf("return_type: ");
+    printf("return_type:    ");
     switch(task->return_arg->type) {
         case INT_TYPE:
         printf("int \r\n");
@@ -141,15 +141,15 @@ void        task_print(task_t* task) {
         break;
     }
     if (task->is_running) {
-        printf("is_running: true \r\n");
+        printf("is_running:     true \r\n");
     } else {
-        printf("is_running: false \r\n");
+        printf("is_running:     false \r\n");
     }
 
     if (task->has_finished) {
-        printf("has_finished: true \r\n");
+        printf("has_finished:   true \r\n");
     } else {
-        printf("has_finished: false \r\n");
+        printf("has_finished:   false \r\n");
     }
     printf(" ---------- TASK INFO END ---------- \r\n");
     return;

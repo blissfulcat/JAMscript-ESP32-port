@@ -7,6 +7,11 @@
 #define __TBOARD_H__
 
 #include "task.h"
+#include "utils.h"
+
+#define TLSTORE_TASK_PTR_IDX 0 ///< NOTE: Not sure if this is necessary but lets keep it for now
+#define TASK_STACK_SIZE 2048 ///< Size of stack allocated for each running task
+#define TASK_DEFAULT_CORE 1 ///< what core does the tasks run on? currently our implementation says core 1
 
 /* STRUCTS & TYPEDEFS */
 
@@ -17,18 +22,14 @@
 typedef struct _tboard_t
 {
     // NOTE: Should determine number of functions at compile time
-    task_t*     tasks[MAX_TASKS];  ///< pointer to array of tasks 
-    uint32_t    num_tasks; ///< number of tasks to run
-    uint32_t    num_dead_tasks; ///< number of dead tasks 
-    uint32_t    last_dead_task_id; ///< the id of the last dead task
-    
-    // not sure what these do but they were in the code on github
+    task_t*     tasks[MAX_TASKS];  
+    uint32_t    num_tasks; 
+    uint32_t    num_dead_tasks; 
+    uint32_t    last_dead_task_id; 
     SemaphoreHandle_t task_management_mutex; 
     StaticSemaphore_t task_management_mutex_data;
-    // locking mechanism to avoid race conditions on the tboard, 
-    // becareful about when to lock 
+    
 } tboard_t;
-
 
 /* FUNCTION PROTOTYPES */
 
@@ -44,6 +45,12 @@ tboard_t*   tboard_create();
 */
 void        tboard_destroy(tboard_t* tboard);
 
+/**
+ * @brief Delete the last dead task from the tasks array and the memory
+ * @param tboard pointer to the tboard_t structure
+ * @warning TODO: untested
+ */
+void        tboard_delete_last_dead_task(tboard_t* tboard);
 
 /**
  * @brief Registers a task to the tboard.
@@ -62,7 +69,55 @@ void        tboard_register_task(tboard_t* tboard, task_t* task);
  * @retval true if the task was started successfully
  * @retval false an error occured during task starting (i.e., task not found)
 */
-bool        tboard_start_task(tboard_t* tboard, int task_serial_id, arg_t** args);
+bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args);
+
+
+/**
+ * @brief Starts a task registered to the tboard with given arguments using the task name.
+ * @note The task needs to have already been registered using tboard_register_task()
+ * @param  tboard pointer to tboard_t struct
+ * @param name name of the task to run 
+ * @param args pointer to an array of arg_t pointers (each of which represents an argument)
+ * @retval true if the task was started successfully
+ * @retval false an error occured during task starting (i.e., task not found)d
+*/
+bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
+
+
+/* GET TASK FUNCTIONS*/
+
+/**
+ * @brief Return the task associated to name in the tboard
+ * @note the task has to be registered on the tboard to be found
+ * @param tboard pointer to the tboard_t structure
+ * @param name char pointer to the name of the task
+ * @returns pointer to the task associated with the name in the tboard
+ * @returns NULL if the element cannot be found
+ */
+task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
+
+/**
+ * @brief Return the task associated to serial ID in the tboard
+ * @note the task has to be registered on the tboard to be found
+ * @param tboard pointer to the tboard_t structure
+ * @param name integer of the serial ID
+ * @returns pointer to the task associated with the serial ID in the tboard
+ * @returns NULL if the element cannot be found
+ */
+task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
+
+
+/**
+ * @brief Print out tboard status as well as all current running tasks to serial.
+ * @param tboard pointer to the tboard_t structure
+*/
+void tboard_print_tasks(tboard_t* tboard);
+
+/**
+ * TODO: Remove this function. We can directly use string.h strcmp()
+*/
+int         strcomp(char* str1, char*str2);
+#endif // __TBOARD_H__
 
 /**
  * @brief Shutdown the tboard
@@ -73,3 +128,4 @@ void           tboard_shutdown(tboard_t *tboard);
 /**
  * @}
 */
+
