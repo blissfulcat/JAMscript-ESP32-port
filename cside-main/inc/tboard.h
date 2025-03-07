@@ -9,9 +9,9 @@
 #include "task.h"
 #include "utils.h"
 
-#define TLSTORE_TASK_PTR_IDX 0 ///< NOTE: Not sure if this is necessary but lets keep it for now
+#define TLSTORE_TASK_PTR_IDX 0 ///< Used in _task_freertos_entrypoint_wrapper NOTE: Not sure if this is necessary but lets keep it for now
 #define TASK_STACK_SIZE 2048 ///< Size of stack allocated for each running task
-#define TASK_DEFAULT_CORE 1 ///< what core does the tasks run on? currently our implementation says core 1
+#define TASK_DEFAULT_CORE 1 ///< Specifies which core tasks are run on. NOTE: For now set to 1.
 
 /* STRUCTS & TYPEDEFS */
 
@@ -22,17 +22,15 @@
 typedef struct _tboard_t
 {
     // NOTE: Should determine number of functions at compile time
-    task_t*     tasks[MAX_TASKS];  
-    uint32_t    num_tasks; 
-    uint32_t    num_dead_tasks; 
-    uint32_t    last_dead_task_id; 
-    SemaphoreHandle_t task_management_mutex; 
-    StaticSemaphore_t task_management_mutex_data;
-    
+    task_t*     tasks[MAX_TASKS];                   ///< Array of task_t pointers
+    uint32_t    num_tasks;                          ///< Number of tasks that have been registered
+    uint32_t    num_dead_tasks;                     ///< Number of tasks that have been completed (NOTE: not 100% about this definition of 'dead')
+    uint32_t    last_dead_task_id;                  ///< The ID of the last task that was declared dead
+    SemaphoreHandle_t task_management_mutex;        ///< Mutex as lock to prevent race conditions between tasks
+    StaticSemaphore_t task_management_mutex_data;   ///< Mutex as lock to prevent race conditions between tasks
 } tboard_t;
 
 /* FUNCTION PROTOTYPES */
-
 /**
  * @brief Constructor. Initializes the tboard structure. Should allocate memory to the array of tasks.
  * @returns pointer to initialized tboard struct
@@ -113,17 +111,13 @@ task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 */
 void tboard_print_tasks(tboard_t* tboard);
 
-/**
- * TODO: Remove this function. We can directly use string.h strcmp()
-*/
-int         strcomp(char* str1, char*str2);
-#endif // __TBOARD_H__
 
 /**
  * @brief Shutdown the tboard
  * @param tboard pointer to tboard_t struct
  */
 void           tboard_shutdown(tboard_t *tboard);
+
 #endif // __TBOARD_H__
 /**
  * @}

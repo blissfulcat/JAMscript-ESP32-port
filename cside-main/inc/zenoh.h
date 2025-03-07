@@ -53,7 +53,7 @@ void zenoh_destroy(zenoh_t* zenoh);
  * @brief Scouts for JNodes. Note that JNodes must be using Zenoh.
  * @retval true If a JNode is found
  * @retval false If a JNode is not found
- * @deprecated Do not use this function.
+ * @warning Do not use this function.
  * @todo Checking for JNode is not implemented. Function currently always returns true
  * @todo FIX this function, DO NOT USE CURRENTLY
 */

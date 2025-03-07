@@ -34,11 +34,14 @@ system_manager_t* system_manager_init();
 /**
  * @brief Frees memory associated with the system_manager_t struct.
  * @param system_manager pointer to system_manager_t struct
+ * @retval true if successfully deallocated memory
+ * @retval false if unsuccessfully deallocated memory
  */
 bool system_manager_destroy(system_manager_t* system_manager);
 
 /**
  * @brief Initializes the Wifi module and connects to a preset network.
+ * @param system_manager pointer to system_manager_t struct
  * @retval true If wifi initiation successful
  * @retval false If error occured during wifi init
  * @todo How to set the SSID and Password for the wifi network?

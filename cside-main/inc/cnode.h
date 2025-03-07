@@ -56,21 +56,21 @@ typedef struct _cnode_t
 cnode_t*    cnode_init(int argc, char** argv);
 
 /**
- * @brief Frees memory allocated during cnode_init().
+ * @brief Destructor. Frees memory allocated during cnode_init().
  * @warning cnode_stop(cn) must have been called first
  * @param cn - pointer to cnode_t struct
 */
 void        cnode_destroy(cnode_t* cn);
 
 /**
- * @brief Starts a Zenoh session, along with sub and pub. Starts listening thread.
+ * @brief Starts a Zenoh session, along with sub and pub and starts listening thread.
  * @param zenoh pointer to zenoh_t struct
  * @param cn pointer to cnode_t struct
 */
 bool        cnode_start(cnode_t* cn);
 
 /**
- * @brief Stops listening thread
+ * @brief Stops listening thread.
  * @param cn pointer to cnode_t struct
  * @retval true successfully stopped the cnode
  * @retval false unsuccessfully stopped the cnode
@@ -87,7 +87,7 @@ bool        cnode_stop(cnode_t* cn);
 bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen);
 
 /**
- * @brief Sends a command to the Zenoh network.
+ * @brief Sends a command to the Zenoh network. 
  * @param cnode Pointer to the cnode_t instance representing the current node.
  * @param cmd Pointer to the command_t object to be sent.
  * @return True if the command was successfully sent, false otherwise.

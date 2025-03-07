@@ -36,12 +36,12 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     // } 
 
     /* The cnode should be receiving from app/replies/down or app/requests/down */
-    const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); 
-    if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
-        z_string_drop(z_string_move(&value));
-        free(cnode_pub_ke);
-        return;
-    } 
+    // const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); 
+    // if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
+    //     z_string_drop(z_string_move(&value));
+    //     free(cnode_pub_ke);
+    //     return;
+    // } 
 
 #ifdef DEBUG_PRINT_MESSAGES
     printf(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),

@@ -91,13 +91,13 @@ typedef enum _jamcommand_t{
  */
 typedef enum
 {
-    NULL_TYPE,
-    STRING_TYPE,
-    INT_TYPE,
-    LONG_TYPE,
-    DOUBLE_TYPE,
-    NVOID_TYPE,
-    VOID_TYPE
+    NULL_TYPE,      ///< Null type
+    STRING_TYPE,    ///< String type
+    INT_TYPE,       ///< Int type
+    LONG_TYPE,      ///< Long type
+    DOUBLE_TYPE,    ///< Double type (float, double)
+    NVOID_TYPE,     ///< Nvoid type (see nvoid_t)
+    VOID_TYPE       ///< Void type
 } argtype_t;
 
 /* Defines length constraints for command string parameters. */
