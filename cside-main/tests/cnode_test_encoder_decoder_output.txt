@@ -1,0 +1,96 @@
+--- Available filters and text transformations: colorize, debug, default, direct, esp32_exception_decoder, hexlify, log2file, nocontrol, printable, send_on_enter, time
+--- More details at https://bit.ly/pio-monitor-filters
+--- Quit: Ctrl+C | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H
+␛[0;32mI (2923) esp_netif_handlers: sta ip: 192.168.2.34, mask: 255.255.255.0, gw: 192.168.2.1␛[0m
+cnode 0: creating task board ... 
+Initiating core ... 
+␛[0;32mI (2923) MEMORY_DEBUG: calloc: 8  src/core.c:12. Total M count: 52
+␛[0m
+Done
+Device ID = 91649 
+Done
+Serial number = 0 
+Committing updates in NVS ... Done
+cnode 0 initialized. 
+cnode 0: declaring Zenoh session ... 
+␛[0;32mI (2943) MEMORY_DEBUG: calloc: 96  src/zenoh.c:76. Total M count: 148
+␛[0m
+cnode 0: declaring Zenoh pub ... 
+␛[0;32mI (3013) MEMORY_DEBUG: malloc: 22src/utils.c:11. Total M count: 170
+␛[0m
+jamscript/cnode/91649
+␛[0;32mI (3013) MEMORY_DEBUG: Freed a cnode_pub_ke src/cnode.c:168. Total M count: 148
+␛[0m
+cnode 0: declaring Zenoh sub ... 
+cnode 0: successfully started. 
+␛[0;32mI (3023) MEMORY_DEBUG: calloc: 32  src/command.c:84. Total M count: 180
+␛[0m
+␛[0;32mI (3033) MEMORY_DEBUG: calloc: 1248  src/command.c:131. Total M count: 1428
+␛[0m
+␛[0;32mI (3043) MEMORY_DEBUG: calloc: 32  src/command.c:628. Total M count: 1460
+␛[0m
+␛[0;32mI (3053) MEMORY_DEBUG: Freed a arg[i].val.sval src/command.c:604. Total M count: 1450
+␛[0m
+␛[0;32mI (3053) MEMORY_DEBUG: Freed a arg src/command.c:620. Total M count: 1434
+␛[0m
+Encoded command: 
+
+===================================
+
+Command cmd: 4
+
+Command subcmd: 100
+
+Command fn_name: my_function
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: si
+
+Command buffer: a763636d64466737562636d64186467666e5f6e616d656b6d795f66756e6374696f6e667461736b696418c8666e6f64656964686e6f64655f31323369666e5f617267736967627369646172677382693132372e302e302e31182aString: 127.0.0.1 Int: 42 
+===================================
+sending command: �ccmd␄fsubcmd␘dgfn_namekmy_functionftaskid␘�fnodeidhnode_123ifn_argsigbsidargs�i127.0.0.1␘*
+ >> [Subscriber handler] Received ('jamscript/cnode/91649': '�ccmd␄fsubcmd␘dgfn_namekmy_functionftaskid␘�fnodeidhnode_123ifn_argsigbsidargs�i127.0.0.1␘*')
+received buffer: �ccmd␄fsubcmd␘dgfn_namekmy_functionftaskid␘�fnodeidhnode_123ifn_argsigbsidargs�i127.0.0.1␘*?mF␁
+␛[0;32mI (3143) MEMORY_DEBUG: calloc: 1248  src/command.c:241. Total M count: 2682
+␛[0m
+␛[0;32mI (3143) MEMORY_DEBUG: calloc: 32  src/command.c:306. Total M count: 2714
+␛[0m
+
+===================================
+
+Command cmd: 4
+
+Command subcmd: 100
+
+Command fn_name: my_function
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: si
+
+Command buffer: a763636d64466737562636d64186467666e5f6e616d656b6d795f66756e6374696f6e667461736b696418c8666e6f64656964686e6f64655f31323369666e5f617267736967627369646172677382693132372e302e302e31182aString: 127.0.0.1 Int: 42 
+===================================
+␛[0;32mI (3193) MEMORY_DEBUG: Freed a cmd src/cnode.c:240. Total M count: 1466
+␛[0m
+␛[0;32mI (3203) MEMORY_DEBUG: Freed a cmd->args[i].val.sval src/command.c:507. Total M count: 1456
+␛[0m
+␛[0;32mI (3213) MEMORY_DEBUG: Freed a cmd->args src/command.c:519. Total M count: 1440
+␛[0m
+␛[0;32mI (3223) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 192
+␛[0m
+␛[0;32mI (3223) MEMORY_DEBUG: Freed a system_manager src/system_manager.c:91. Total M count: 176
+␛[0m
+␛[0;32mI (3233) MEMORY_DEBUG: Freed a cs->device_id src/core.c:30. Total M count: 170
+␛[0m
+␛[0;32mI (3243) MEMORY_DEBUG: Freed a cs src/core.c:32. Total M count: 162
+␛[0m
+␛[0;32mI (5463) MEMORY_DEBUG: Freed a zenoh src/zenoh.c:101. Total M count: 66
+␛[0m
+␛[0;32mI (5463) MEMORY_DEBUG: Freed a cn src/cnode.c:134. Total M count: 38
+␛[0m
+␛[0;32mI (5463) main_task: Returned from app_main()␛[0m
