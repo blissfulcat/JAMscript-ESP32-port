@@ -2,6 +2,7 @@
 #include <cnode.h>
 #include <task.h>
 #include <tboard.h>
+#include <command.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <constants.h>
@@ -9,8 +10,13 @@
 
 void execute_cmd(tboard_t *tboard, function_t *f, command_t *cmd)
 {
-    // Note: task_create() parameters are based on your implementation.
-    task_t* task = task_create(cmd->fn_name, cmd->task_id, il_return_type, cmd->fn_argsig, f);
+    arg_t* args = command_args_clone(cmd->args);
+    task_t* task = task_create(cmd->fn_name, cmd->task_id, args, cmd->fn_argsig, f);
+
+    // right now it will execute immediately after adding the task
+    tboard_register_task(tboard, task);    
+    
+    task_set_args(task, cmd->args[0].nargs, &cmd->args);
 }
 
 void process_message(tboard_t *tboard, command_t *cmd)
@@ -28,7 +34,6 @@ void process_message(tboard_t *tboard, command_t *cmd)
         if (func == NULL)
         {
             printf("Couldn't find function '%s'\n", cmd->fn_name);
-            // Here, you might add error handling that does not rely on multicast/MQTT.
             return;
         }
         execute_cmd(tboard, func, cmd);
