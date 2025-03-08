@@ -30,8 +30,12 @@
 
 // WiFi credentials
 /* TODO: how should we set the wifi credentials? */
+#ifndef ESP_WIFI_SSID
 #define ESP_WIFI_SSID "SET SSID HERE"
+#endif
+#ifndef ESP_WIFI_PASS
 #define ESP_WIFI_PASS "SET PASSWORD HERE"
+#endif
 
 /// WiFi event handler
 #define ESP_MAXIMUM_RETRY 5
