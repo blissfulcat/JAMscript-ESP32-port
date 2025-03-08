@@ -16,7 +16,6 @@
 
 /* STRUCTS & TYPEDEFS */
 #define MAX_ARGS 20 ///< Maximum number of arguments 
-#define MAX_TASKS 20 ///< Maximum number of tasks
 
 /**
  * @brief Structure containing the execution context of a currently executing task.
@@ -93,7 +92,6 @@ void        task_set_return_arg(task_t* task, arg_t* return_arg);
  * @note This function takes in variable arguments, each of which must be an arg_t* object
 */
 void        task_set_args(task_t* task, int num_args, ...);
-
 
 /**
  * @brief Print out information about task to the terminal.

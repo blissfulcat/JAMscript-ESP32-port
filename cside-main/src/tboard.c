@@ -215,6 +215,7 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     return NULL;
 }
 
+
 task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id){
     
     if (tboard == NULL){
@@ -228,6 +229,53 @@ task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id){
         }
     }
     return NULL;
+}
+
+
+void tboard_print_func(function_t* func)
+{
+    if(func == NULL)
+    {
+        printf("Function: Null\n");
+        return;
+    }
+    printf("FUNCTION INFO: symbol: '%s' entry_point 0x%08lx task_type: %d arg_sgnature: '%s' condition: '%s'\n",
+           func->symbol,
+           (uint32_t)func->entry_point,
+           func->arg_signature,
+           func->condition);
+}
+
+function_t* tboard_find_func(tboard_t* tboard, const char* symbol)
+{
+    assert(tboard != NULL);
+
+    // Should consider using a hash
+    for (int i = 0; i < tboard->num_funcs; i++)
+    {
+        function_t *func = tboard->funcs[i];
+
+        if (!strcmp(func->symbol, symbol))
+        {
+            return func;
+        }
+    }
+
+    return NULL;
+}
+
+void tboard_register_func(tboard_t* tboard, function_t func)
+{
+    assert(tboard != NULL);
+
+    // NOTE: Having this kind of indirection isn't ideal but as all function allocation happens at the same 
+    // all function definitions should be allocated contiguously
+    // if there was compile time information on number of functions, would be ideal.
+    
+    function_t** func_slot = tboard->funcs + tboard->num_funcs++;
+    *func_slot = calloc(1, sizeof(function_t));
+
+    **func_slot = func;
 }
 
 
