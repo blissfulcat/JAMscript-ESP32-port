@@ -102,6 +102,9 @@ void zenoh_start_lease_task(zenoh_t* zenoh); // do we really need this
 */
 bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub);
 #endif
+
+
+bool zenoh_publish_encoded(zenoh_t* zenoh, zenoh_pub_t* zenoh_pub, const uint8_t* buffer, size_t buffer_len);
 /**
  * @}
 */

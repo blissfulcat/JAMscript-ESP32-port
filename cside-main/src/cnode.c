@@ -288,5 +288,5 @@ bool cnode_send_cmd(cnode_t* cn, command_t* cmd){
         return false;
     }
     // Publish the command to the Zenoh network
-    return zenoh_publish_encoded(cn->zenoh, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
+    return zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_request, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
 }

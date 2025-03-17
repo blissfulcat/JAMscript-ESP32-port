@@ -183,7 +183,7 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) 
     return true;
 }
 
-bool zenoh_publish_encoded(zenoh_t* zenoh, const uint8_t* buffer, size_t buffer_len) {
+bool zenoh_publish_encoded(zenoh_t* zenoh,zenoh_pub_t* zenoh_pub, const uint8_t* buffer, size_t buffer_len) {
     /* Make sure we don't accidentally dereference a null pointer */
     if (zenoh == NULL || buffer == NULL) {
         return false;
@@ -193,7 +193,7 @@ bool zenoh_publish_encoded(zenoh_t* zenoh, const uint8_t* buffer, size_t buffer_
     z_bytes_copy_from_buf(&payload, buffer, buffer_len);
 
     // Publish using the key expression
-    if (z_publisher_put(z_loan(zenoh->z_pub), z_move(payload), z_encoding_application_cbor()) != Z_OK) {
+    if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), z_encoding_application_cbor()) != Z_OK) {
         return false;
     }
 
