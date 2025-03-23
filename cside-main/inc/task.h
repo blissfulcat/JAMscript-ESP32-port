@@ -50,6 +50,21 @@ typedef struct _task_t
     function_stub_t entry_point; ///< function pointer; represents the entry point to the stub of this function
 } task_t;
 
+/**
+ * @brief Structure representing instance of a task to be run by the tboard.
+*/
+typedef struct _task_instance_t
+{
+    volatile bool is_running;
+    volatile bool has_finished;
+    uint32_t serial_id;
+    TaskHandle_t task_handle_frtos;
+    arg_t* return_arg; ///< return value and type
+    arg_t* args[MAX_ARGS]; ///< array of arg_t objects for the arguments 
+    function_stub_t entry_point; ///< function pointer; represents the entry point to the stub of this function
+} task_instance_t;
+
+
 /* FUNCTION PROTOTYPES */
 
 /**
@@ -85,14 +100,24 @@ arg_t**      task_get_args(task_t* task);
 */
 void        task_set_return_arg(task_t* task, arg_t* return_arg);
 
-
 /**
  * @brief Set the arguments of the task.
+ * @param task pointer to task_t struct.
+ * @param args pointer to array of pointer of arguments.
+ * @param num_args number of arguments provided to task.
+ * @retval true arguments correctly set
+ * @retval false error in setting arguments
+ * @warning number of arguments need to be less than MAX_ARGS 
+*/
+bool        task_set_args(task_t* task, arg_t** args, int num_args);
+
+/**
+ * @brief Set the arguments of the task using variable arguments.
  * @param task pointer to task_t struct
  * @param num_args number of arguments 
  * @note This function takes in variable arguments, each of which must be an arg_t* object
 */
-void        task_set_args(task_t* task, int num_args, ...);
+void        task_set_args_va(task_t* task, int num_args, ...);
 
 
 /**

@@ -63,7 +63,28 @@ void        task_set_return_arg(task_t* task, arg_t* return_arg) {
     return;
 }
 
-void        task_set_args(task_t* task, int num_args, ...) {
+
+bool        task_set_args(task_t* task, arg_t** args, int num_args) {
+    if (task == NULL) return false;
+    
+    if (strlen(task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
+        log_error("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large");
+        return false;
+    }
+
+    for (int i = 0; i < num_args; i++) {
+        if (char_to_argtype(task->fn_argsig[i]) != args[i]->type) {
+            log_error("Incompatible type passed to task_set_args()");
+            /* Clean up and reset all args to NULL */
+            for (int j = 0; j <= i; j++) task->args[j] = NULL;
+            return false;
+        }
+        task->args[i] = args[i];
+    }
+    return true;
+}
+
+void        task_set_args_va(task_t* task, int num_args, ...) {
     if (task == NULL) return;
 
     if (strlen(task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
@@ -77,7 +98,7 @@ void        task_set_args(task_t* task, int num_args, ...) {
     for (int i = 0; i < num_args; i++) {
         arg_t* arg = va_arg(valist, arg_t*);
         if (char_to_argtype(task->fn_argsig[i]) != arg->type) {
-            printf("Incompatible type passed to task_set_args()\r\n");
+            printf("Incompatible type passed to task_set_args_va()\r\n");
             va_end(valist);
             return;
         }
