@@ -15,6 +15,62 @@ static  argtype_t    char_to_argtype(char c) {
     return NULL_TYPE;
 }
 
+static  void    task_print_args(arg_t** args, int num_args) {
+    bool anyargs = false;
+    for (int i = 0; i < num_args; i++) {
+        arg_t* arg = args[i];
+        if (arg == NULL) continue;
+        anyargs = true;
+        switch(arg->type) {
+            case INT_TYPE:
+            printf("%d, ", arg->val.ival);
+            break;
+            case DOUBLE_TYPE:
+            printf("%.3f, ", arg->val.dval);
+            break;
+            case STRING_TYPE:
+            printf("\"%s\", ", arg->val.sval);
+            break;
+            case LONG_TYPE:
+            printf("%ld, ", arg->val.lval);
+            break;
+            case NVOID_TYPE:
+            printf("nvoid(n=%d), ", arg->val.nval->len);
+            break;
+            default:
+            break;
+        }
+    }
+    if (!anyargs) printf("no arguments");
+} 
+
+
+static  void    task_print_retval(arg_t* return_arg) {
+    if (return_arg == NULL || return_arg->type == VOID_TYPE) {
+        printf("no return value");
+        return;
+    }
+    switch(return_arg->type) {
+        case INT_TYPE:
+        printf("%d, ", return_arg->val.ival);
+        break;
+        case DOUBLE_TYPE:
+        printf("%.3f, ", return_arg->val.dval);
+        break;
+        case STRING_TYPE:
+        printf("\"%s\", ", return_arg->val.sval);
+        break;
+        case LONG_TYPE:
+        printf("%ld, ", return_arg->val.lval);
+        break;
+        case NVOID_TYPE:
+        printf("nvoid(n=%d), ", return_arg->val.nval->len);
+        break;
+        default:
+        break;
+    }
+}
+
 
 /* PUBLIC FUNCTIONS */
 task_t*     task_create(char* name, argtype_t return_type, char* fn_argsig, function_stub_t entry_point) {
@@ -170,18 +226,18 @@ bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int 
 
 
 
-void        task_instance_print(task_instance_t* instance) {
-    if (instance == NULL) {
+void        task_print(task_t* task) {
+    if (task == NULL) {
         log_error("Uninitialized task given to task_print() \r\n");
         return;
     }
 
     printf("\r\n ---------- TASK INFO BEGIN ---------- \r\n");
-    printf("task name:                 %s \r\n",  instance->parent_task->name);
-    printf("(instance) serial id:      %lu \r\n", instance->serial_id);
-    printf("argsig:         ");
-    for (int i = 0; i < strlen(instance->parent_task->fn_argsig); i++) {
-        switch(instance->parent_task->fn_argsig[i]) {
+    printf("task name:               %s \r\n", task->name);
+    //printf("(instance) serial id:      %lu \r\n", task->serial_id);
+    printf("argsig:                  ");
+    for (int i = 0; i < strlen(task->fn_argsig); i++) {
+        switch(task->fn_argsig[i]) {
             case 'i':
             printf("int, ");
             break;
@@ -197,8 +253,8 @@ void        task_instance_print(task_instance_t* instance) {
         }
     }
     printf("\r\n");
-    printf("return_type:        ");
-    switch(instance->parent_task->return_type) {
+    printf("return_type:             ");
+    switch(task->return_type) {
         case INT_TYPE:
         printf("int \r\n");
         break;
@@ -221,16 +277,29 @@ void        task_instance_print(task_instance_t* instance) {
         printf("null \r\n");
         break;
     }
-    if (instance->is_running) {
-        printf("is_running:     true \r\n");
-    } else {
-        printf("is_running:     false \r\n");
-    }
+    printf("number of instances:     %lu\r\n\r\n", task->num_instances);
 
-    if (instance->has_finished) {
-        printf("has_finished:   true \r\n");
-    } else {
-        printf("has_finished:   false \r\n");
+    for (int i = 0; i < task->num_instances; i++) {
+        task_instance_t* instance = task->instances[i];
+            printf("instance id:             %lu\r\n", instance->serial_id);
+        if (instance->is_running) {
+            printf("is_running:              true \r\n");
+        } else {
+            printf("is_running:              false \r\n");
+        }
+
+        if (instance->has_finished) {
+            printf("has_finished:            true \r\n");
+        } else {
+            printf("has_finished:            false \r\n");
+        }
+        printf("arguments:               ");
+        task_print_args(instance->args, strlen(instance->parent_task->fn_argsig));
+        printf("\r\n");
+
+        printf("return value:            ");
+        task_print_retval(instance->return_arg);
+        printf("\r\n\r\n");
     }
     printf(" ---------- TASK INFO END ---------- \r\n");
     return;

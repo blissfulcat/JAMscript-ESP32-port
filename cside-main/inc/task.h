@@ -126,6 +126,7 @@ void        task_instance_set_return_arg(task_instance_t* instance, arg_t* retur
  * @retval true arguments correctly set
  * @retval false error in setting arguments
  * @warning number of arguments need to be less than MAX_ARGS 
+ * @note The arguments are passed by reference and are not copied.
 */
 bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args);
 
@@ -139,10 +140,10 @@ void        task_set_args_va(task_t* task, int num_args, ...);
 
 
 /**
- * @brief Print out information about task instance to the terminal.
- * @param instance pointer to task_instance_t struct
+ * @brief Print out information about task to the terminal.
+ * @param task pointer to task_t struct
 */
-void        task_instance_print(task_instance_t* instance);
+void        task_print(task_t* task);
 #endif // __TASK_H__
 /**
  * @}
