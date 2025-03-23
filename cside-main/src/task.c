@@ -17,111 +17,171 @@ static  argtype_t    char_to_argtype(char c) {
 
 
 /* PUBLIC FUNCTIONS */
-task_t*     task_create(char* name, uint32_t serial_id, argtype_t return_type, char* fn_argsig, function_stub_t entry_point) {
+task_t*     task_create(char* name, argtype_t return_type, char* fn_argsig, function_stub_t entry_point) {
     /* Initialize task_t struct */
     task_t* task = calloc(1, sizeof(task_t));
-    task->return_arg = calloc(1, sizeof(arg_t));
+    
 
     if (task == NULL) {
         printf("Could not allocate dynamically");
         return NULL;
     }
     task->name = name;
-    task->serial_id = serial_id;
-    task->return_arg->type = return_type;
+    task->return_type = return_type;
     task->fn_argsig = fn_argsig;
     task->entry_point = entry_point;
-    task->is_running = false;
+
+    /* Make sure all instances are set to NULL */
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        task->instances[i] = NULL;
+    }
+    task->num_instances = 0;
     return task;
+}
+
+
+task_instance_t* task_instance_create(task_t* parent_task, uint32_t serial_id) {
+    if (parent_task == NULL) return NULL;
+
+    /* Check if the maximum number of instances allowable has been reached */
+    if (parent_task->num_instances >= MAX_INSTANCES) {
+        log_error("Maximum number of instances per task reached");
+        return NULL;
+    }
+
+    /* Initialize struct */
+    task_instance_t* instance = calloc(1, sizeof(task_instance_t));
+    arg_t* return_arg = calloc(1, sizeof(arg_t));
+    if (instance == NULL || return_arg == NULL) {
+        log_error("Could not allocate dynamically");
+        return NULL;
+    }
+    instance->return_arg = return_arg;
+
+    /* Create new instance of task using parent_task */
+    instance->has_finished = false;
+    instance->is_running = false;
+    instance->return_arg->type = parent_task->return_type;
+    instance->task_handle_frtos = NULL;
+    instance->serial_id = serial_id;
+    instance->parent_task = parent_task;
+
+    /* Set this instance in parent_task, find first non null entry */
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        if (parent_task->instances[i] != NULL) {
+            /* If instance is not null, check if the serial ID already exists */
+            if (parent_task->instances[i]->serial_id == instance->serial_id) {
+                log_error("Task instance with same serial ID found when creating instance.");
+                free(return_arg);
+                free(instance);
+                return NULL;
+            } else {
+                continue;
+            }  
+        }
+        parent_task->instances[i] = instance;
+        break;
+    }
+    parent_task->num_instances++;
+    return instance;
 }
 
 
 void        task_destroy(task_t* task) {
     /* FREE ALL MEMBERS THAT ARE ALLOCATED USING MALLOC, CALLOC */
-    if (task == NULL || task->return_arg == NULL) return;
-    free(task->return_arg);
+    if (task == NULL) return;
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        if (task->instances[i] != NULL) task_instance_destroy(task->instances[i]);
+    }
     free(task);
-    return;
 }
 
 
-arg_t**      task_get_args(task_t* task) {
-    if (task == NULL) return NULL;
-    return task->args;
+void        task_instance_destroy(task_instance_t* instance) {
+    if (instance == NULL) return;
+    instance->parent_task->num_instances--; // decrement parent task's instance counter
+    if (instance->return_arg != NULL) free(instance->return_arg);
+    free(instance);
 }
 
 
-void        task_set_return_arg(task_t* task, arg_t* return_arg) {
-    if (task == NULL || task->return_arg == NULL) return;
+arg_t**      task_instance_get_args(task_instance_t* instance) {
+    if (instance == NULL) return NULL;
+    return instance->args;
+}
+
+
+void        task_instance_set_return_arg(task_instance_t* instance, arg_t* return_arg) {
+    if (instance == NULL || instance->return_arg == NULL) return;
     /* Check that the return type matches */
-    if (return_arg->type != task->return_arg->type) {
-       printf("Return type does not match \r\n");
+    if (return_arg->type != instance->return_arg->type) {
+       log_error("Return type does not match");
        return; 
     } 
-    task->return_arg->type = return_arg->type;
-    task->return_arg->val = return_arg->val;
+    instance->return_arg->type = return_arg->type;
+    instance->return_arg->val = return_arg->val;
     return;
 }
 
 
-bool        task_set_args(task_t* task, arg_t** args, int num_args) {
-    if (task == NULL) return false;
+bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args) {
+    if (instance == NULL) return false;
     
-    if (strlen(task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
+    if (strlen(instance->parent_task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
         log_error("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large");
         return false;
     }
 
     for (int i = 0; i < num_args; i++) {
-        if (char_to_argtype(task->fn_argsig[i]) != args[i]->type) {
+        if (char_to_argtype(instance->parent_task->fn_argsig[i]) != args[i]->type) {
             log_error("Incompatible type passed to task_set_args()");
             /* Clean up and reset all args to NULL */
-            for (int j = 0; j <= i; j++) task->args[j] = NULL;
+            for (int j = 0; j <= i; j++) instance->args[j] = NULL;
             return false;
         }
-        task->args[i] = args[i];
+        instance->args[i] = args[i];
     }
     return true;
 }
 
-void        task_set_args_va(task_t* task, int num_args, ...) {
-    if (task == NULL) return;
+// void        task_set_args_va(task_t* task, int num_args, ...) {
+//     if (task == NULL) return;
 
-    if (strlen(task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
-        printf("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large (MAX: %d)\r\n", MAX_ARGS);
-        return;
-    }
+//     if (strlen(task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
+//         printf("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large (MAX: %d)\r\n", MAX_ARGS);
+//         return;
+//     }
 
-    va_list valist;
-    va_start(valist, num_args);
+//     va_list valist;
+//     va_start(valist, num_args);
 
-    for (int i = 0; i < num_args; i++) {
-        arg_t* arg = va_arg(valist, arg_t*);
-        if (char_to_argtype(task->fn_argsig[i]) != arg->type) {
-            printf("Incompatible type passed to task_set_args_va()\r\n");
-            va_end(valist);
-            return;
-        }
-        task->args[i] = arg;
-    }
-    va_end(valist);
-    return;
-}
+//     for (int i = 0; i < num_args; i++) {
+//         arg_t* arg = va_arg(valist, arg_t*);
+//         if (char_to_argtype(task->fn_argsig[i]) != arg->type) {
+//             printf("Incompatible type passed to task_set_args_va()\r\n");
+//             va_end(valist);
+//             return;
+//         }
+//         task->args[i] = arg;
+//     }
+//     va_end(valist);
+//     return;
+// }
 
 
 
-void        task_print(task_t* task) {
-    if (task == NULL) {
-        printf("Uninitialized task given to task_print() \r\n");
+void        task_instance_print(task_instance_t* instance) {
+    if (instance == NULL) {
+        log_error("Uninitialized task given to task_print() \r\n");
         return;
     }
 
     printf("\r\n ---------- TASK INFO BEGIN ---------- \r\n");
-    printf("name:           %s \r\n", task->name);
-    printf("serial id:      %lu \r\n", task->serial_id);
+    printf("task name:                 %s \r\n",  instance->parent_task->name);
+    printf("(instance) serial id:      %lu \r\n", instance->serial_id);
     printf("argsig:         ");
-    for (int i = 0; i < strlen(task->fn_argsig); i++) {
-        switch(task->fn_argsig[i]) {
+    for (int i = 0; i < strlen(instance->parent_task->fn_argsig); i++) {
+        switch(instance->parent_task->fn_argsig[i]) {
             case 'i':
             printf("int, ");
             break;
@@ -137,8 +197,8 @@ void        task_print(task_t* task) {
         }
     }
     printf("\r\n");
-    printf("return_type:    ");
-    switch(task->return_arg->type) {
+    printf("return_type:        ");
+    switch(instance->parent_task->return_type) {
         case INT_TYPE:
         printf("int \r\n");
         break;
@@ -161,13 +221,13 @@ void        task_print(task_t* task) {
         printf("null \r\n");
         break;
     }
-    if (task->is_running) {
+    if (instance->is_running) {
         printf("is_running:     true \r\n");
     } else {
         printf("is_running:     false \r\n");
     }
 
-    if (task->has_finished) {
+    if (instance->has_finished) {
         printf("has_finished:   true \r\n");
     } else {
         printf("has_finished:   false \r\n");
