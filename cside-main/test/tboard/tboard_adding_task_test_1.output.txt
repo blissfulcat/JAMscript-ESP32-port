@@ -1,0 +1,18 @@
+I (313) main_task: Calling app_main()
+I (313) MEMORY_DEBUG: calloc: 108  ./main/JAMscript-ESP32-port/cside-main/src/task.c:21. Total M count: 108
+
+I (313) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:22. Total M count: 124
+
+Read args: 1, 2, 3
+
+ ---------- TASK INFO BEGIN ---------- 
+name: example
+serial id: 0
+argsig: int, int, int,
+return_type: int
+is_running: false
+has_finished: false
+ ---------- TASK INFO END ---------- 
+I (343) MEMORY_DEBUG: Freed a task->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:41. Total M count: 108
+
+I (363) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:42. Total M count: 0

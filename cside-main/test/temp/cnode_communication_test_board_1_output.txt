@@ -1,0 +1,18 @@
+cnode 0 initialized.
+cnode 0: declaring Zenoh session ...
+cnode 0: declaring Zenoh pub ... 
+jamscript/cnode/uuid4_2
+cnode 0: declaring Zenoh sub ... 
+cnode 0: successfully started.
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')
+ >> [Subscriber handler] Received ('jamscript/cnode/uuid4_1': 'ACK from new board')

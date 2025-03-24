@@ -1,0 +1,79 @@
+I (538) main_task: Started on CPU0
+I (548) main_task: Calling app_main()
+I (548) MEMORY_DEBUG: calloc: 20  ./main/JAMscript-ESP32-port/cside-main/src/cnode.c:22. Total M count: 20  
+
+Initiating system ...
+Initiating Wi-Fi ... 
+I (598) wifi:wifi driver task: 3ffc0694, prio:23, stack:6656, core=0
+I (608) wifi:wifi firmware version: ccaebfa
+I (608) wifi:wifi certification version: v7.0
+I (608) wifi:config NVS flash: enabled
+I (608) wifi:config nano formating: disabled
+I (618) wifi:Init data frame dynamic rx buffer num: 32
+I (618) wifi:Init static rx mgmt buffer num: 5
+I (628) wifi:Init management short buffer num: 32
+I (628) wifi:Init dynamic tx buffer num: 32
+I (628) wifi:Init static rx buffer size: 1600
+I (638) wifi:Init static rx buffer num: 10
+I (638) wifi:Init dynamic rx buffer num: 32
+I (648) wifi_init: rx ba win: 6
+I (648) wifi_init: accept mbox: 6
+I (648) wifi_init: tcpip mbox: 32
+I (658) wifi_init: udp mbox: 6
+I (658) wifi_init: tcp mbox: 6
+I (668) wifi_init: tcp tx win: 5760
+I (668) wifi_init: tcp rx win: 5760
+I (668) wifi_init: tcp mss: 1440
+I (678) wifi_init: WiFi IRAM OP enabled
+I (678) wifi_init: WiFi RX IRAM OP enabled
+W (688) wifi:Password length matches WPA2 standards, authmode threshold changes from OPEN to WPA2
+I (698) phy_init: phy_version 4830,54550f7,Jun 20 2024,14:22:08
+I (778) wifi:mode : sta (c0:49:ef:4b:29:2c)
+I (778) wifi:enable tsf
+I (808) wifi:new:<11,0>, old:<1,0>, ap:<255,255>, sta:<11,0>, prof:1, snd_ch_cfg:0x0
+I (818) wifi:state: init -> auth (0xb0)
+I (838) wifi:state: auth -> assoc (0x0)
+I (898) wifi:state: assoc -> run (0x10)
+I (938) wifi:connected with Xiaomi Civi 3, aid = 2, channel 11, BW20, bssid = 36:b4:d6:ca:2e:54
+I (938) wifi:security: WPA2-PSK, phy: bgn, rssi: -22
+I (948) wifi:pm start, type: 1
+
+I (948) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (1028) wifi:dp: 2, bi: 102400, li: 4, scale listen interval from 307200 us to 409600 us
+I (1028) wifi:AP's beacon interval = 102400 us, DTIM period = 2
+I (1958) esp_netif_handlers: sta ip: 192.168.24.152, mask: 255.255.255.0, gw: 192.168.24.131
+Initiating Zenoh ...
+I (1958) MEMORY_DEBUG: calloc: 12  ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:74. Total M count: 12
+
+I (1968) MEMORY_DEBUG: malloc: 8./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:85. Total M count: 20    
+
+Scouting for JNodes ... 
+I (1988) MEMORY_DEBUG: malloc: 4./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:124. Total M count: 24   
+
+I (2998) MEMORY_DEBUG: Freed a (int*)context ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:64. Total M 
+count: 20
+
+Did not find any zenoh process.
+cnode 0 initialized.
+cnode 0: declaring Zenoh pub ...
+I (2998) MEMORY_DEBUG: malloc: 76./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:178. Total M count: 96  
+
+cnode 0: declaring Zenoh sub ... 
+I (3018) MEMORY_DEBUG: malloc: 12./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:153. Total M count: 108 
+
+cnode 0: successfully started.
+ >> [Subscriber handler] Received ('jamscript/cnode/example': 'Message')
+I (3038) MEMORY_DEBUG: Freed a zenoh->z_session ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:103. Total M count: 100
+
+I (3048) MEMORY_DEBUG: Freed a zenoh->z_sub ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:107. Total M 
+count: 88
+
+I (3058) MEMORY_DEBUG: Freed a zenoh->z_pub ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:111. Total M 
+count: 12
+
+I (3068) MEMORY_DEBUG: Freed a zenoh ./main/JAMscript-ESP32-port/cside-main/src/zenoh.c:114. Total M count: 
+0
+
+I (3078) MEMORY_DEBUG: Freed a cn ./main/JAMscript-ESP32-port/cside-main/src/cnode.c:107. Total M count: 0
+
+I (3088) main_task: Returned from app_main()
