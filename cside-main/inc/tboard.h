@@ -12,6 +12,7 @@
 #define TLSTORE_TASK_PTR_IDX 0 ///< Used in _task_freertos_entrypoint_wrapper NOTE: Not sure if this is necessary but lets keep it for now
 #define TASK_STACK_SIZE 2048 ///< Size of stack allocated for each running task
 #define TASK_DEFAULT_CORE 1 ///< Specifies which core tasks are run on. NOTE: For now set to 1.
+#define MUTEX_WAIT 500 ///< Time (ms) to wait for a mutex
 
 /* STRUCTS & TYPEDEFS */
 
@@ -57,33 +58,20 @@ void        tboard_delete_last_dead_task(tboard_t* tboard);
 */
 void        tboard_register_task(tboard_t* tboard, task_t* task);
 
-
 /**
- * @brief Starts a task registered to the tboard with given arguments using the task serial id.
+ * @brief Starts a task instance corresponding to one of the registered tasks. Returns a pointer to a newly allocated task_instance_t.
  * @note The task needs to have already been registered using tboard_register_task()
- * @param  tboard pointer to tboard_t struct
- * @param task_serial_id serial id of the task that is to be ran
- * @param args pointer to an array of arg_t pointers (each of which represents an argument)
- * @retval true if the task was started successfully
- * @retval false an error occured during task starting (i.e., task not found)
+ * @param tboard pointer to tboard_t struct
+ * @param name string of the name of the task to be run
+ * @param task_serial_id serial id uniquely identifying which instance of this specific task is run
+ * @param args arguments passed to the instance
+ * @param num_args number of arguments passed
+ * @returns pointer to allocated task_instance_t, NULL if unable to allocate or argument error.
 */
-bool        tboard_start_task_id(tboard_t* tboard, int task_serial_id, arg_t** args);
-
-
-/**
- * @brief Starts a task registered to the tboard with given arguments using the task name.
- * @note The task needs to have already been registered using tboard_register_task()
- * @param  tboard pointer to tboard_t struct
- * @param name name of the task to run 
- * @param args pointer to an array of arg_t pointers (each of which represents an argument)
- * @retval true if the task was started successfully
- * @retval false an error occured during task starting (i.e., task not found)d
-*/
-bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
+task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t** args, uint32_t num_args);
 
 
 /* GET TASK FUNCTIONS*/
-
 /**
  * @brief Return the task associated to name in the tboard
  * @note the task has to be registered on the tboard to be found
@@ -93,16 +81,6 @@ bool        tboard_start_task_name(tboard_t* tboard, char* name, arg_t** args);
  * @returns NULL if the element cannot be found
  */
 task_t*     tboard_find_task_name(tboard_t* tboard, char* name);
-
-/**
- * @brief Return the task associated to serial ID in the tboard
- * @note the task has to be registered on the tboard to be found
- * @param tboard pointer to the tboard_t structure
- * @param name integer of the serial ID
- * @returns pointer to the task associated with the serial ID in the tboard
- * @returns NULL if the element cannot be found
- */
-task_t*     tboard_find_task_id(tboard_t* tboard, int task_serial_id);
 
 
 /**
