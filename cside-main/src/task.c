@@ -180,6 +180,16 @@ void        task_instance_set_return_arg(task_instance_t* instance, arg_t* retur
 }
 
 
+task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id) {
+    if (task == NULL) return NULL;
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        if (task->instances[i] != NULL && task->instances[i]->serial_id == serial_id) {
+            return task->instances[i];
+        }
+    }
+    return NULL;
+}
+
 bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args) {
     if (instance == NULL) return false;
     

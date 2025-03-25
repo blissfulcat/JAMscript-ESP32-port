@@ -105,6 +105,13 @@ void        task_instance_destroy(task_instance_t* instance);
 
 
 /**
+ * @brief Returns the task instance with the given serial id.
+ * @param task pointer to task_t struct
+ * @param serial_id serial id of the task instance
+ */
+task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id);
+
+/**
  * @brief Returns the arguments of the task instance.
  * @param instance pointer to task_instance_t struct
  * @returns pointer to arguments (arg_t)

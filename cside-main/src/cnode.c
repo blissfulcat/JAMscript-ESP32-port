@@ -1,15 +1,42 @@
 #include "cnode.h"
 #include "command.h"
 #include "tboard.h"
+#include "task.h"
 #include "utils.h"
 
 #define PRINT_INIT_PROGRESS // undefine to remove the initiation messages when creating a cnode
 #define CNODE_REPLY_PUB_KEYEXPR "app/replies/up"
 #define CNODE_REQUEST_PUB_KEYEXPR "app/requests/up"
 #define CNODE_SUB_KEYEXPR "app/**"
-#define DEBUG_PRINT_MESSAGES // uncomment to print out all messages received
 
 /* PRIVATE FUNCTIONS */
+arg_t* _cnode_return_task(cnode_t* cn, command_t* cmd, task_instance_t* task_instance) {
+    // this is blocking........ open a thread for this? can potentially use one of the esp32 cores
+    while (!task_instance->has_finished) {
+        sleep(1);
+    }
+    arg_t retarg = {.type = cmd->args->type, .val.ival = 0};
+    task_instance_set_return_arg(task_instance, &retarg);
+    return &retarg;
+}
+
+
+static bool _is_own_message(z_view_string_t* keystr, const cnode_t* cnode) {
+    const char* pub_ke_reply = CNODE_REPLY_PUB_KEYEXPR;
+    const char* pub_ke_request = CNODE_REQUEST_PUB_KEYEXPR;
+    const char* key_data = z_string_data(z_view_string_loan(keystr));
+
+    if (strncmp(key_data, pub_ke_reply, strlen(pub_ke_reply)) == 0) {
+        return true;
+    }
+
+    if (strncmp(key_data, pub_ke_request, strlen(pub_ke_request)) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
 static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     /* Argument should be a cnode pointer */
     cnode_t* cnode = (cnode_t*) arg;
@@ -19,21 +46,10 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     z_bytes_to_string(z_sample_payload(sample), &value);
 
     /* Do not want to print out what we send out */
-    // const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id);
-
-    /* The code below is to avoid processing our own commands */
-    // char* cnode_pub_ke = CNODE_REPLY_PUB_KEYEXPR;
-    // if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
-    //     z_string_drop(z_string_move(&value));
-    //     // free(cnode_pub_ke);
-    //     return;
-    // } 
-    // cnode_pub_ke = CNODE_REQUEST_PUB_KEYEXPR;
-    // if (strncmp(z_string_data(z_view_string_loan(&keystr)), cnode_pub_ke, strlen(cnode_pub_ke)) == 0) {
-    //     z_string_drop(z_string_move(&value));
-    //     // free(cnode_pub_ke);
-    //     return;
-    // } 
+    if (_is_own_message(&keystr, cnode)) {
+        z_string_drop(z_string_move(&value));
+        return;
+    }
 
     /* The cnode should be receiving from app/replies/down or app/requests/down */
     // const char* cnode_pub_ke = concat(CNODE_PUB_KEYEXPR, cnode->node_id); 
@@ -43,19 +59,63 @@ static void _cnode_data_handler(z_loaned_sample_t* sample, void* arg) {
     //     return;
     // } 
 
-#ifdef DEBUG_PRINT_MESSAGES
-    printf(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),
-           z_string_data(z_view_string_loan(&keystr)), (int)z_string_len(z_string_loan(&value)),
-           z_string_data(z_string_loan(&value)));
-#endif
+    // debug_log(" >> [Subscriber handler] Received ('%.*s': '%.*s')\n", (int)z_string_len(z_view_string_loan(&keystr)),
+    //        z_string_data(z_view_string_loan(&keystr)), (int)z_string_len(z_string_loan(&value)),
+    //        z_string_data(z_string_loan(&value)));
 
     /* Call the new function to process the message */
-    cnode_process_received_cmd(cnode, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));    
+    command_t *cmd = cnode_process_received_cmd(cnode, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));   
+    
+    /* receives initial request from controller */
+    if (cmd->cmd == CMD_REXEC) {
+        task_t *task = tboard_find_task_name(cnode->tboard, cmd->fn_name);
+        if (task == NULL) {
+            return;
+        }
+        task_instance_t* task_instance = task_instance_create(task, cmd->task_id);
+        if (task_instance == NULL) {
+            return;
+        }
+        task_instance_set_args(task_instance, &cmd->args, cmd->args->nargs);
+        task_instance_set_return_arg(task_instance, &cmd->args);
+        // immediately start task, not necessarily what we want to do in the future
+        tboard_start_task(cnode->tboard, cmd->fn_name, cmd->task_id, &cmd->args, cmd->args->nargs);
+
+        cnode_send_ack(cnode, cmd);
+
+        // TODO: I don't know if I should free these here or not
+        command_free(cmd);
+        task_destroy(task_instance);
+    }
+    /* receives request for response on task from controller */
+    if(cmd->cmd == CMD_GET_REXEC_RES) {
+        // get return value 
+        task_t *task = tboard_find_task_name(cnode->tboard, cmd->fn_name);
+        if (task == NULL) {
+            return;
+        }
+        task_instance_t *task_instance = task_get_instance(task, cmd->task_id);
+        if (task_instance == NULL) {
+            return;
+        }
+        arg_t *retarg = _cnode_return_task(cnode, cmd, task);
+        if (retarg == NULL) {
+            return;
+        }
+        // publish command to the network
+        cnode_send_response(cnode, cmd, retarg);
+
+        // TODO: I don't know if I should free these here or not
+        command_free(cmd);
+        task_destroy(task_instance);
+        command_args_free(retarg);
+    }
     /* Cleanup */
     z_string_drop(z_string_move(&value));
     // free(cnode_pub_ke);
     cnode->message_received = true; /* Indicate that we have received a message */
 }
+
 
 /* PUBLIC FUNCTIONS */
 cnode_t* cnode_init(int argc, char** argv) {
@@ -92,10 +152,10 @@ printf("Initiating Wi-Fi ... \r\n");
 printf("cnode %ld: creating task board ... \r\n", serial_num);
 #endif
         // Start the taskboard
-    // cn->tboard = tboard_create(cn, cn->args->nexecs);
-    // if ( cn->tboard == NULL ) {
-    //     cnode_destroy(cn);
-    // }
+    cn->tboard = tboard_create();
+    if ( cn->tboard == NULL ) {
+        cnode_destroy(cn);
+    }
 
 #ifdef PRINT_INIT_PROGRESS
 printf("Initiating core ... \r\n");
@@ -257,36 +317,65 @@ bool cnode_stop(cnode_t* cn) {
     return true;
 }
 
-bool cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen) {
+
+command_t* cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen) {
     if (!cn || !buf || buflen <= 0) {
         fprintf(stderr, "[ERROR] Invalid input to cnode_process_message\n");
-        return false;
+        return NULL;
     }
 
     // Decode CBOR message
-#ifdef DEBUG_PRINT_MESSAGES
-    printf("received buffer: %s\n", buf);
-#endif
     command_t *cmd = command_from_data(NULL, buf, buflen);
     if (!cmd) {
         fprintf(stderr, "[ERROR] Failed to parse command from data\n");
-        return false;
+        return NULL;
     }
-#ifdef DEBUG_PRINT_MESSAGES
-    printf("decoded received buffer to:\n");
-    command_print(cmd);
-#endif
-    // TODO: start task here based on the command
 
-    free(cmd); // TODO: I don't know if I should free cmd here or not
-    return true;
+    return cmd;
 }
 
 bool cnode_send_cmd(cnode_t* cn, command_t* cmd){
     if (!cn || !cmd) {
-        fprintf(stderr, "[ERROR] Invalid input to cnode_send_cmd\n");
         return false;
     }
     // Publish the command to the Zenoh network
-    return zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_request, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
+    return zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
+}   
+
+bool cnode_send_response(cnode_t* cn, command_t* cmd, arg_t* retarg) {
+    if (!cn || !cmd) {
+        return false;
+    }
+    jamcommand_t cmdName = CMD_REXEC_RES;
+    int subcmd = cmd->subcmd;
+    const char* fn_name = cmd->fn_name;
+    uint64_t task_id = cmd->task_id;
+    const char* node_id = cmd->node_id;
+    const char* fn_argsig = cmd->fn_argsig;
+    
+    command_t *cmd = command_new_using_arg(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, retarg);
+    if (!cmd) {
+        return false;
+    }
+    // Publish the command to the Zenoh network
+    return zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)cmd->buffer, (size_t) cmd->length);
+}
+
+bool cnode_send_ack(cnode_t* cn, command_t* cmd) {
+    if (!cn || !cmd) {
+        return false;
+    }
+    jamcommand_t cmdName = CMD_ACK;
+    int subcmd = cmd->subcmd;
+    const char* fn_name = cmd->fn_name;
+    uint64_t task_id = cmd->task_id;
+    const char* node_id = cmd->node_id;
+    const char* fn_argsig = cmd->fn_argsig;
+    
+    command_t *cmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig);
+    if (!cmd) {
+        return false;
+    }
+    // Publish the command to the Zenoh network
+    return zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)cmd->buffer, (size_t)cmd->length);
 }
