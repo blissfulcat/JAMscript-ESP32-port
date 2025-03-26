@@ -16,20 +16,16 @@ void _task_freertos_entrypoint_wrapper(void* param)
                                        param );
 
     instance->is_running = true;
+    /* Call entry point here */
     instance->parent_task->entry_point(&ctx);
 
-    instance->has_finished = true;
-
     assert(ctx.return_arg != NULL);
-
-    //if(return_arg != NULL)
-    //    command_args_free(return_arg);
-    //task_destroy(tboard, task);
-    // TODO: need to lock with semaphore before calling task_destroy()
+    /* Entry point has returned */
     instance->has_finished = true;
     instance->is_running = false;
     if (ctx.return_arg->type != NULL_TYPE) instance->return_arg->val = ctx.return_arg->val;
 
+    /* Need to use Mutex since we access shared data structure */
     if(xSemaphoreTake(_global_tboard->task_management_mutex, MUTEX_WAIT) == pdTRUE) {
         _global_tboard->last_dead_task_id = instance->serial_id;
         _global_tboard->num_dead_tasks++;
@@ -60,7 +56,7 @@ tboard_t*   tboard_create() {
     tboard->num_tasks = 0;
     tboard->num_dead_tasks = 0;
     tboard->last_dead_task_id = 0;
-    // NOTE: This is a temporary solution in order to be able to update the tboard on task execution end
+    // NOTE: This is a temporary solution in order to be able to update the tboard
     _global_tboard = tboard;
     return tboard;
 }
@@ -81,23 +77,6 @@ void        tboard_destroy(tboard_t* tboard) {
     free(tboard);
 }
 
-// void        tboard_delete_last_dead_task(tboard_t* tboard){
-//     if (tboard->num_dead_tasks == 0) {
-//         return;
-//     }
-//     uint32_t target_task_id = tboard->last_dead_task_id;
-
-//     // Delete the task and replace the tasks[i] by a null pointer
-//     for (int i=0; i<MAX_TASKS; i++) {
-//         if (tboard->tasks[i]->serial_id == target_task_id){
-//             task_destroy(tboard->tasks[i]);
-//             tboard->tasks[i] = NULL;
-//             tboard->num_tasks--;
-//             tboard->num_dead_tasks--;
-//         }
-//     }
-// }
-
 
 void        tboard_register_task(tboard_t* tboard, task_t* task) {
 
@@ -106,10 +85,8 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
         return;
     }
 
-    // check that no task has already the same name or serial id in the tasks
-    // NOTE: Maybe we should be checking that they have BOTH the same name AND same serial id
+    // check that no task has already the same name in the tasks
     for (int i=0; i<MAX_TASKS; i++){
-        // Comparing strings need to use some kind of strcomp and not the == operator. 
         if (tboard->tasks[i] != NULL && (strcmp(tboard->tasks[i]->name, task->name)==0)){
             log_error("Task with duplicate name");
             return;  
@@ -129,7 +106,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
     return;
 }
 
-task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t** args, uint32_t num_args) {
+task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t* args) {
     if (tboard == NULL) {
         return NULL;
     }
@@ -146,8 +123,8 @@ task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_ser
     
     printf("set arguments\n");
     /* Try to set arguments for this instance */
-    if (!task_instance_set_args(task_target_inst, args, num_args)) return NULL;
-    printf("put down arguments\n");
+    if (!task_instance_set_args(task_target_inst, args)) return NULL;
+
     /* Create task using FreeRTOS */
     xTaskCreatePinnedToCore(_task_freertos_entrypoint_wrapper, 
                             task_target->name, 
@@ -180,6 +157,7 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
 void tboard_print_tasks(tboard_t* tboard) {
     if (tboard == NULL) {
         log_error("Uninitialized tboard.");
+        return;
     }
     printf("---------- TBOARD INFO BEGIN ----------\n");
     printf("Number of tasks:             %lu\n", tboard->num_tasks);

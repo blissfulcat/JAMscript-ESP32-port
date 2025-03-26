@@ -15,27 +15,31 @@ static  argtype_t    char_to_argtype(char c) {
     return NULL_TYPE;
 }
 
-static  void    task_print_args(arg_t** args, int num_args) {
+static  void    task_print_args(arg_t* args, int num_args) {
     bool anyargs = false;
+    if (args == NULL) {
+        printf("no arguments");
+        return;
+    }
     for (int i = 0; i < num_args; i++) {
-        arg_t* arg = args[i];
-        if (arg == NULL) continue;
+        arg_t arg = args[i];
+        //if (arg == NULL) continue;
         anyargs = true;
-        switch(arg->type) {
+        switch(arg.type) {
             case INT_TYPE:
-            printf("%d, ", arg->val.ival);
+            printf("%d, ", arg.val.ival);
             break;
             case DOUBLE_TYPE:
-            printf("%.3f, ", arg->val.dval);
+            printf("%.3f, ", arg.val.dval);
             break;
             case STRING_TYPE:
-            printf("\"%s\", ", arg->val.sval);
+            printf("\"%s\", ", arg.val.sval);
             break;
             case LONG_TYPE:
-            printf("%ld, ", arg->val.lval);
+            printf("%ld, ", arg.val.lval);
             break;
             case NVOID_TYPE:
-            printf("nvoid(n=%d), ", arg->val.nval->len);
+            printf("nvoid(n=%d), ", arg.val.nval->len);
             break;
             default:
             break;
@@ -71,6 +75,18 @@ static  void    task_print_retval(arg_t* return_arg) {
     }
 }
 
+/* This is dumb code but the free macro doesn't know to remove (num_args) * sizeof(arg_t) from the count so we will lose track of the correct count
+if we just call free(instance->args) */
+static  void   task_instance_args_destroy(task_instance_t* instance) {
+    int num_args = instance->args->nargs;
+    #ifdef MEMORY_DEBUG
+    total_mem_usage -= (num_args-1) * sizeof(arg_t);
+    free(instance->args);
+    #else
+    free(args); 
+    #endif
+    instance->args = NULL;
+}
 
 /* PUBLIC FUNCTIONS */
 task_t*     task_create(char* name, argtype_t return_type, char* fn_argsig, function_stub_t entry_point) {
@@ -121,6 +137,7 @@ task_instance_t* task_instance_create(task_t* parent_task, uint32_t serial_id) {
     instance->task_handle_frtos = NULL;
     instance->serial_id = serial_id;
     instance->parent_task = parent_task;
+    instance->args = NULL;
 
     /* Set this instance in parent_task, find first non null entry */
     for (int i = 0; i < MAX_INSTANCES; i++) {
@@ -156,12 +173,13 @@ void        task_destroy(task_t* task) {
 void        task_instance_destroy(task_instance_t* instance) {
     if (instance == NULL) return;
     instance->parent_task->num_instances--; // decrement parent task's instance counter
-    if (instance->return_arg != NULL) free(instance->return_arg);
+    if (instance->return_arg != NULL) {free(instance->return_arg);}
+    if (instance->args != NULL) {task_instance_args_destroy(instance);}
     free(instance);
 }
 
 
-arg_t**      task_instance_get_args(task_instance_t* instance) {
+arg_t*      task_instance_get_args(task_instance_t* instance) {
     if (instance == NULL) return NULL;
     return instance->args;
 }
@@ -190,20 +208,38 @@ task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id) {
     return NULL;
 }
 
-bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args) {
+bool        task_instance_set_args(task_instance_t* instance, arg_t* args) {
     printf("got here");
     if (instance == NULL) return false;
-    
+    /* If args == NULL assume that the task has no arguments */
+    if (args == NULL) {
+        instance->args = NULL;
+        return true;
+    }
+
+    int num_args = args[0].nargs;
     if (strlen(instance->parent_task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
         log_error("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large");
         return false;
     }
-    printf("and here");
+
+    /* Allocate space for arguments */
+    if (instance->args == NULL) {
+        instance->args = (arg_t*) calloc(num_args, sizeof(arg_t));
+    }
+
     for (int i = 0; i < num_args; i++) {
-        if (char_to_argtype(instance->parent_task->fn_argsig[i]) != args[i]->type) {
+        if (char_to_argtype(instance->parent_task->fn_argsig[i]) != args[i].type) {
             log_error("Incompatible type passed to task_set_args()");
-            /* Clean up and reset all args to NULL */
-            for (int j = 0; j <= i; j++) instance->args[j] = NULL;
+            /* Clean up args */
+            task_instance_args_destroy(instance);
+            return false;
+        }
+
+        if (args[i].nargs != num_args) {
+            log_error("Malformed arguments array. All args need to have same nargs field value");
+            /* Clean up args */
+            task_instance_args_destroy(instance);
             return false;
         }
         instance->args[i] = args[i];
