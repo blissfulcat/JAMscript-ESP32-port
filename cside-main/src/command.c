@@ -577,13 +577,13 @@ void command_arg_print(arg_t* arg)
         switch (arg[i].type)
         {
         case INT_TYPE:
-            printf("Int: %d ", arg[i].val.ival);
+            printf("Int: %d \n", arg[i].val.ival);
             break;
         case STRING_TYPE:
-            printf("String: %s ", arg[i].val.sval);
+            printf("String: %s \n", arg[i].val.sval);
             break;
         case DOUBLE_TYPE:
-            printf("Double: %f ", arg[i].val.dval);
+            printf("Double: %f \n", arg[i].val.dval);
             break;
         default:
             break;
@@ -672,7 +672,7 @@ void command_print(command_t* cmd)
     printf("\nCommand buffer: ");
     for (i = 0; i < (int)strlen((char*)cmd->buffer); i++)
         printf("%x", (int)cmd->buffer[i]);
-
+    printf("\n");
     command_arg_print(cmd->args);
 
     printf("\n===================================\n");

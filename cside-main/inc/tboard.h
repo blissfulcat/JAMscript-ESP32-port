@@ -7,6 +7,7 @@
 #define __TBOARD_H__
 
 #include "task.h"
+#include "command.h"
 #include "utils.h"
 
 #define TLSTORE_TASK_PTR_IDX 0 ///< Used in _task_freertos_entrypoint_wrapper NOTE: Not sure if this is necessary but lets keep it for now
