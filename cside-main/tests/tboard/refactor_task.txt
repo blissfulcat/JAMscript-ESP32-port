@@ -1,92 +1,168 @@
-I (315) main_task: Calling app_main()
-I (315) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:22. Total M count: 40
+I (316) main_task: Calling app_main()
+I (316) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 40
 
-Create infinite loop passed
-I (325) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:22. Total M count: 80
+Create infinite loop passed 
+I (326) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 80
 
 Create example 1 task passed
-I (335) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:22. Total M count: 120
+I (336) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 120
 
-Create example 2 task passed
-I (345) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 220
+Create example 2 task passed 
+I (346) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 144
 
-I (355) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 236
+I (356) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 160
 
-Create single task instance passed 
-I (375) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 336
+Create single task instance passed
+I (376) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 184
 
-I (385) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 352
+I (386) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 200
 
-E (395) JAM_ERROR: Jamscript Runtime Error: Task instance with same serial ID found when creating instance.  ./main/JAMscript-ESP32-port/cside-main/src/task.c:74.
+E (396) JAM_ERROR: Jamscript Runtime Error: Task instance with same serial ID found when creating instance.  ./main/JAMscript-ESP32-port/cside-main/src/task.c:147.
 
-I (405) MEMORY_DEBUG: Freed a return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:75. Total M count: 336
+I (406) MEMORY_DEBUG: Freed a return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:148. Total M count: 184
 
-I (415) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:76. Total M count: 236
+I (416) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:149. Total M count: 160
 
 Create duplicate task test passed
-I (435) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 336
+I (436) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 184
 
-I (445) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 352
+I (446) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 200
 
-I (455) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 452
+I (456) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 224
 
-I (465) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 468
+I (466) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 240
 
-I (475) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 568
+I (476) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 264
 
-I (485) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 584
+I (486) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 280
 
-I (495) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 684
+I (496) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 304
 
-I (505) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 700
+I (506) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 320
 
-I (515) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 800
+I (516) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 344
 
-I (525) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 816
+I (526) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 360
 
-E (535) JAM_ERROR: Jamscript Runtime Error: Maximum number of instances per task reached  ./main/JAMscript-ESP32-port/cside-main/src/task.c:48.
+E (536) JAM_ERROR: Jamscript Runtime Error: Maximum number of instances per task reached  ./main/JAMscript-ESP32-port/cside-main/src/task.c:120.
 
 Maximum task instances test passed
- I (555) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:53. Total M count: 916
+ I (556) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 384
 
-I (565) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:54. Total M count: 932
+I (566) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 400
 
-Set and get arguments test passed 
-E (585) JAM_ERROR: Jamscript Runtime Error: Incompatible type passed to task_set_args()  ./main/JAMscript-ESP32-port/cside-main/src/task.c:137.
+I (576) MEMORY_DEBUG: calloc: 48  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 448
+
+Set and get arguments test passed
+E (596) JAM_ERROR: Jamscript Runtime Error: Incompatible type passed to task_set_args()  ./main/JAMscript-ESP32-port/cside-main/src/task.c:222.
+
+I (606) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 400
+
+I (616) MEMORY_DEBUG: calloc: 48  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 448
+
+E (626) JAM_ERROR: Jamscript Runtime Error: Malformed arguments array. All args need to have same nargs field value  ./main/JAMscript-ESP32-port/cside-main/src/task.c:229.
+
+I (646) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 400
 
 Set incorrect argument test passed
-I (595) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 916
 
-I (605) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 816
+ ---------- TASK INFO BEGIN ----------
+task name:               inf_loop 
+argsig:
+return_type:             void
+number of instances:     1
 
-I (625) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:96. Total M count: 776
+instance id:             0
+is_running:              false
+has_finished:            false
+arguments:               no arguments
+return value:            no return value
 
-I (635) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 760
+ ---------- TASK INFO END ---------- 
 
-I (645) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 660
+ ---------- TASK INFO BEGIN ----------
+task name:               example
+argsig:                  int, int, int,
+return_type:             int
+number of instances:     1
 
-I (655) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:96. Total M count: 620
+instance id:             0
+is_running:              false
+has_finished:            false
+arguments:               no arguments
+return value:            0,
 
-I (665) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 604
+ ---------- TASK INFO END ----------
 
-I (675) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 504
+ ---------- TASK INFO BEGIN ----------
+task name:               example_2
+argsig:                  string, double, 
+return_type:             void
+number of instances:     5
 
-I (685) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 488
+instance id:             0
+is_running:              false
+has_finished:            false 
+arguments:               no arguments
+return value:            no return value
 
-I (695) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 388
+instance id:             1
+is_running:              false
+has_finished:            false 
+arguments:               no arguments
+return value:            no return value
 
-I (715) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 372
+instance id:             2
+is_running:              false 
+has_finished:            false
+arguments:               no arguments
+return value:            no return value
 
-I (725) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 272
+instance id:             3
+is_running:              false 
+has_finished:            false
+arguments:               no arguments
+return value:            no return value
 
-I (735) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 256
+instance id:             4
+is_running:              false 
+has_finished:            false
+arguments:               no arguments
+return value:            no return value
 
-I (745) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 156
+ ---------- TASK INFO END ----------
+I (826) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 384
 
-I (755) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:103. Total M count: 140
+I (836) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 360
 
-I (765) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:104. Total M count: 40
+I (856) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 320
 
-I (785) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:96. Total M count: 0
+I (866) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 304
+
+I (876) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 280
+
+I (886) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 240
+
+I (896) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 224
+
+I (906) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 200
+
+I (916) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 184
+
+I (936) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 160
+
+I (946) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 144
+
+I (956) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 120
+
+I (966) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 104
+
+I (976) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 80
+
+I (986) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 64
+
+I (996) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 40
+
+I (1016) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 0
 
 Memory leak test passed 

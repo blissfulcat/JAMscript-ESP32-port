@@ -1,55 +1,67 @@
 I (317) main_task: Calling app_main()
-I (317) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:78. Total M count: 40
+I (317) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 40
 
-I (317) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:78. Total M count: 80
+I (317) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 80
 
-I (327) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:78. Total M count: 120
+I (327) MEMORY_DEBUG: calloc: 40  ./main/JAMscript-ESP32-port/cside-main/src/task.c:94. Total M count: 120
 
-I (337) MEMORY_DEBUG: malloc: 180./main/JAMscript-ESP32-port/cside-main/src/tboard.c:43. Total M count: 300
+I (337) MEMORY_DEBUG: malloc: 180./main/JAMscript-ESP32-port/cside-main/src/tboard.c:45. Total M count: 300
 
 Create tboard test passed
 Register tasks test passed
-E (357) JAM_ERROR: Jamscript Runtime Error: Unitiailized tboard or task.  ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:104.
+E (357) JAM_ERROR: Jamscript Runtime Error: Unitiailized tboard or task.  ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:106.
 
-E (367) JAM_ERROR: Jamscript Runtime Error: Task with duplicate name  ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:113.
+E (367) JAM_ERROR: Jamscript Runtime Error: Task with duplicate name  ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:115.
 
 Register null, duplicate task test passed
-Find tasks by name test passed 
-I (387) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 400
+Find tasks by name test passed
+I (387) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 324
 
-I (397) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 416
+I (397) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 340
 
 Entered infinite loop
 Starting infinite loop task test passed 
-I (1407) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 516
+I (1407) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 364
 
-I (1407) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 532
+I (1407) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 380
+
+I (1417) MEMORY_DEBUG: calloc: 48  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 428
 
 Return value 6 
 Starting example 1 task test passed
-I (2417) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 632
+I (2427) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 452
 
-I (2417) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 648
+I (2427) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 468
 
-I (2427) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 748
+I (2437) MEMORY_DEBUG: calloc: 32  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 500
+
+I (2447) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 524
 
 Hello from example_2: instance 0
-I (2437) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 764
+I (2457) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 540
+
+I (2477) MEMORY_DEBUG: calloc: 32  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 572
 
 Hello from example_2: instance 1
-I (2447) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 864
+I (2487) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 596
 
-I (2467) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 880
+I (2497) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 612
+
+I (2507) MEMORY_DEBUG: calloc: 32  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 644
 
 Hello from example_2: instance 2
-I (2477) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 980
+I (2517) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 668
 
-I (2487) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 996
+I (2527) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 684
+
+I (2547) MEMORY_DEBUG: calloc: 32  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 716
 
 Hello from example_2: instance 3
-I (2497) MEMORY_DEBUG: calloc: 100  ./main/JAMscript-ESP32-port/cside-main/src/task.c:109. Total M count: 1096
+I (2557) MEMORY_DEBUG: calloc: 24  ./main/JAMscript-ESP32-port/cside-main/src/task.c:125. Total M count: 740
 
-I (2517) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:110. Total M count: 1112
+I (2567) MEMORY_DEBUG: calloc: 16  ./main/JAMscript-ESP32-port/cside-main/src/task.c:126. Total M count: 756
+
+I (2577) MEMORY_DEBUG: calloc: 32  ./main/JAMscript-ESP32-port/cside-main/src/task.c:217. Total M count: 788
 
 Hello from example_2: instance 4
 Starting multiple instances of the same task test completed
@@ -58,106 +70,118 @@ Number of tasks:             3
 Number of dead tasks:        6
 Last dead task ID:           4
 
- ---------- TASK INFO BEGIN ----------
+ ---------- TASK INFO BEGIN ---------- 
 task name:               inf_loop
 argsig:
-return_type:             void 
+return_type:             void
 number of instances:     1
 
 instance id:             0
-is_running:              true
+is_running:              true 
 has_finished:            false
 arguments:               no arguments
 return value:            no return value
 
  ---------- TASK INFO END ----------
 
- ---------- TASK INFO BEGIN ----------
-task name:               example 
+ ---------- TASK INFO BEGIN ---------- 
+task name:               example
 argsig:                  int, int, int,
 return_type:             int
 number of instances:     1
 
 instance id:             0
-is_running:              false 
+is_running:              false
 has_finished:            true
 arguments:               1, 2, 3,
-return value:            6,
+return value:            6, 
 
  ---------- TASK INFO END ----------
 
- ---------- TASK INFO BEGIN ---------- 
+ ---------- TASK INFO BEGIN ----------
 task name:               example_2
 argsig:                  string, double,
-return_type:             void
+return_type:             void 
 number of instances:     5
 
 instance id:             0
 is_running:              false
 has_finished:            true
-arguments:               "instance 0", 1.000,
+arguments:               "instance 0", 1.000, 
 return value:            no return value
 
 instance id:             1
 is_running:              false
-has_finished:            true
+has_finished:            true 
 arguments:               "instance 1", 2.000,
 return value:            no return value
 
 instance id:             2
 is_running:              false
-has_finished:            true
+has_finished:            true 
 arguments:               "instance 2", 3.000,
 return value:            no return value
 
 instance id:             3
 is_running:              false
-has_finished:            true
+has_finished:            true 
 arguments:               "instance 3", 69.000,
 return value:            no return value
 
 instance id:             4
 is_running:              false
 has_finished:            true
-arguments:               "instance 4", 1.420, 
+arguments:               "instance 4", 1.420,
 return value:            no return value
 
- ---------- TASK INFO END ----------
+ ---------- TASK INFO END ---------- 
 ---------- TBOARD INFO END ----------
-I (2717) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 1096
+I (2787) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 772
 
-I (2737) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 996
+I (2797) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 748
 
-I (2747) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:152. Total M count: 956
+I (2807) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 708
 
-I (2757) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 940
+I (2817) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 692
 
-I (2767) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 840
+I (2827) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 644
 
-I (2777) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:152. Total M count: 800
+I (2837) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 620
 
-I (2787) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 784
+I (2857) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 580
 
-I (2797) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 684
+I (2867) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 564
 
-I (2817) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 668
+I (2877) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 532
 
-I (2827) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 568
+I (2887) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 508
 
-I (2837) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 552
+I (2897) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 492
 
-I (2847) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 452
+I (2907) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 460
 
-I (2857) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 436
+I (2917) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 436
 
-I (2867) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 336
+I (2937) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 420
 
-I (2877) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:159. Total M count: 320
+I (2947) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 388
 
-I (2897) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:160. Total M count: 220
+I (2957) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 364
 
-I (2907) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:152. Total M count: 180
+I (2967) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 348
 
-I (2917) MEMORY_DEBUG: Freed a tboard ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:80. Total M count: 0
+I (2977) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 316
+
+I (2987) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 292
+
+I (3007) MEMORY_DEBUG: Freed a instance->return_arg ./main/JAMscript-ESP32-port/cside-main/src/task.c:176. Total M count: 276
+
+I (3017) MEMORY_DEBUG: Freed a instance->args ./main/JAMscript-ESP32-port/cside-main/src/task.c:84. Total M count: 244
+
+I (3027) MEMORY_DEBUG: Freed a instance ./main/JAMscript-ESP32-port/cside-main/src/task.c:178. Total M count: 220
+
+I (3037) MEMORY_DEBUG: Freed a task ./main/JAMscript-ESP32-port/cside-main/src/task.c:169. Total M count: 180
+
+I (3047) MEMORY_DEBUG: Freed a tboard ./main/JAMscript-ESP32-port/cside-main/src/tboard.c:82. Total M count: 0
 
 Memory leak test passed
