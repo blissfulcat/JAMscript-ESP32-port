@@ -101,10 +101,18 @@ void zenoh_start_lease_task(zenoh_t* zenoh); // do we really need this
  * @retval false If an error occured 
 */
 bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub);
-#endif
 
-
+/**
+ * @brief Publish a CBOR encoded message over zenoh using a given publisher.
+ * @param zenoh pointer to zenoh_t struct
+ * @param zenoh_pub pointer to zenoh_pub_t struct specifying which publisher to send over.
+ * @param buffer buffer containing encoded message
+ * @param buffer_len length of buffer
+ * @retval true If publish successful
+ * @retval false If an error occured 
+*/
 bool zenoh_publish_encoded(zenoh_t* zenoh, zenoh_pub_t* zenoh_pub, const uint8_t* buffer, size_t buffer_len);
+#endif
 /**
  * @}
 */
