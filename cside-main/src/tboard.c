@@ -128,7 +128,7 @@ void        tboard_register_task(tboard_t* tboard, task_t* task) {
     return;
 }
 
-task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t** args, uint32_t num_args) {
+task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t* args) {
     if (tboard == NULL) {
         return NULL;
     }
@@ -145,7 +145,7 @@ task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_ser
     if (task_target_inst == NULL) return NULL;
 
     /* Try to set arguments for this instance */
-    if (!task_instance_set_args(task_target_inst, args, num_args)) return NULL;
+    if (!task_instance_set_args(task_target_inst, args)) return NULL;
 
     /* Create task using FreeRTOS */
     xTaskCreatePinnedToCore(_task_freertos_entrypoint_wrapper, 

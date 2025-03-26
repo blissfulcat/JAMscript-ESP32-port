@@ -24,7 +24,7 @@
  */
 typedef struct _execution_context_t
 {
-    arg_t** query_args; ///< query arguments to the task
+    arg_t* query_args; ///< query arguments to the task
     arg_t* return_arg; ///< return argument 
 } execution_context_t;
 
@@ -59,7 +59,7 @@ typedef struct _task_instance_t
     uint32_t serial_id;
     TaskHandle_t task_handle_frtos;
     arg_t* return_arg; ///< return value and type
-    arg_t* args[MAX_ARGS]; ///< array of arg_t objects for the arguments 
+    arg_t* args; ///< array of arg_t objects for the arguments 
     task_t* parent_task; ///< pointer to parent task
 };
 
@@ -109,7 +109,7 @@ void        task_instance_destroy(task_instance_t* instance);
  * @param instance pointer to task_instance_t struct
  * @returns pointer to arguments (arg_t)
 */
-arg_t**      task_instance_get_args(task_instance_t* instance); 
+arg_t*      task_instance_get_args(task_instance_t* instance); 
 
 /**
  * @brief Set the return argument of the task instance.
@@ -121,14 +121,13 @@ void        task_instance_set_return_arg(task_instance_t* instance, arg_t* retur
 /**
  * @brief Set the arguments of the task instance.
  * @param instance pointer to task_instance_t struct.
- * @param args pointer to array of pointer of arguments.
- * @param num_args number of arguments provided to task instance.
+ * @param args pointer to array of arguments.
  * @retval true arguments correctly set
  * @retval false error in setting arguments
  * @warning number of arguments need to be less than MAX_ARGS 
  * @note The arguments are passed by reference and are not copied.
 */
-bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args);
+bool        task_instance_set_args(task_instance_t* instance, arg_t* args);
 
 /**
  * @brief Set the arguments of the task using variable arguments.

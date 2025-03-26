@@ -65,10 +65,9 @@ void        tboard_register_task(tboard_t* tboard, task_t* task);
  * @param name string of the name of the task to be run
  * @param task_serial_id serial id uniquely identifying which instance of this specific task is run
  * @param args arguments passed to the instance
- * @param num_args number of arguments passed
  * @returns pointer to allocated task_instance_t, NULL if unable to allocate or argument error.
 */
-task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t** args, uint32_t num_args);
+task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_serial_id, arg_t* args);
 
 
 /* GET TASK FUNCTIONS*/
