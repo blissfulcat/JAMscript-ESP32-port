@@ -47,7 +47,7 @@ void        tboard_destroy(tboard_t* tboard);
 /**
  * @brief Delete the last dead task from the tasks array and the memory
  * @param tboard pointer to the tboard_t structure
- * @warning TODO: untested
+ * @warning TODO: unimplemented
  */
 void        tboard_delete_last_dead_task(tboard_t* tboard);
 
