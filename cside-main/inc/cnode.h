@@ -100,5 +100,5 @@ bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
  * @brief Sends an ack to the Zenoh network. 
  * @param cnode Pointer to the cnode_t instance representing the current node.
  */
-bool cnode_send_ack(cnode_t* cn);
+bool        cnode_send_ack(cnode_t* cn, command_t* cmd);
 #endif

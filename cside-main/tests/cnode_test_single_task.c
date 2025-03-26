@@ -19,6 +19,16 @@ void entry_point_example(execution_context_t* context) {
     return;
 }
 
+void create_task(cnode_t* cnode) {
+    char* name = "example";
+    argtype_t return_type = INT_TYPE;
+    char* fn_argsig = "iii"; 
+    function_stub_t entry_point = entry_point_example;
+    task_t* task = task_create(name, return_type, fn_argsig, entry_point);
+
+    tboard_register_task(cnode->tboard, task);
+}
+
 // handles all date receive from zenoh subscriber
 static void data_handler(z_loaned_sample_t* sample, void* arg) {
     z_view_string_t keystr;
@@ -59,7 +69,7 @@ static void data_handler(z_loaned_sample_t* sample, void* arg) {
             return;
         }
         command_free(cmd);
-        commadn_free(encoded_cmd);
+        command_free(encoded_cmd);
     }
     // if the command is a response, send a request for the return value
     if(cmd->cmd == CMD_REXEC_RES) {
@@ -78,31 +88,21 @@ void app_main(void)
     cnode_t* cnode = cnode_init(argc, argv);
     /* Starts Zenoh publisher and subscriber */
     cnode_start(cnode);
-    
-    /* Init wifi */
-    system_manager_t* sm = system_manager_init();
-    if (!system_manager_wifi_init(sm)) {
-        printf("Could not init wifi \r\n");
-        exit(-1);
-    }
 
-    /* Init Zenoh session */
-    zenoh_t* zn = zenoh_init();
-    if (zn == NULL) {
-        printf("Could not init Zenoh session \r\n");
-        exit(-1);
-    }
+    // /* Declare subscriber with data handler */ 
+    // if (!zenoh_declare_sub(cnode->zenoh, "app/**", data_handler, (void*) cnode)) {
+    //     printf("Could not declare subscriber \r\n");
+    // }
 
-    /* Declare subscriber with data handler */ 
-    if (!zenoh_declare_sub(zn, "app/**", data_handler, (void*) cnode)) {
-        printf("Could not declare subscriber \r\n");
-    }
+
+    /* Create a task for example 1 */
+    create_task(cnode);
 
     /* initialize variables for command_new */
     jamcommand_t cmdName = CMD_REXEC;  // Type of command (e.g., CMD_PING)
     int subcmd = 100;             // Subcommand identifier
     const char* fn_name = "example";  // Function name (could be empty if not needed)
-    uint64_t task_id = 0;       // Unique task identifier
+    uint64_t task_id = 200;       // Unique task identifier
     const char* node_id = "node_123";  // Node identifier (empty string if not applicable)
     const char* fn_argsig = "iii";  // Function argument signature ("s" = string, "i" = int)
     
@@ -111,14 +111,18 @@ void app_main(void)
     int arg3 = 3;
 
     /* encode a REXEC message */
-    command_t *encoded_cmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, arg1, arg2, arg3);
-    printf("Encoded command: \r\n");
-    command_print(encoded_cmd);
+    command_t *cmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, arg1, arg2, arg3);
+    printf("REXEC command: \r\n");
+    command_print(cmd);
     /* send the message */
-    if (!cnode_send_cmd(cnode, encoded_cmd)) {
+    if (!cnode_send_cmd(cnode, cmd)) {
         printf("Could not send command \r\n");
     }
 
-    command_free(encoded_cmd);
-    cnode_destroy(cnode);
+    // command_free(cmd);
+    // cnode_destroy(cnode);
+
+    while(true){
+        sleep(1);
+    }
 }

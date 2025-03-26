@@ -191,13 +191,14 @@ task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id) {
 }
 
 bool        task_instance_set_args(task_instance_t* instance, arg_t** args, int num_args) {
+    printf("got here");
     if (instance == NULL) return false;
     
     if (strlen(instance->parent_task->fn_argsig) != num_args || num_args >= MAX_ARGS) {
         log_error("Number of arguments passed to task_set_args() does not match fn_argsig length or is too large");
         return false;
     }
-
+    printf("and here");
     for (int i = 0; i < num_args; i++) {
         if (char_to_argtype(instance->parent_task->fn_argsig[i]) != args[i]->type) {
             log_error("Incompatible type passed to task_set_args()");

@@ -1,4 +1,5 @@
 #include "tboard.h"
+#include "command.h"
 static tboard_t* _global_tboard; // NOTE: Temp fix to be able to update tboard correctly. Ideally there is a better solutiion.
 
 void _task_freertos_entrypoint_wrapper(void* param)
@@ -139,14 +140,14 @@ task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_ser
         log_error("Could not find task name");
         return NULL;
     }
-
     /* Try to create a new instance of the task_target using given task_serial_id */
     task_instance_t* task_target_inst = task_instance_create(task_target, task_serial_id);
     if (task_target_inst == NULL) return NULL;
-
+    
+    printf("set arguments\n");
     /* Try to set arguments for this instance */
     if (!task_instance_set_args(task_target_inst, args, num_args)) return NULL;
-
+    printf("put down arguments\n");
     /* Create task using FreeRTOS */
     xTaskCreatePinnedToCore(_task_freertos_entrypoint_wrapper, 
                             task_target->name, 
