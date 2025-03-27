@@ -4,30 +4,11 @@
 #include "cnode.h"
 #include "command.h"
 
-/// simply task example
-int example (int a, int b, int c) {
-    return a+b+c; /* Synchronous task with return value */
-}
+zenoh_t* zn;
 
-void entry_point_example(execution_context_t* context) {
-    arg_t** args = context->query_args;
-    int a = args[0]->val.ival;
-    int b = args[1]->val.ival;
-    int c = args[2]->val.ival;
-    int ret = example(a, b, c);
-    context->return_arg->val.ival = ret;
-    return;
-}
+zenoh_pub_t z_pub_reply;
+zenoh_pub_t z_pub_request;
 
-void create_task(cnode_t* cnode) {
-    char* name = "example";
-    argtype_t return_type = INT_TYPE;
-    char* fn_argsig = "iii"; 
-    function_stub_t entry_point = entry_point_example;
-    task_t* task = task_create(name, return_type, fn_argsig, entry_point);
-
-    tboard_register_task(cnode->tboard, task);
-}
 
 // handles all date receive from zenoh subscriber
 static void data_handler(z_loaned_sample_t* sample, void* arg) {
@@ -36,9 +17,16 @@ static void data_handler(z_loaned_sample_t* sample, void* arg) {
     z_owned_string_t value;
     z_bytes_to_string(z_sample_payload(sample), &value);
 
-    cnode_t* cnode = (cnode_t*) arg;
+    const char* key_data = z_string_data(z_view_string_loan(&keystr));
+    if (strncmp(key_data, &z_pub_reply, strlen(&z_pub_reply)) == 0) {
+        return;
+    }
 
-    command_t *cmd = cnode_process_received_cmd(cnode, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));
+    if (strncmp(key_data, &z_pub_request, strlen(&z_pub_reply)) == 0) {
+        return;
+    }
+
+    command_t *cmd = cnode_process_received_cmd(NULL, z_string_data(z_string_loan(&value)), (int) z_string_len(z_string_loan(&value)));
     if (!cmd) {
         printf("Could not process command \r\n");
         return;
@@ -64,7 +52,7 @@ static void data_handler(z_loaned_sample_t* sample, void* arg) {
             return;
         }
         // send the request for the return value
-        if(!cnode_send_cmd(cnode, encoded_cmd)) {
+        if(!zenoh_publish_encoded(zn, &z_pub_reply, (const uint8_t *)encoded_cmd->buffer, (size_t) encoded_cmd->length)) {
             printf("Could not send command \r\n");
             return;
         }
@@ -73,30 +61,51 @@ static void data_handler(z_loaned_sample_t* sample, void* arg) {
     }
     // if the command is a response, send a request for the return value
     if(cmd->cmd == CMD_REXEC_RES) {
-        printf("Received response \r\n");
+        printf("Received task response \r\n");
+        command_print(cmd);
     }
 
     z_string_drop(z_string_move(&value));
 }
 
+void create_zenoh(){
+    /* Init wifi */
+    system_manager_t* sm = system_manager_init();
+    if (!system_manager_wifi_init(sm)) {
+        printf("Could not init wifi \r\n");
+        exit(-1);
+    }
+
+    /* Init Zenoh session */
+    zn = zenoh_init();
+    if (zn == NULL) {
+        printf("Could not init Zenoh session \r\n");
+        exit(-1);
+    }
+
+    zenoh_start_lease_task(zn);
+    zenoh_start_read_task(zn);
+
+    if (!zenoh_declare_pub(zn, "app/replies/down", &z_pub_reply)) {
+        printf("Could not declare pub 1 \r\n");
+        exit(-1);
+    }
+
+    if (!zenoh_declare_pub(zn, "app/requests/down", &z_pub_request)) {
+        printf("Could not declare pub 2 \r\n");
+        exit(-1);
+    }
+
+    printf("Successfully declared 2 publishers \r\n");
+
+    if (!zenoh_declare_sub(zn, "app/**", data_handler, NULL)) {
+        printf("Could not declare subscriber \r\n");
+    }
+}
 
 void app_main(void)
 {
-    int argc = 0;
-    char** argv = NULL;
-
-    cnode_t* cnode = cnode_init(argc, argv);
-    /* Starts Zenoh publisher and subscriber */
-    cnode_start(cnode);
-
-    // /* Declare subscriber with data handler */ 
-    // if (!zenoh_declare_sub(cnode->zenoh, "app/**", data_handler, (void*) cnode)) {
-    //     printf("Could not declare subscriber \r\n");
-    // }
-
-
-    /* Create a task for example 1 */
-    create_task(cnode);
+    create_zenoh();
 
     /* initialize variables for command_new */
     jamcommand_t cmdName = CMD_REXEC;  // Type of command (e.g., CMD_PING)
@@ -114,10 +123,12 @@ void app_main(void)
     command_t *cmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, arg1, arg2, arg3);
     printf("REXEC command: \r\n");
     command_print(cmd);
-    /* send the message */
-    if (!cnode_send_cmd(cnode, cmd)) {
-        printf("Could not send command \r\n");
+
+    printf("sending REXEC request\n");
+    if (!zenoh_publish_encoded(zn, &z_pub_request, (const uint8_t *)cmd->buffer, (size_t) cmd->length)) {
+        printf("Could not send message using z_pub_request \r\n");
     }
+    /* send the message */
 
     // command_free(cmd);
     // cnode_destroy(cnode);

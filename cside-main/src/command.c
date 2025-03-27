@@ -672,8 +672,11 @@ void command_print(command_t* cmd)
     printf("\nCommand buffer: ");
     for (i = 0; i < (int)strlen((char*)cmd->buffer); i++)
         printf("%x", (int)cmd->buffer[i]);
-    printf("\n");
-    command_arg_print(cmd->args);
+    if(cmd->args != NULL){
+        printf("\n");
+        command_arg_print(cmd->args);
+    }
+
 
     printf("\n===================================\n");
 }

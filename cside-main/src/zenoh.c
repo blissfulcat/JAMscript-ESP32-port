@@ -174,10 +174,12 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) 
     if (zenoh == NULL) {
         return false;
     }
+    printf("zenoh passed");
 
     z_owned_bytes_t payload;
     z_bytes_copy_from_str(&payload, message);
     if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), NULL) != Z_OK) {
+        printf("z_publisher_put failed");
         return false;
     }
     return true;
@@ -185,15 +187,15 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) 
 
 bool zenoh_publish_encoded(zenoh_t* zenoh,zenoh_pub_t* zenoh_pub, const uint8_t* buffer, size_t buffer_len) {
     /* Make sure we don't accidentally dereference a null pointer */
-    if (zenoh == NULL || buffer == NULL) {
+    if (zenoh == NULL || buffer == NULL || zenoh_pub == NULL) {
+        printf("zenoh_publish_encoded failed");
         return false;
     }
-
     z_owned_bytes_t payload;
     z_bytes_copy_from_buf(&payload, buffer, buffer_len);
-
     // Publish using the key expression
     if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), z_encoding_application_cbor()) != Z_OK) {
+        printf("z_publisher_put failed");
         return false;
     }
 

@@ -209,7 +209,6 @@ task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id) {
 }
 
 bool        task_instance_set_args(task_instance_t* instance, arg_t* args) {
-    printf("got here");
     if (instance == NULL) return false;
     /* If args == NULL assume that the task has no arguments */
     if (args == NULL) {
