@@ -17,6 +17,7 @@
 // function prototypes
 bool cnode_send_ack(cnode_t* cn, command_t* cmd);
 bool cnode_send_response(cnode_t* cn, command_t* cmd, arg_t* retarg);
+bool cnode_send_error(cnode_t* cn, command_t* cmd);
 
 /* PRIVATE FUNCTIONS */
 arg_t* _cnode_return_task(cnode_t* cn, command_t* cmd) {
@@ -108,6 +109,7 @@ void cnode_cmd_processing_task(void* pvParameters) {
                                        received_cmd->task_id, received_cmd->args)) {
                     printf("Could not start task \r\n");
                     command_free(received_cmd);
+                    cnode_send_error(cn, received_cmd);
                     continue;
                 } 
                 
@@ -123,6 +125,7 @@ void cnode_cmd_processing_task(void* pvParameters) {
                 if (retarg == NULL) {
                     printf("Failed to get task return value\n");
                     command_free(received_cmd);
+                    cnode_send_error(cn, received_cmd);
                     continue;
                 } 
                 if (!cnode_send_response(cn, received_cmd, retarg)) {
@@ -130,6 +133,10 @@ void cnode_cmd_processing_task(void* pvParameters) {
                 }
                 command_args_free(retarg);
                 command_free(received_cmd);
+            }
+            else{
+                // if the command is unknown, send an error
+                cnode_send_error(cn, received_cmd);
             }
             
         }
@@ -203,10 +210,8 @@ TODO: Currently calling zenoh_scout() creates buggy behavior for zenoh communica
 //         return false;
 //     }
     /* Create the command queue */
-    static uint8_t queueStorageArea[QUEUE_LENGTH * ITEM_SIZE];
-    static StaticQueue_t queueBuffer;
     
-    cn->commandQueue = xQueueCreate(10, sizeof(command_t *));
+    cn->commandQueue = xQueueCreate(QUEUE_LENGTH, sizeof(command_t *));
     if (cn->commandQueue == NULL) {
         printf("Failed to create command queue\n");
         cnode_destroy(cn);
@@ -407,6 +412,36 @@ bool cnode_send_response(cnode_t* cn, command_t* cmd, arg_t* retarg) {
     // Publish the command to the Zenoh network
     bool sent = zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)retcmd->buffer, (size_t) retcmd->length);
 
+    command_free(retcmd);
+    return sent;
+}
+
+bool cnode_send_error(cnode_t* cn, command_t* cmd) {
+    if (!cn || !cmd) {
+        printf("cnode_send_error: null cnode or cmd\n");
+        return false;
+    }
+    if (!cn->zenoh || !cn->zenoh_pub_reply) {
+        printf("cnode_send_error: cn->zenoh or cn->zenoh_pub_request is NULL\n");
+        return false;
+    }
+    jamcommand_t cmdName = CMD_REXEC_ERR;
+    int subcmd = cmd->subcmd;
+    const char* fn_name = cmd->fn_name;
+    uint64_t task_id = cmd->task_id;
+    const char* node_id = cmd->node_id;
+    const char* fn_argsig = "";
+    
+    command_t *retcmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, NULL);
+    if (!retcmd) {
+        printf("cnode_send_ack: retcmd is NULL\n");
+        return false;
+    }
+
+    sleep(1); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
+    // Publish the command to the Zenoh network
+    bool sent = zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)retcmd->buffer, (size_t)retcmd->length);
+    
     command_free(retcmd);
     return sent;
 }

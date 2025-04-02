@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include "esp_log.h"
 
-// #define NULL ((void *)0)
+#define NULL ((void *)0)
 #define JAM_OK 1
 #define JAM_FAIL -1
 #define JAM_MEMORY_ERR -2

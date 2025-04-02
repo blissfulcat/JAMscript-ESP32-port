@@ -101,8 +101,18 @@ command_t*        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_
 bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
 
 /**
+ * @brief Sends an error to the Zenoh network. 
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
+ */
+bool        cnode_send_error(cnode_t* cn, command_t* cmd);
+
+/**
  * @brief Sends an ack to the Zenoh network. 
  * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
  */
 bool        cnode_send_ack(cnode_t* cn, command_t* cmd);
 #endif
