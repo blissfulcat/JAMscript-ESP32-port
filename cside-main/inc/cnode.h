@@ -13,6 +13,9 @@
 #include "utils.h"
 #include "command.h"
 #include "tboard.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
 
 /* STRUCTS & TYPEDEFS */
 
@@ -34,15 +37,16 @@ typedef struct _cnode_args_t {
  */
 typedef struct _cnode_t 
 {
-    tboard_t* tboard; ///< pointer to tboard_t object. used to manage tasks
-    system_manager_t* system_manager; ///< pointer to system_manager_t object. used to initiate system & wifi
-    char* node_id; ///< randomly generated (snowflakeid) ID
-    zenoh_t* zenoh; ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
-    zenoh_pub_t* zenoh_pub_reply;        ///< This publisher is to send replies back to controller
-    zenoh_pub_t* zenoh_pub_request;      ///< This publisher is to send commands to controller
-    corestate_t* core_state; ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
-    bool initialized; ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
-    volatile bool message_received; ///< boolean representing if a message has been received, needs to be reset manually.
+    tboard_t* tboard;                       ///< pointer to tboard_t object. used to manage tasks
+    system_manager_t* system_manager;       ///< pointer to system_manager_t object. used to initiate system & wifi
+    char* node_id;                          ///< randomly generated (snowflakeid) ID
+    zenoh_t* zenoh;                         ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
+    zenoh_pub_t* zenoh_pub_reply;           ///< This publisher is to send replies back to controller
+    zenoh_pub_t* zenoh_pub_request;         ///< This publisher is to send commands to controller
+    QueueHandle_t commandQueue;             ///< Queue to hold commands
+    corestate_t* core_state;                ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
+    bool initialized;                       ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
+    volatile bool message_received;         ///< boolean representing if a message has been received, needs to be reset manually.    
 } cnode_t;
 
 /* FUNCTION PROTOTYPES */

@@ -33,11 +33,12 @@ void app_main(void)
 
     /* Loop forever */
     while (true) {
-        if (!zenoh_publish(cnode->zenoh, "Message from old board")) {
+        if (!zenoh_publish(cnode->zenoh, "Message from old board", cnode->zenoh_pub_reply)) {
             printf("Could not publish! \r\n");
         }
+        printf("Published! \r\n");
         //printf("Published! \r\n");
-        sleep(1);
+        vTaskDelay(pdMS_TO_TICKS(1000));  // delay 1 second non-blocking
     }
     
 }

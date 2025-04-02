@@ -118,6 +118,13 @@ task_instance_t*    task_get_instance(task_t* task, uint32_t serial_id);
 */
 arg_t*      task_instance_get_args(task_instance_t* instance); 
 
+
+/**
+ * @brief Returns the return arguments of the task instance.
+ * @param instance pointer to task_instance_t struct
+ * @returns pointer to arguments (arg_t)
+ */
+arg_t*      task_instance_get_return_args(task_instance_t* instance);
 /**
  * @brief Set the return argument of the task instance.
  * @param task_instance pointer to task_instance_t struct

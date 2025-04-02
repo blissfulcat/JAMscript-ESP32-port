@@ -12,10 +12,10 @@ int example (int a, int b, int c) {
 }
 
 void entry_point_example(execution_context_t* context) {
-    arg_t** args = context->query_args;
-    int a = args[0]->val.ival;
-    int b = args[1]->val.ival;
-    int c = args[2]->val.ival;
+    arg_t* args = context->query_args;
+    int a = args[0].val.ival;
+    int b = args[1].val.ival;
+    int c = args[2].val.ival;
     int ret = example(a, b, c);
     context->return_arg->val.ival = ret;
     return;
@@ -52,6 +52,6 @@ void app_main(void)
             // zenoh_publish(cnode->zenoh, "ACK from new board");
             cnode->message_received = false;
         }
-        sleep(1);
+        vTaskDelay(pdMS_TO_TICKS(1000));  // delay 1 second non-blocking
     }
 }

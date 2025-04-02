@@ -40,14 +40,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * These represent different message types exchanged between nodes.
  */
 typedef enum _jamcommand_t{
-    CMD_PING,   
-    CMD_ACK,
+    CMD_PING,  
     CMD_REXEC,
     CMD_REXEC_ACK,
     CMD_REXEC_RES,
     CMD_REXEC_ERR,
+    CMD_GET_REXEC_RES,
     CMD_CLOSE_PORT,
-    CMD_GET_REXEC_RES, 
+
 } jamcommand_t;
 // only most barebone commands right now
 

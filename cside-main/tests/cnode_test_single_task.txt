@@ -1,0 +1,140 @@
+I (822) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (842) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (852) wifi:<ba-add>idx:0 (ifx:0, 34:5d:9e:e5:18:b8), tid:7, ssn:1, winSize:64
+␛[0;32mI (1832) esp_netif_handlers: sta ip: 192.168.2.34, mask: 255.255.255.0, gw: 192.168.2.1␛[0m
+␛[0;32mI (1832) MEMORY_DEBUG: calloc: 20  src/zenoh.c:76. Total M count: 36
+␛[0m
+Successfully declared 2 publishers 
+␛[0;32mI (1952) MEMORY_DEBUG: calloc: 48  src/command.c:84. Total M count: 84
+␛[0m
+␛[0;32mI (1952) MEMORY_DEBUG: calloc: 1248  src/command.c:131. Total M count: 1332
+␛[0m
+␛[0;32mI (1952) MEMORY_DEBUG: calloc: 48  src/command.c:628. Total M count: 1380
+␛[0m
+␛[0;32mI (1962) MEMORY_DEBUG: Freed a arg src/command.c:620. Total M count: 1364
+␛[0m
+REXEC command: 
+
+===================================
+
+Command cmd: 1
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: iii
+
+Command buffer: a763636d64166737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696763696969646172677383123
+Int: 1 
+Int: 2 
+Int: 3 
+
+===================================
+sending REXEC request
+ >> [Subscriber handler] Received ('app/requests/down': '�ccmd␁fsubcmd␘dgfn_namegexampleftaskid␘�fnodeidhnode_123ifn_argsigciiidargs�␁␂␃')
+␛[0;32mI (2022) MEMORY_DEBUG: Freed a cmd->args src/command.c:519. Total M count: 1348
+␛[0m
+␛[0;32mI (2032) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 100
+␛[0m
+ >> [Subscriber handler] Received ('app/replies/up': '�ccmd␂fsubcmd␘dgfn_namegexampleftaskid␘�fnodeidhnode_123ifn_argsig`dargs�')
+␛[0;32mI (3202) MEMORY_DEBUG: calloc: 1248  src/command.c:241. Total M count: 1348
+␛[0m
+Received command: 
+
+===================================
+
+Command cmd: 2
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64266737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696760646172677380
+===================================
+Received ack 
+␛[0;32mI (3242) MEMORY_DEBUG: calloc: 1248  src/command.c:131. Total M count: 2596
+␛[0m
+Sending command 
+
+===================================
+
+Command cmd: 5
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64566737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696760646172677380
+===================================
+ >> [Subscriber handler] Received ('app/replies/down': '�ccmd␅fsubcmd␘dgfn_namegexampleftaskid␘�fnodeidhnode_123ifn_argsig`dargs�')
+␛[0;32mI (3302) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 1348
+␛[0m
+␛[0;32mI (3302) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 100
+␛[0m
+ >> [Subscriber handler] Received ('app/replies/up': '�ccmd␃fsubcmd␘dgfn_namegexampleftaskid␘�fnodeidhnode_123ifn_argsig`dargs�␆')
+␛[0;32mI (4632) MEMORY_DEBUG: calloc: 1248  src/command.c:241. Total M count: 1348
+␛[0m
+␛[0;32mI (4642) MEMORY_DEBUG: calloc: 16  src/command.c:306. Total M count: 1364
+␛[0m
+Received command: 
+
+===================================
+
+Command cmd: 3
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64366737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f617267736967606461726773816
+Int: 6 
+
+===================================
+Received task response 
+
+===================================
+
+Command cmd: 3
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64366737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f617267736967606461726773816
+Int: 6 
+
+===================================
+task response is 6
+␛[0;32mI (4722) MEMORY_DEBUG: Freed a cmd->args src/command.c:519. Total M count: 1348
+␛[0m
+␛[0;32mI (4732) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 100
+␛[0m

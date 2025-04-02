@@ -111,20 +111,16 @@ task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_ser
         return NULL;
     }
     /* Find target task by name */
-    printf("find task name\n");
     task_t* task_target = tboard_find_task_name(tboard, name);
-    printf("  find task name done\n");
 
     if (task_target == NULL) {
         log_error("Could not find task name");
         return NULL;
     }
-    printf("create task instance\n");
     /* Try to create a new instance of the task_target using given task_serial_id */
     task_instance_t* task_target_inst = task_instance_create(task_target, task_serial_id);
     if (task_target_inst == NULL) return NULL;
     
-    printf("set task instance args\n");
     /* Try to set arguments for this instance */
     if (!task_instance_set_args(task_target_inst, args)) return NULL;
 

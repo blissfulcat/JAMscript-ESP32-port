@@ -134,6 +134,7 @@ task_instance_t* task_instance_create(task_t* parent_task, uint32_t serial_id) {
     instance->has_finished = false;
     instance->is_running = false;
     instance->return_arg->type = parent_task->return_type;
+    instance->return_arg->nargs = 1;
     instance->task_handle_frtos = NULL;
     instance->serial_id = serial_id;
     instance->parent_task = parent_task;
@@ -181,7 +182,13 @@ void        task_instance_destroy(task_instance_t* instance) {
 
 arg_t*      task_instance_get_args(task_instance_t* instance) {
     if (instance == NULL) return NULL;
-    return instance->args;
+    return command_args_clone(instance->args);
+}
+
+
+arg_t*      task_instance_get_return_args(task_instance_t* instance) {
+    if (instance == NULL) return NULL;
+    return command_args_clone(instance->return_arg);
 }
 
 
