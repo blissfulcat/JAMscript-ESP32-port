@@ -28,7 +28,7 @@ void dump_heap_left();
 char* concat(const char *s1, const char *s2);
 static const char* ERROR_TAG = "JAM_ERROR";
 #define log_error(x) ESP_LOGE(ERROR_TAG, "Jamscript Runtime Error: %s  " __FILE__ ":%d.\n",x, __LINE__);
-#define MEMORY_DEBUG
+// #define MEMORY_DEBUG
 #ifdef MEMORY_DEBUG
 extern int32_t total_mem_usage;
 static uint32_t string_len = 1;

@@ -38,17 +38,17 @@ void app_main(void)
     char** argv = NULL;
 
     cnode_t* cnode = cnode_init(argc, argv);
-    cnode->node_id = "node_123";
+
+    // cnode->node_id = "node_123";
     /* Starts Zenoh publisher and subscriber */
     if (!cnode_start(cnode)) {
         printf("Could not start cnode \r\n");
     }
 
     create_task(cnode);
-
+    printf("cnode successfully started. node_id: %s\r\n", cnode->node_id);
     while (true) {
         if (cnode->message_received) {
-            printf("Message received from new board, sending back ACK \r\n");
             // zenoh_publish(cnode->zenoh, "ACK from new board");
             cnode->message_received = false;
         }
