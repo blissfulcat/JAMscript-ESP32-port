@@ -28,8 +28,10 @@ arg_t* _cnode_return_task(cnode_t* cn, command_t* cmd) {
 
     task_t *task = tboard_find_task_name(cn->tboard, cmd->fn_name);
     if (!task) return NULL;
-    task_instance_t *task_instance = task_get_instance(task, cmd->task_id);
-    if (!task_instance) return NULL;
+    int task_instance_idx = task_get_instance_index(task, cmd->task_id);
+    if (task_instance_idx == -1) return NULL;
+
+    task_instance_t *task_instance = task->instances[task_instance_idx];
 
     // this is blocking........ open a thread for this? can potentially use one of the esp32 cores
     while (!task_instance->has_finished) {

@@ -515,8 +515,12 @@ void command_free(command_t* cmd)
         }
     }
 
-    if (cmd->args != NULL)
+    if (cmd->args != NULL) {
+    #ifdef MEMORY_DEBUG
+    total_mem_usage -= (cmd->args[0].nargs - 1)*sizeof(arg_t);
+    #endif
         free(cmd->args);
+    }
     free(cmd);
 }
 
@@ -617,6 +621,9 @@ void command_args_free(arg_t* arg)
     if (arg != NULL)
     {
         command_arg_inner_free(arg);
+        #ifdef MEMORY_DEBUG 
+        total_mem_usage -= (arg[0].nargs-1)*sizeof(arg_t);
+        #endif
         free(arg);
     }
 }
