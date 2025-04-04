@@ -105,19 +105,65 @@ void zenoh_destroy(zenoh_t* zenoh) {
 * Should we send a message (pub) and wait for a response for identification ?
 * TODO: Refactor: we do not need the zenoh object as a parameter
 */
-bool zenoh_scout() {
-    int *context = (int *)malloc(sizeof(int));
-    *context = 0;
-    z_owned_config_t config;
-    z_config_default(&config);
-    z_owned_closure_hello_t closure;
-    z_closure_hello(&closure, callback, drop, context);
-    zp_config_insert(z_loan_mut(config), Z_CONFIG_MODE_KEY, MODE);
-    if (strcmp(CONNECT, "") != 0) {
-        zp_config_insert(z_loan_mut(config), Z_CONFIG_CONNECT_KEY, CONNECT);
+#define SCOUT_TIMEOUT_MS 3000  // 3 seconds
+
+
+static void scout_callback(z_loaned_hello_t *hello, void *context) {
+    (*(int *)context)++;
+
+    // Print peer information
+    printf("Discovered Zenoh peer: ");
+    fprinthello(stdout, hello);
+    printf("\n");
+}
+
+static void scout_drop(void *context) {
+    int count = *(int *)context;
+    free(context);
+
+    if (count == 0) {
+        printf("Did not find any Zenoh peers.\n");
+    } else {
+        printf("Scout finished. Discovered %d peer(s).\n", count);
     }
+}
+
+
+bool zenoh_scout() {
+    // Allocate context to track discovered peers
+    int *peer_count = (int *)malloc(sizeof(int));
+    if (!peer_count) {
+        printf("Memory allocation failed.\n");
+        return false;
+    }
+    *peer_count = 0;
+
+    // Create default config
+    z_owned_config_t config;
+    if (z_config_default(&config) < 0) {
+        printf("Failed to create default Zenoh config.\n");
+        free(peer_count);
+        return false;
+    }
+
+    // Set up callback closure
+    z_owned_closure_hello_t closure;
+    if (z_closure_hello(&closure, scout_callback, scout_drop, peer_count) < 0) {
+        printf("Failed to create scout closure.\n");
+        free(peer_count);
+        return false;
+    }
+
+    // Start scouting
+    printf("Scouting for Zenoh peers...\n");
     z_scout(z_config_move(&config), z_closure_hello_move(&closure), NULL);
-    return true;
+
+    // Allow time for scout to run
+    vTaskDelay(pdMS_TO_TICKS(SCOUT_TIMEOUT_MS));
+
+    // Return true if we found any peers
+    bool found = (*peer_count > 0);
+    return found;
 }
 
 bool zenoh_declare_sub(zenoh_t* zenoh, const char* key_expression, zenoh_callback_t* callback, void* cb_arg) {
@@ -178,6 +224,7 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) 
     z_owned_bytes_t payload;
     z_bytes_copy_from_str(&payload, message);
     if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), NULL) != Z_OK) {
+        printf("z_publisher_put failed");
         return false;
     }
     return true;
@@ -185,15 +232,15 @@ bool zenoh_publish(zenoh_t* zenoh, const char* message, zenoh_pub_t* zenoh_pub) 
 
 bool zenoh_publish_encoded(zenoh_t* zenoh,zenoh_pub_t* zenoh_pub, const uint8_t* buffer, size_t buffer_len) {
     /* Make sure we don't accidentally dereference a null pointer */
-    if (zenoh == NULL || buffer == NULL) {
+    if (zenoh == NULL || buffer == NULL || zenoh_pub == NULL) {
+        printf("zenoh_publish_encoded failed");
         return false;
     }
-
     z_owned_bytes_t payload;
     z_bytes_copy_from_buf(&payload, buffer, buffer_len);
-
     // Publish using the key expression
     if (z_publisher_put(z_loan(zenoh_pub->z_pub), z_move(payload), z_encoding_application_cbor()) != Z_OK) {
+        printf("z_publisher_put failed");
         return false;
     }
 

@@ -105,12 +105,28 @@ void        task_instance_destroy(task_instance_t* instance);
 
 
 /**
+ * @brief Returns the index of task instance (in task->instances) with the given serial id.
+ * @param task pointer to task_t struct
+ * @param serial_id serial id of the task instance
+ * @retval -1 if could not find task with serial id
+ * @retval index if could find task
+ */
+int    task_get_instance_index(task_t* task, uint32_t serial_id);
+
+/**
  * @brief Returns the arguments of the task instance.
  * @param instance pointer to task_instance_t struct
  * @returns pointer to arguments (arg_t)
 */
 arg_t*      task_instance_get_args(task_instance_t* instance); 
 
+
+/**
+ * @brief Returns the return arguments of the task instance.
+ * @param instance pointer to task_instance_t struct
+ * @returns pointer to arguments (arg_t)
+ */
+arg_t*      task_instance_get_return_args(task_instance_t* instance);
 /**
  * @brief Set the return argument of the task instance.
  * @param task_instance pointer to task_instance_t struct

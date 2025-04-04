@@ -1,4 +1,5 @@
 #include "tboard.h"
+#include "command.h"
 static tboard_t* _global_tboard; // NOTE: Temp fix to be able to update tboard correctly. Ideally there is a better solutiion.
 
 void _task_freertos_entrypoint_wrapper(void* param)
@@ -116,11 +117,10 @@ task_instance_t*    tboard_start_task(tboard_t* tboard, char* name, int task_ser
         log_error("Could not find task name");
         return NULL;
     }
-
     /* Try to create a new instance of the task_target using given task_serial_id */
     task_instance_t* task_target_inst = task_instance_create(task_target, task_serial_id);
     if (task_target_inst == NULL) return NULL;
-
+    
     /* Try to set arguments for this instance */
     if (!task_instance_set_args(task_target_inst, args)) return NULL;
 
@@ -140,10 +140,14 @@ task_t*     tboard_find_task_name(tboard_t* tboard, char* name){
     
     if (tboard == NULL){
         log_error("Unitialized tboard passed to tboard_find_task_name");
+        printf("Unitialized tboard passed to tboard_find_task_name");
         return NULL;
     }
 
     for (int i=0; i<MAX_TASKS; i++){
+        if (tboard->tasks[i] == NULL){
+            continue;
+        }
         char* target_name = tboard->tasks[i]->name;
         if (strcmp(name, target_name) == 0){
             return tboard->tasks[i];

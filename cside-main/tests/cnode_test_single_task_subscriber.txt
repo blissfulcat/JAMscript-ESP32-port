@@ -1,0 +1,136 @@
+cnode 0: declaring Zenoh sub ... 
+cnode 0: successfully started. 
+␛[0;32mI (1985) MEMORY_DEBUG: calloc: 40  src/task.c:94. Total M count: 460
+␛[0m
+␛[0;32mI (6875) MEMORY_DEBUG: calloc: 1248  src/command.c:241. Total M count: 1708
+␛[0m
+␛[0;32mI (6875) MEMORY_DEBUG: calloc: 48  src/command.c:306. Total M count: 1756
+␛[0m
+Received command: 
+
+===================================
+
+Command cmd: 1
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: iii
+
+Command buffer: a763636d64166737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696763696969646172677383123
+Int: 1 
+Int: 2 
+Int: 3 
+
+===================================
+find task name
+  find task name done
+create task instance
+␛[0;32mI (6925) MEMORY_DEBUG: calloc: 24  src/task.c:125. Total M count: 1780
+␛[0m
+␛[0;32mI (6925) MEMORY_DEBUG: calloc: 16  src/task.c:126. Total M count: 1796
+␛[0m
+set task instance args
+␛[0;32mI (6935) MEMORY_DEBUG: calloc: 48  src/task.c:234. Total M count: 1844
+␛[0m
+Started task
+␛[0;32mI (7945) MEMORY_DEBUG: calloc: 1248  src/command.c:131. Total M count: 3092
+␛[0m
+sending ack
+
+===================================
+
+Command cmd: 2
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64266737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696760646172677380
+===================================
+␛[0;32mI (7975) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 1844
+␛[0m
+␛[0;32mI (7985) MEMORY_DEBUG: Freed a cmd->args src/command.c:519. Total M count: 1828
+␛[0m
+␛[0;32mI (7985) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 580
+␛[0m
+Message received from new board, sending back ACK 
+␛[0;32mI (8255) MEMORY_DEBUG: calloc: 1248  src/command.c:241. Total M count: 1828
+␛[0m
+Received command: 
+
+===================================
+
+Command cmd: 5
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64566737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f61726773696760646172677380
+===================================
+Received task response 
+found task
+got task instance
+task instance has finished
+␛[0;32mI (8295) MEMORY_DEBUG: calloc: 16  src/command.c:628. Total M count: 1844
+␛[0m
+get return arg
+␛[0;32mI (8305) MEMORY_DEBUG: Freed a instance->return_arg src/task.c:177. Total M count: 1828
+␛[0m
+␛[0;32mI (8315) MEMORY_DEBUG: Freed a instance->args src/task.c:84. Total M count: 1780
+␛[0m
+␛[0;32mI (8325) MEMORY_DEBUG: Freed a instance src/task.c:179. Total M count: 1756
+␛[0m
+destroyed task instance
+Message received from new board, sending back ACK 
+starting to send response
+␛[0;32mI (9335) MEMORY_DEBUG: calloc: 1248  src/command.c:131. Total M count: 3004
+␛[0m
+␛[0;32mI (9335) MEMORY_DEBUG: calloc: 16  src/command.c:628. Total M count: 3020
+␛[0m
+creating new command
+sending response
+
+===================================
+
+Command cmd: 3
+
+Command subcmd: 100
+
+Command fn_name: example
+
+Command taskid : 200
+
+Command node_id: node_123
+
+Command fn_argsig: 
+
+Command buffer: a763636d64366737562636d64186467666e5f6e616d65676578616d706c65667461736b696418c8666e6f64656964686e6f64655f31323369666e5f617267736967606461726773816
+Int: 6 
+
+===================================
+␛[0;32mI (9385) MEMORY_DEBUG: Freed a cmd->args src/command.c:519. Total M count: 3004
+␛[0m
+␛[0;32mI (9385) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 1756
+␛[0m
+␛[0;32mI (9395) MEMORY_DEBUG: Freed a arg src/command.c:620. Total M count: 1740
+␛[0m
+␛[0;32mI (9395) MEMORY_DEBUG: Freed a cmd src/command.c:520. Total M count: 492

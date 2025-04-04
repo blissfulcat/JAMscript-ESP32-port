@@ -34,20 +34,20 @@ void app_main(void)
     zenoh_start_read_task(zn);
 
     /* Declare multiple publishers */
-    // zenoh_pub_t z_pub_reply;
-    // zenoh_pub_t z_pub_request;
+    zenoh_pub_t z_pub_reply;
+    zenoh_pub_t z_pub_request;
 
-    // if (!zenoh_declare_pub(zn, "app/replies/up", &z_pub_reply)) {
-    //     printf("Could not declare pub 1 \r\n");
-    //     exit(-1);
-    // }
+    if (!zenoh_declare_pub(zn, "app/replies/up", &z_pub_reply)) {
+        printf("Could not declare pub 1 \r\n");
+        exit(-1);
+    }
 
-    // if (!zenoh_declare_pub(zn, "app/requests/up", &z_pub_request)) {
-    //     printf("Could not declare pub 2 \r\n");
-    //     exit(-1);
-    // }
+    if (!zenoh_declare_pub(zn, "app/requests/up", &z_pub_request)) {
+        printf("Could not declare pub 2 \r\n");
+        exit(-1);
+    }
 
-    // printf("Successfully declared 2 publishers \r\n");
+    printf("Successfully declared 2 publishers \r\n");
 
     if (!zenoh_declare_sub(zn, "app/**", data_handler, NULL)) {
         printf("Could not declare subscriber \r\n");
@@ -56,13 +56,13 @@ void app_main(void)
     /* Loop forever */
     while (true) {
 
-        // if (!zenoh_publish(zn, "reply from cnode", &z_pub_reply)) {
-        //     printf("Could not send message using z_pub_reply \r\n");
-        // }
+        if (!zenoh_publish(zn, "reply from cnode", &z_pub_reply)) {
+            printf("Could not send message using z_pub_reply \r\n");
+        }
 
-        // if (!zenoh_publish(zn, "request from cnode", &z_pub_request)) {
-        //     printf("Could not send message using z_pub_request \r\n");
-        // }
+        if (!zenoh_publish(zn, "request from cnode", &z_pub_request)) {
+            printf("Could not send message using z_pub_request \r\n");
+        }
 
         sleep(1);
     }

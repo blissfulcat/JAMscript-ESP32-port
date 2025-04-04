@@ -81,10 +81,8 @@ static  void   task_instance_args_destroy(task_instance_t* instance) {
     int num_args = instance->args->nargs;
     #ifdef MEMORY_DEBUG
     total_mem_usage -= (num_args-1) * sizeof(arg_t);
-    free(instance->args);
-    #else
-    free(args); 
     #endif
+    free(instance->args); 
     instance->args = NULL;
 }
 
@@ -134,6 +132,7 @@ task_instance_t* task_instance_create(task_t* parent_task, uint32_t serial_id) {
     instance->has_finished = false;
     instance->is_running = false;
     instance->return_arg->type = parent_task->return_type;
+    instance->return_arg->nargs = 1;
     instance->task_handle_frtos = NULL;
     instance->serial_id = serial_id;
     instance->parent_task = parent_task;
@@ -172,6 +171,12 @@ void        task_destroy(task_t* task) {
 
 void        task_instance_destroy(task_instance_t* instance) {
     if (instance == NULL) return;
+    int i = task_get_instance_index(instance->parent_task, instance->serial_id);
+    if (i == -1) {
+        log_error("Instance to destroy is not in parent task");
+        return;
+    }
+    instance->parent_task->instances[i] = NULL;
     instance->parent_task->num_instances--; // decrement parent task's instance counter
     if (instance->return_arg != NULL) {free(instance->return_arg);}
     if (instance->args != NULL) {task_instance_args_destroy(instance);}
@@ -181,7 +186,13 @@ void        task_instance_destroy(task_instance_t* instance) {
 
 arg_t*      task_instance_get_args(task_instance_t* instance) {
     if (instance == NULL) return NULL;
-    return instance->args;
+    return command_args_clone(instance->args);
+}
+
+
+arg_t*      task_instance_get_return_args(task_instance_t* instance) {
+    if (instance == NULL) return NULL;
+    return command_args_clone(instance->return_arg);
 }
 
 
@@ -197,6 +208,16 @@ void        task_instance_set_return_arg(task_instance_t* instance, arg_t* retur
     return;
 }
 
+
+int    task_get_instance_index(task_t* task, uint32_t serial_id) {
+    if (task == NULL) return -1;
+    for (int i = 0; i < MAX_INSTANCES; i++) {
+        if (task->instances[i] != NULL && task->instances[i]->serial_id == serial_id) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 bool        task_instance_set_args(task_instance_t* instance, arg_t* args) {
     if (instance == NULL) return false;

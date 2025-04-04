@@ -40,12 +40,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * These represent different message types exchanged between nodes.
  */
 typedef enum _jamcommand_t{
-    CMD_PING,   
+    CMD_PING,  
     CMD_REXEC,
     CMD_REXEC_ACK,
     CMD_REXEC_RES,
+    CMD_REXEC_ERR,
+    CMD_GET_REXEC_RES,
     CMD_CLOSE_PORT,
-    CMD_GET_REXEC_RES, 
+
 } jamcommand_t;
 // only most barebone commands right now
 
@@ -183,7 +185,7 @@ command_t* command_new(jamcommand_t cmd, int subcmd, const char* fn_name, uint64
 /**
  * @brief Creates a new command object using an argument list
  * @param cmd Command type
- * @param opt Optional parameters
+ * @param subcmd Subcommand identifier
  * @param fn_name Function name
  * @param taskid Task identifier
  * @param node_id Node UUID
@@ -191,7 +193,7 @@ command_t* command_new(jamcommand_t cmd, int subcmd, const char* fn_name, uint64
  * @param args Pointer to argument list
  * @return Pointer to newly allocated command object
  */
-command_t* command_new_using_arg(jamcommand_t cmd, int opt, const char* fn_name,
+command_t* command_new_using_arg(jamcommand_t cmd, int subcmd, const char* fn_name,
                                  uint64_t taskid, const char* node_id,
                                  const char* fn_argsig, arg_t* args);
 

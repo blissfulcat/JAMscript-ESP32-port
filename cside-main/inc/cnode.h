@@ -12,6 +12,10 @@
 #include "system_manager.h"
 #include "utils.h"
 #include "command.h"
+#include "tboard.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
 
 /* STRUCTS & TYPEDEFS */
 
@@ -33,14 +37,16 @@ typedef struct _cnode_args_t {
  */
 typedef struct _cnode_t 
 {
-    system_manager_t* system_manager; ///< pointer to system_manager_t object. used to initiate system & wifi
-    char* node_id; ///< randomly generated (snowflakeid) ID
-    zenoh_t* zenoh; ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
-    zenoh_pub_t* zenoh_pub_reply;        ///< This publisher is to send replies back to controller
-    zenoh_pub_t* zenoh_pub_request;      ///< This publisher is to send commands to controller
-    corestate_t* core_state; ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
-    bool initialized; ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
-    volatile bool message_received; ///< boolean representing if a message has been received, needs to be reset manually.
+    tboard_t* tboard;                       ///< pointer to tboard_t object. used to manage tasks
+    system_manager_t* system_manager;       ///< pointer to system_manager_t object. used to initiate system & wifi
+    char* node_id;                          ///< randomly generated (snowflakeid) ID
+    zenoh_t* zenoh;                         ///< pointer to zenoh_t object. used to send messages over the network to other cnodes/controllers.
+    zenoh_pub_t* zenoh_pub_reply;           ///< This publisher is to send replies back to controller
+    zenoh_pub_t* zenoh_pub_request;         ///< This publisher is to send commands to controller
+    QueueHandle_t commandQueue;             ///< Queue to hold commands
+    corestate_t* core_state;                ///< pointer to corestate_t object. used to store the node_id and serial_id in ROM.
+    bool initialized;                       ///< boolean representing if this cnode instance has been initialized with cnode_init() or not.
+    volatile bool message_received;         ///< boolean representing if a message has been received, needs to be reset manually.    
 } cnode_t;
 
 /* FUNCTION PROTOTYPES */
@@ -84,7 +90,7 @@ bool        cnode_stop(cnode_t* cn);
  * @param buflen Length of the buffer.
  * @return True if the command was successfully processed, false otherwise.
  */
-bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen);
+command_t*        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t buflen);
 
 /**
  * @brief Sends a command to the Zenoh network. 
@@ -93,7 +99,20 @@ bool        cnode_process_received_cmd(cnode_t* cn, const char* buf, size_t bufl
  * @return True if the command was successfully sent, false otherwise.
  */
 bool        cnode_send_cmd(cnode_t* cnode, command_t* cmd);
-#endif
+
 /**
- * @}
-*/
+ * @brief Sends an error to the Zenoh network. 
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
+ */
+bool        cnode_send_error(cnode_t* cn, command_t* cmd);
+
+/**
+ * @brief Sends an ack to the Zenoh network. 
+ * @param cnode Pointer to the cnode_t instance representing the current node.
+ * @param cmd Pointer to the command_t object to be sent.
+ * @return True if the command was successfully sent, false otherwise.
+ */
+bool        cnode_send_ack(cnode_t* cn, command_t* cmd);
+#endif

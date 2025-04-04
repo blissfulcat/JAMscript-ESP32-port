@@ -515,8 +515,12 @@ void command_free(command_t* cmd)
         }
     }
 
-    if (cmd->args != NULL)
+    if (cmd->args != NULL) {
+    #ifdef MEMORY_DEBUG
+    total_mem_usage -= (cmd->args[0].nargs - 1)*sizeof(arg_t);
+    #endif
         free(cmd->args);
+    }
     free(cmd);
 }
 
@@ -577,13 +581,13 @@ void command_arg_print(arg_t* arg)
         switch (arg[i].type)
         {
         case INT_TYPE:
-            printf("Int: %d ", arg[i].val.ival);
+            printf("Int: %d \n", arg[i].val.ival);
             break;
         case STRING_TYPE:
-            printf("String: %s ", arg[i].val.sval);
+            printf("String: %s \n", arg[i].val.sval);
             break;
         case DOUBLE_TYPE:
-            printf("Double: %f ", arg[i].val.dval);
+            printf("Double: %f \n", arg[i].val.dval);
             break;
         default:
             break;
@@ -617,6 +621,9 @@ void command_args_free(arg_t* arg)
     if (arg != NULL)
     {
         command_arg_inner_free(arg);
+        #ifdef MEMORY_DEBUG 
+        total_mem_usage -= (arg[0].nargs-1)*sizeof(arg_t);
+        #endif
         free(arg);
     }
 }
@@ -672,8 +679,11 @@ void command_print(command_t* cmd)
     printf("\nCommand buffer: ");
     for (i = 0; i < (int)strlen((char*)cmd->buffer); i++)
         printf("%x", (int)cmd->buffer[i]);
+    if(cmd->args != NULL){
+        printf("\n");
+        command_arg_print(cmd->args);
+    }
 
-    command_arg_print(cmd->args);
 
     printf("\n===================================\n");
 }
