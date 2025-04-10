@@ -107,6 +107,8 @@ void cnode_cmd_processing_task(void* pvParameters) {
         if (xQueueReceive(cn->commandQueue, &received_cmd, (TickType_t)10) == pdPASS) {
             /* Process the command based on its type */
             if (received_cmd->cmd == CMD_REXEC) {
+                printf("received request from node_id %s with arguments:\r\n", cn->node_id);
+                command_arg_print(received_cmd->args);
                 if (!tboard_start_task(cn->tboard, received_cmd->fn_name,
                                        received_cmd->task_id, received_cmd->args)) {
                     printf("Could not start task \r\n");
@@ -125,11 +127,12 @@ void cnode_cmd_processing_task(void* pvParameters) {
                 arg_t* retarg = _cnode_return_task(cn, received_cmd);
 
                 if (retarg == NULL) {
-                    printf("Failed to get task return value\n");
+                    // printf("Failed to get task return value\n");
                     command_free(received_cmd);
                     cnode_send_error(cn, received_cmd);
                     continue;
                 } 
+                printf("sending answer back to controller\r\n");
                 if (!cnode_send_response(cn, received_cmd, retarg)) {
                     printf("Could not send response \r\n");
                 }
@@ -400,7 +403,7 @@ bool cnode_send_response(cnode_t* cn, command_t* cmd, arg_t* retarg) {
     int subcmd = cmd->subcmd;
     const char* fn_name = cmd->fn_name;
     uint64_t task_id = cmd->task_id;
-    const char* node_id = cmd->node_id;
+    const char* node_id = cn->node_id;
     const char* fn_argsig = cmd->fn_argsig;
     
     command_t *retcmd = command_new_using_arg(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, retarg);
@@ -410,7 +413,7 @@ bool cnode_send_response(cnode_t* cn, command_t* cmd, arg_t* retarg) {
         return false;
     }
 
-    sleep(1); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
+    usleep(500000); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
     // Publish the command to the Zenoh network
     bool sent = zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)retcmd->buffer, (size_t) retcmd->length);
 
@@ -431,7 +434,7 @@ bool cnode_send_error(cnode_t* cn, command_t* cmd) {
     int subcmd = cmd->subcmd;
     const char* fn_name = cmd->fn_name;
     uint64_t task_id = cmd->task_id;
-    const char* node_id = cmd->node_id;
+    const char* node_id = cn->node_id;
     const char* fn_argsig = "";
     
     command_t *retcmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, NULL);
@@ -440,7 +443,7 @@ bool cnode_send_error(cnode_t* cn, command_t* cmd) {
         return false;
     }
 
-    sleep(1); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
+    usleep(500000); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
     // Publish the command to the Zenoh network
     bool sent = zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)retcmd->buffer, (size_t)retcmd->length);
     
@@ -461,7 +464,7 @@ bool cnode_send_ack(cnode_t* cn, command_t* cmd) {
     int subcmd = cmd->subcmd;
     const char* fn_name = cmd->fn_name;
     uint64_t task_id = cmd->task_id;
-    const char* node_id = cmd->node_id;
+    const char* node_id = cn->node_id;
     const char* fn_argsig = "";
     
     command_t *retcmd = command_new(cmdName, subcmd, fn_name, task_id, node_id, fn_argsig, NULL);
@@ -470,7 +473,7 @@ bool cnode_send_ack(cnode_t* cn, command_t* cmd) {
         return false;
     }
 
-    sleep(1); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
+    usleep(500000); // TODO: this sleep is necessary to ensure that messages are sent consistently. There needs to be a better method
     // Publish the command to the Zenoh network
     bool sent = zenoh_publish_encoded(cn->zenoh, cn->zenoh_pub_reply, (const uint8_t *)retcmd->buffer, (size_t)retcmd->length);
     
