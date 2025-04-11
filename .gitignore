@@ -3,3 +3,6 @@
 .DS_Store
 CMakeLists.txt
 cmake-build-debug
+.pio
+sdkconfig.az-delivery-devkit-v4
+platformio.ini
