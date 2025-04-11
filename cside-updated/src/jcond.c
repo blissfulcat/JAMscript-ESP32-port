@@ -1,3 +1,0 @@
-#include "jcond.h"
-
-// TODO functions for populating and storing jcond state at runtime...
