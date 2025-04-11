@@ -1,3 +1,7 @@
+## Setup Guides
+For reference, there are two pdf's in this folder which can help guide with the setup process. In particular, how to setup the ESP-IDF environment and import zenoh-pico into your
+work environment. Note that it is also possible to use PlatformIO.
+
 ## Doxygen 
 
 To generate Doxygen HTML documentation. You can use the Doxyfile present in this folder.
