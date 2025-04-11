@@ -7,13 +7,16 @@ This project focuses on porting JAMScript to the ESP32 microcontroller, a low-co
 ## Application Examples
 The implementation of JAMScript on the ESP32 opens up a wide range of applications, particularly in the realm of IoT. One prominent example is in autonomous vehicles, where real-time data processing is crucial. With JAMScript running on ESP32, vehicles can communicate with each other and with infrastructure in real-time, enabling more efficient traffic control and contributing to the development of smart cities. This example illustrates the potential of integrating JAMScript with ESP32 to enhance the efficiency, responsiveness, and intelligence of various edge computing applications.
 
+## Dependencies
+- zenoh-pico release version 1.0.0 is used
+- espressif/cbor version v0.6.0~1 is used
+
 ## Development Environment
 To contribute to the development of this project, it is recommeded to use Visual Studio Code since it has the ESP-IDF extension. If you are using this setup, refer to the `docs` folder
 for practical guides on how to import zenoh-pico as an ESP-IDF `component`.
 
-## Dependencies
-- zenoh-pico release version 1.0.0 is used
-- espressif/cbor version v0.6.0~1 is used
+## Tests
+All of the tests (unit or not) that we used throughout the development of this project are located in the `test` folder. At this point in time, you should be able to run these tests and obtain the same results. Note that some tests are *outdated* and hence are put in the OUTDATED folder. They are kept for record purposes but should not be run.
 
 ## Module Documentation 
 The documentation for the structs, enums, defines, and functions of the various components associated with this project can be found in the 
